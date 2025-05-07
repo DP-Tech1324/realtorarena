@@ -1,142 +1,110 @@
 
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { Facebook, Instagram, Twitter, Linkedin } from 'lucide-react';
+import { Facebook, Instagram, Linkedin, Twitter, Mail, Phone, MapPin } from 'lucide-react';
 
 const Footer = () => {
+  const currentYear = new Date().getFullYear();
+  
   return (
     <footer className="bg-realtor-navy text-white">
-      {/* Main Footer Content */}
       <div className="container mx-auto px-4 py-12">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-          {/* Company Info */}
+          {/* Column 1: Logo & Contact Info */}
           <div>
-            <h3 className="text-2xl font-bold mb-6">
-              <span className="text-realtor-gold">Luxury</span> Realty
-            </h3>
-            <p className="text-white/80 mb-6">
-              We specialize in luxury real estate, helping clients find their dream homes and investment properties in the most desirable locations.
+            <Link to="/" className="flex items-center mb-6">
+              <h1 className="text-2xl font-bold">
+                <span className="text-realtor-gold">Jigar </span>Patel
+              </h1>
+            </Link>
+            <p className="text-white/80 mb-4">
+              Your trusted real estate advisor in the Greater Toronto Area.
             </p>
-            <div className="flex space-x-4">
-              <a href="#" className="text-white hover:text-realtor-gold transition-colors duration-200">
-                <Facebook size={20} />
-              </a>
-              <a href="#" className="text-white hover:text-realtor-gold transition-colors duration-200">
-                <Instagram size={20} />
-              </a>
-              <a href="#" className="text-white hover:text-realtor-gold transition-colors duration-200">
-                <Twitter size={20} />
-              </a>
-              <a href="#" className="text-white hover:text-realtor-gold transition-colors duration-200">
-                <Linkedin size={20} />
-              </a>
+            <div className="space-y-2">
+              <div className="flex items-center">
+                <Phone size={16} className="mr-2" />
+                <span>(647) 555-1234</span>
+              </div>
+              <div className="flex items-center">
+                <Mail size={16} className="mr-2" />
+                <a href="mailto:jigar@royallepage.ca">jigar@royallepage.ca</a>
+              </div>
+              <div className="flex items-start">
+                <MapPin size={16} className="mr-2 mt-1" />
+                <span>Royal LePage<br />7646 Weston Rd, Woodbridge<br />ON L4L 9J9</span>
+              </div>
             </div>
           </div>
 
-          {/* Quick Links */}
+          {/* Column 2: Quick Links */}
           <div>
-            <h4 className="text-lg font-bold mb-6">Quick Links</h4>
-            <ul className="space-y-3">
-              <li>
-                <Link to="/" className="text-white/80 hover:text-realtor-gold transition-colors duration-200">
-                  Home
-                </Link>
-              </li>
-              <li>
-                <Link to="/properties" className="text-white/80 hover:text-realtor-gold transition-colors duration-200">
-                  Properties
-                </Link>
-              </li>
-              <li>
-                <Link to="/services" className="text-white/80 hover:text-realtor-gold transition-colors duration-200">
-                  Services
-                </Link>
-              </li>
-              <li>
-                <Link to="/agents" className="text-white/80 hover:text-realtor-gold transition-colors duration-200">
-                  Our Team
-                </Link>
-              </li>
-              <li>
-                <Link to="/contact" className="text-white/80 hover:text-realtor-gold transition-colors duration-200">
-                  Contact Us
-                </Link>
-              </li>
+            <h3 className="text-lg font-bold mb-4">Quick Links</h3>
+            <ul className="space-y-2">
+              <li><Link to="/" className="hover:text-realtor-gold transition-colors">Home</Link></li>
+              <li><Link to="/listings" className="hover:text-realtor-gold transition-colors">Properties</Link></li>
+              <li><Link to="/about" className="hover:text-realtor-gold transition-colors">About Me</Link></li>
+              <li><Link to="/buyers" className="hover:text-realtor-gold transition-colors">Buyer Resources</Link></li>
+              <li><Link to="/sellers" className="hover:text-realtor-gold transition-colors">Seller Resources</Link></li>
+              <li><Link to="/contact" className="hover:text-realtor-gold transition-colors">Contact</Link></li>
             </ul>
           </div>
 
-          {/* Property Categories */}
+          {/* Column 3: Resources */}
           <div>
-            <h4 className="text-lg font-bold mb-6">Property Categories</h4>
-            <ul className="space-y-3">
-              <li>
-                <a href="#" className="text-white/80 hover:text-realtor-gold transition-colors duration-200">
-                  Luxury Homes
-                </a>
-              </li>
-              <li>
-                <a href="#" className="text-white/80 hover:text-realtor-gold transition-colors duration-200">
-                  Waterfront Properties
-                </a>
-              </li>
-              <li>
-                <a href="#" className="text-white/80 hover:text-realtor-gold transition-colors duration-200">
-                  Urban Condos
-                </a>
-              </li>
-              <li>
-                <a href="#" className="text-white/80 hover:text-realtor-gold transition-colors duration-200">
-                  New Developments
-                </a>
-              </li>
-              <li>
-                <a href="#" className="text-white/80 hover:text-realtor-gold transition-colors duration-200">
-                  Investment Properties
-                </a>
-              </li>
+            <h3 className="text-lg font-bold mb-4">Resources</h3>
+            <ul className="space-y-2">
+              <li><Link to="/calculators" className="hover:text-realtor-gold transition-colors">Mortgage Calculator</Link></li>
+              <li><Link to="/calculators" className="hover:text-realtor-gold transition-colors">Affordability Calculator</Link></li>
+              <li><Link to="/valuation" className="hover:text-realtor-gold transition-colors">Free Home Valuation</Link></li>
+              <li><Link to="/blog" className="hover:text-realtor-gold transition-colors">Real Estate Blog</Link></li>
+              <li><Link to="/buyers" className="hover:text-realtor-gold transition-colors">First-Time Buyer Guide</Link></li>
+              <li><Link to="/sellers" className="hover:text-realtor-gold transition-colors">Selling Tips</Link></li>
             </ul>
           </div>
 
-          {/* Newsletter Signup */}
+          {/* Column 4: Social Media & Newsletter */}
           <div>
-            <h4 className="text-lg font-bold mb-6">Newsletter</h4>
+            <h3 className="text-lg font-bold mb-4">Connect With Me</h3>
+            <div className="flex space-x-4 mb-6">
+              <a href="https://facebook.com" target="_blank" rel="noopener noreferrer" className="hover:text-realtor-gold transition-colors">
+                <Facebook size={20} />
+              </a>
+              <a href="https://instagram.com" target="_blank" rel="noopener noreferrer" className="hover:text-realtor-gold transition-colors">
+                <Instagram size={20} />
+              </a>
+              <a href="https://linkedin.com" target="_blank" rel="noopener noreferrer" className="hover:text-realtor-gold transition-colors">
+                <Linkedin size={20} />
+              </a>
+              <a href="https://twitter.com" target="_blank" rel="noopener noreferrer" className="hover:text-realtor-gold transition-colors">
+                <Twitter size={20} />
+              </a>
+            </div>
             <p className="text-white/80 mb-4">
-              Subscribe to our newsletter for the latest property listings and real estate news.
+              Subscribe to my newsletter for market updates and real estate tips.
             </p>
-            <form className="flex">
-              <input
-                type="email"
-                placeholder="Your email address"
-                className="px-4 py-2 rounded-l-md w-full focus:outline-none text-gray-800"
-                required
+            <div className="flex">
+              <input 
+                type="email" 
+                placeholder="Your email" 
+                className="px-4 py-2 rounded-l text-black flex-grow"
               />
-              <button
-                type="submit"
-                className="bg-realtor-gold text-realtor-navy px-4 py-2 rounded-r-md font-medium hover:bg-realtor-gold/90 transition-colors duration-200"
-              >
+              <button className="bg-realtor-gold text-realtor-navy px-4 py-2 rounded-r font-medium">
                 Subscribe
               </button>
-            </form>
+            </div>
           </div>
         </div>
-      </div>
 
-      {/* Bottom Footer Bar */}
-      <div className="bg-realtor-navy border-t border-white/10 py-4">
-        <div className="container mx-auto px-4 flex flex-col md:flex-row items-center justify-between">
-          <p className="text-white/80 text-sm">
-            &copy; {new Date().getFullYear()} Luxury Realty. All rights reserved.
+        <div className="border-t border-white/20 mt-12 pt-6 flex flex-col md:flex-row justify-between items-center">
+          <p className="text-sm text-white/60">
+            © {currentYear} Jigar Patel, Royal LePage. All Rights Reserved.
           </p>
-          <div className="flex space-x-4 mt-4 md:mt-0">
-            <a href="#" className="text-white/80 hover:text-realtor-gold text-sm transition-colors duration-200">
-              Privacy Policy
-            </a>
-            <a href="#" className="text-white/80 hover:text-realtor-gold text-sm transition-colors duration-200">
-              Terms of Service
-            </a>
-            <a href="#" className="text-white/80 hover:text-realtor-gold text-sm transition-colors duration-200">
-              Disclaimer
-            </a>
+          <div className="mt-4 md:mt-0">
+            <ul className="flex text-sm text-white/60 space-x-6">
+              <li><Link to="/privacy" className="hover:text-white">Privacy Policy</Link></li>
+              <li><Link to="/terms" className="hover:text-white">Terms of Use</Link></li>
+              <li><Link to="/sitemap" className="hover:text-white">Sitemap</Link></li>
+            </ul>
           </div>
         </div>
       </div>

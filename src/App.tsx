@@ -4,11 +4,15 @@ import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
-import Index from "./pages/Index";
-import Properties from "./pages/Properties";
-import ServicesPage from "./pages/ServicesPage";
-import AgentsPage from "./pages/AgentsPage";
-import ContactPage from "./pages/ContactPage";
+import Home from "./pages/Home";
+import About from "./pages/About";
+import Listings from "./pages/Listings";
+import Buyers from "./pages/Buyers";
+import Sellers from "./pages/Sellers";
+import HomeValuation from "./pages/HomeValuation";
+import Calculators from "./pages/Calculators";
+import Contact from "./pages/Contact";
+import Blog from "./pages/Blog";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -20,11 +24,15 @@ const App = () => (
       <Sonner />
       <BrowserRouter>
         <Routes>
-          <Route path="/" element={<Index />} />
-          <Route path="/properties" element={<Properties />} />
-          <Route path="/services" element={<ServicesPage />} />
-          <Route path="/agents" element={<AgentsPage />} />
-          <Route path="/contact" element={<ContactPage />} />
+          <Route path="/" element={<Home />} />
+          <Route path="/about" element={<About />} />
+          <Route path="/listings" element={<Listings />} />
+          <Route path="/buyers" element={<Buyers />} />
+          <Route path="/sellers" element={<Sellers />} />
+          <Route path="/valuation" element={<HomeValuation />} />
+          <Route path="/calculators" element={<Calculators />} />
+          <Route path="/contact" element={<Contact />} />
+          <Route path="/blog" element={<Blog />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>
