@@ -1,31 +1,68 @@
 
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 
 interface PageHeaderProps {
   title: string;
   subtitle?: string;
   bgImage?: string;
+  imageSlider?: string[]; // New property for image slider
 }
 
 const PageHeader: React.FC<PageHeaderProps> = ({ 
   title, 
   subtitle, 
-  bgImage = "https://images.unsplash.com/photo-1560185007-c5ca9d2c014d?ixlib=rb-4.0.3" 
+  bgImage = "https://images.unsplash.com/photo-1560185007-c5ca9d2c014d?ixlib=rb-4.0.3",
+  imageSlider 
 }) => {
+  const [currentImageIndex, setCurrentImageIndex] = useState(0);
+  
+  // Only set up the interval if we're using the image slider
+  useEffect(() => {
+    if (!imageSlider || imageSlider.length <= 1) return;
+    
+    const interval = setInterval(() => {
+      setCurrentImageIndex(prevIndex => 
+        prevIndex === imageSlider.length - 1 ? 0 : prevIndex + 1
+      );
+    }, 5000); // Change image every 5 seconds
+    
+    return () => clearInterval(interval);
+  }, [imageSlider]);
+
+  // Determine which image to use
+  const backgroundImage = imageSlider && imageSlider.length > 0 
+    ? imageSlider[currentImageIndex] 
+    : bgImage;
+
   return (
-    <div className="relative bg-realtor-navy py-16">
-      {bgImage && (
+    <div className="relative bg-realtor-navy py-24">
+      {backgroundImage && (
         <div 
-          className="absolute inset-0 bg-cover bg-center opacity-20"
-          style={{ backgroundImage: `url('${bgImage}')` }}
+          className="absolute inset-0 bg-cover bg-center opacity-25 transition-opacity duration-1000 ease-in-out"
+          style={{ backgroundImage: `url('${backgroundImage}')` }}
         ></div>
       )}
       <div className="container mx-auto px-4 text-center relative z-10">
-        <h1 className="text-4xl md:text-5xl font-bold text-white mb-4">{title}</h1>
+        <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-white mb-4 animate-fade-in">{title}</h1>
         {subtitle && (
-          <p className="text-xl text-white/80 max-w-2xl mx-auto">
+          <p className="text-xl md:text-2xl text-white/90 max-w-3xl mx-auto animate-fade-in" style={{ animationDelay: '0.2s' }}>
             {subtitle}
           </p>
+        )}
+        
+        {imageSlider && imageSlider.length > 1 && (
+          <div className="flex justify-center mt-8 gap-2">
+            {imageSlider.map((_, index) => (
+              <button
+                key={index}
+                onClick={() => setCurrentImageIndex(index)}
+                className={`w-3 h-3 rounded-full ${
+                  index === currentImageIndex ? 'bg-realtor-gold' : 'bg-white/50'
+                } transition-colors`}
+                aria-label={`Go to slide ${index + 1}`}
+              />
+            ))}
+          </div>
         )}
       </div>
     </div>

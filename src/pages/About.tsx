@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Link } from 'react-router-dom';
 import Navbar from '@/components/Navbar';
@@ -9,15 +8,23 @@ import { agent } from '@/data/agent';
 import { Phone, Mail, Award, ThumbsUp, Home } from 'lucide-react';
 
 const About = () => {
+  // Array of hero banner images for the image slider
+  const heroImages = [
+    "https://images.unsplash.com/photo-1600585154526-990dced4db0d?ixlib=rb-4.0.3",
+    "https://images.unsplash.com/photo-1600573472591-61770e120a4a?ixlib=rb-4.0.3",
+    "https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?ixlib=rb-4.0.3",
+    "https://images.unsplash.com/photo-1600566753086-00f18fb6b3ea?ixlib=rb-4.0.3"
+  ];
+
   return (
     <div className="min-h-screen flex flex-col">
       <Navbar />
       
       <main className="flex-grow pt-[72px]">
         <PageHeader 
-          title="About Me" 
-          subtitle="Get to know your trusted real estate advisor"
-          bgImage="https://images.unsplash.com/photo-1600585154526-990dced4db0d?ixlib=rb-4.0.3"
+          title="About Jigar Patel" 
+          subtitle="Your trusted real estate advisor in the Greater Toronto Area"
+          imageSlider={heroImages}
         />
 
         {/* Bio Section */}
