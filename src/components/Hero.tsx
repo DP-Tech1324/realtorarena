@@ -1,5 +1,5 @@
 
-import React from 'react';
+import React, { useEffect, useRef } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { 
@@ -23,6 +23,8 @@ const Hero = () => {
   const [priceRange, setPriceRange] = React.useState("");
   const [propertyType, setPropertyType] = React.useState("");
   const [location, setLocation] = React.useState("");
+  const [activeIndex, setActiveIndex] = React.useState(0);
+  const autoPlayRef = useRef<NodeJS.Timeout | null>(null);
 
   // Enhanced hero images with better quality options
   const heroImages = [
@@ -31,11 +33,28 @@ const Hero = () => {
     "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?ixlib=rb-4.0.3&auto=format&fit=crop&q=85&w=2070",
   ];
 
+  // Setup autoplay functionality
+  useEffect(() => {
+    if (autoPlayRef.current) {
+      clearTimeout(autoPlayRef.current);
+    }
+    
+    autoPlayRef.current = setTimeout(() => {
+      setActiveIndex((prevIndex) => (prevIndex + 1) % heroImages.length);
+    }, 5000);
+    
+    return () => {
+      if (autoPlayRef.current) {
+        clearTimeout(autoPlayRef.current);
+      }
+    };
+  }, [activeIndex, heroImages.length]);
+
   return (
     <section className="relative w-full h-[85vh] min-h-[650px] flex items-center justify-center overflow-hidden">
       {/* Image Carousel Background */}
       <div className="absolute inset-0 z-0">
-        <Carousel className="w-full h-full" opts={{ loop: true, duration: 50 }} autoPlay={true}>
+        <Carousel className="w-full h-full" opts={{ loop: true, duration: 50 }} value={activeIndex} onValueChange={setActiveIndex}>
           <CarouselContent className="h-full">
             {heroImages.map((image, index) => (
               <CarouselItem key={index} className="h-full">
