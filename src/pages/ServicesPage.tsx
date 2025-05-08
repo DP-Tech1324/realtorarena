@@ -3,20 +3,25 @@ import React from 'react';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
 import Services from '@/components/Services';
+import PageHeader from '@/components/PageHeader';
 
 const ServicesPage = () => {
+  // Services page hero images
+  const servicesHeroImages = [
+    "https://images.unsplash.com/photo-1560520031-3a4dc4e9de0c?ixlib=rb-4.0.3&auto=format&fit=crop&w=2070&q=80",
+    "https://images.unsplash.com/photo-1581291518633-83b4ebd1d83e?ixlib=rb-4.0.3&auto=format&fit=crop&w=2070&q=80",
+    "https://images.unsplash.com/photo-1542744173-8e7e53415bb0?ixlib=rb-4.0.3&auto=format&fit=crop&w=2070&q=80"
+  ];
+
   return (
     <div className="min-h-screen flex flex-col">
       <Navbar />
       <main className="flex-grow pt-[72px]">
-        <div className="bg-realtor-navy py-16">
-          <div className="container mx-auto px-4 text-center">
-            <h1 className="text-4xl md:text-5xl font-bold text-white mb-4">Our Services</h1>
-            <p className="text-xl text-white/80 max-w-2xl mx-auto">
-              Comprehensive real estate solutions tailored to your needs
-            </p>
-          </div>
-        </div>
+        <PageHeader 
+          title="Our Comprehensive Services" 
+          subtitle="Tailored real estate solutions to meet your specific needs and exceed your expectations"
+          imageSlider={servicesHeroImages}
+        />
         <Services />
       </main>
       <Footer />

@@ -1,18 +1,26 @@
 
 import React, { useState, useEffect } from 'react';
+import { ArrowRight } from 'lucide-react';
+import { Button } from '@/components/ui/button';
 
 interface PageHeaderProps {
   title: string;
   subtitle?: string;
   bgImage?: string;
-  imageSlider?: string[]; // New property for image slider
+  imageSlider?: string[];
+  showCta?: boolean;
+  ctaText?: string;
+  ctaLink?: string;
 }
 
 const PageHeader: React.FC<PageHeaderProps> = ({ 
   title, 
   subtitle, 
   bgImage = "https://images.unsplash.com/photo-1560185007-c5ca9d2c014d?ixlib=rb-4.0.3",
-  imageSlider 
+  imageSlider,
+  showCta = false,
+  ctaText = "Learn More",
+  ctaLink = "#"
 }) => {
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   
@@ -35,20 +43,43 @@ const PageHeader: React.FC<PageHeaderProps> = ({
     : bgImage;
 
   return (
-    <div className="relative bg-realtor-navy py-24">
+    <div className="relative bg-realtor-navy py-28">
       {backgroundImage && (
         <div 
-          className="absolute inset-0 bg-cover bg-center opacity-25 transition-opacity duration-1000 ease-in-out"
+          className="absolute inset-0 bg-cover bg-center opacity-30 transition-opacity duration-1000 ease-in-out"
           style={{ backgroundImage: `url('${backgroundImage}')` }}
         ></div>
       )}
+      
+      {/* Overlay with gradient */}
+      <div className="absolute inset-0 bg-gradient-to-r from-realtor-navy/90 to-realtor-navy/70"></div>
+      
       <div className="container mx-auto px-4 text-center relative z-10">
-        <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-white mb-4 animate-fade-in">{title}</h1>
-        {subtitle && (
-          <p className="text-xl md:text-2xl text-white/90 max-w-3xl mx-auto animate-fade-in" style={{ animationDelay: '0.2s' }}>
-            {subtitle}
-          </p>
-        )}
+        <div className="max-w-3xl mx-auto">
+          <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-white mb-6 animate-fade-in">
+            {title}
+          </h1>
+          
+          {subtitle && (
+            <p className="text-xl md:text-2xl text-white/90 max-w-3xl mx-auto animate-fade-in mb-8" 
+               style={{ animationDelay: '0.2s' }}>
+              {subtitle}
+            </p>
+          )}
+          
+          {showCta && (
+            <Button 
+              className="bg-realtor-gold hover:bg-realtor-gold/90 text-realtor-navy flex items-center gap-2 mx-auto animate-fade-in"
+              style={{ animationDelay: '0.4s' }}
+              asChild
+            >
+              <a href={ctaLink}>
+                {ctaText}
+                <ArrowRight size={16} />
+              </a>
+            </Button>
+          )}
+        </div>
         
         {imageSlider && imageSlider.length > 1 && (
           <div className="flex justify-center mt-8 gap-2">

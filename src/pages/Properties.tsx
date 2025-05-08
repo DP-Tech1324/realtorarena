@@ -3,21 +3,31 @@ import React from 'react';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
 import FeaturedProperties from '@/components/FeaturedProperties';
+import PageHeader from '@/components/PageHeader';
 
 const Properties = () => {
+  // Property page hero images
+  const propertyHeroImages = [
+    "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?ixlib=rb-4.0.3&auto=format&fit=crop&w=2070&q=80",
+    "https://images.unsplash.com/photo-1600573472591-61770e120a4a?ixlib=rb-4.0.3&auto=format&fit=crop&w=2070&q=80",
+    "https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?ixlib=rb-4.0.3&auto=format&fit=crop&w=2070&q=80"
+  ];
+
   return (
     <div className="min-h-screen flex flex-col">
       <Navbar />
       <main className="flex-grow pt-[72px]">
-        <div className="bg-realtor-navy py-16">
-          <div className="container mx-auto px-4 text-center">
-            <h1 className="text-4xl md:text-5xl font-bold text-white mb-4">Our Properties</h1>
-            <p className="text-xl text-white/80 max-w-2xl mx-auto">
-              Discover our exclusive collection of exceptional properties
-            </p>
-          </div>
+        <PageHeader 
+          title="Exclusive Property Collection" 
+          subtitle="Discover our handpicked selection of premium properties in desirable locations"
+          imageSlider={propertyHeroImages}
+          showCta={true}
+          ctaText="View Featured Properties"
+          ctaLink="#featured-properties"
+        />
+        <div id="featured-properties">
+          <FeaturedProperties />
         </div>
-        <FeaturedProperties />
       </main>
       <Footer />
     </div>

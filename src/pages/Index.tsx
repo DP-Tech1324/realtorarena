@@ -8,26 +8,24 @@ import Agents from '@/components/Agents';
 import Testimonials from '@/components/Testimonials';
 import ContactForm from '@/components/ContactForm';
 import Footer from '@/components/Footer';
-import PageHeader from '@/components/PageHeader';
 
 const Index = () => {
-  // Hero slider images
-  const heroImages = [
-    "https://images.unsplash.com/photo-1600607687644-a19911add663?ixlib=rb-4.0.3",
-    "https://images.unsplash.com/photo-1600047509807-ba8f99d2cdde?ixlib=rb-4.0.3",
-    "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?ixlib=rb-4.0.3"
-  ];
-
   return (
     <div className="min-h-screen flex flex-col">
       <Navbar />
-      <main className="flex-grow pt-[72px]">
+      <main className="flex-grow">
         <Hero />
         <FeaturedProperties />
         <Services />
         <Agents />
         <Testimonials />
-        <ContactForm />
+        <div className="bg-realtor-light-gray py-16">
+          <div className="container mx-auto px-4">
+            <div className="max-w-4xl mx-auto bg-white rounded-lg shadow-xl p-8">
+              <ContactForm />
+            </div>
+          </div>
+        </div>
       </main>
       <Footer />
     </div>
