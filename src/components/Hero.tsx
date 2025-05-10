@@ -3,7 +3,7 @@ import React, { useEffect, useRef } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { 
-  Select as SelectPrimitive,
+  Select,
   SelectContent, 
   SelectGroup, 
   SelectItem, 
@@ -97,12 +97,13 @@ const Hero = () => {
                 />
               </div>
               <div className="md:col-span-3">
-                <SelectPrimitive value={propertyType} onValueChange={setPropertyType}>
+                <Select value={propertyType} onValueChange={setPropertyType}>
                   <SelectTrigger className="h-11 border-2 border-gray-200 focus:border-realtor-gold">
                     <SelectValue placeholder="Property Type" />
                   </SelectTrigger>
                   <SelectContent>
                     <SelectGroup>
+                      <SelectItem value="all-types">All Types</SelectItem>
                       <SelectItem value="house">House</SelectItem>
                       <SelectItem value="apartment">Apartment</SelectItem>
                       <SelectItem value="condo">Condo</SelectItem>
@@ -110,22 +111,23 @@ const Hero = () => {
                       <SelectItem value="land">Land</SelectItem>
                     </SelectGroup>
                   </SelectContent>
-                </SelectPrimitive>
+                </Select>
               </div>
               <div className="md:col-span-3">
-                <SelectPrimitive value={priceRange} onValueChange={setPriceRange}>
+                <Select value={priceRange} onValueChange={setPriceRange}>
                   <SelectTrigger className="h-11 border-2 border-gray-200 focus:border-realtor-gold">
                     <SelectValue placeholder="Price Range" />
                   </SelectTrigger>
                   <SelectContent>
                     <SelectGroup>
+                      <SelectItem value="all-prices">All Prices</SelectItem>
                       <SelectItem value="0-500000">Under $500k</SelectItem>
                       <SelectItem value="500000-1000000">$500k - $1M</SelectItem>
                       <SelectItem value="1000000-2000000">$1M - $2M</SelectItem>
                       <SelectItem value="2000000+">$2M+</SelectItem>
                     </SelectGroup>
                   </SelectContent>
-                </SelectPrimitive>
+                </Select>
               </div>
               <div className="md:col-span-1">
                 <Button className="w-full h-11 bg-realtor-gold hover:bg-realtor-gold/90 text-realtor-navy transition-all duration-300 hover:shadow-md">
