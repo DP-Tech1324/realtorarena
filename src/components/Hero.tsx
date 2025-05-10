@@ -54,7 +54,7 @@ const Hero = () => {
     <section className="relative w-full h-[85vh] min-h-[650px] flex items-center justify-center overflow-hidden">
       {/* Image Carousel Background */}
       <div className="absolute inset-0 z-0">
-        <Carousel className="w-full h-full" opts={{ loop: true, duration: 50 }} value={activeIndex} onValueChange={setActiveIndex}>
+        <Carousel className="w-full h-full" opts={{ loop: true, duration: 50 }}>
           <CarouselContent className="h-full">
             {heroImages.map((image, index) => (
               <CarouselItem key={index} className="h-full">

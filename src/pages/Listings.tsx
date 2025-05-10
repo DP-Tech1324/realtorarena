@@ -111,7 +111,7 @@ const Listings = () => {
                         </SelectTrigger>
                         <SelectContent>
                           <SelectGroup>
-                            <SelectItem value="">Any Price</SelectItem>
+                            <SelectItem value="any">Any Price</SelectItem>
                             <SelectItem value="0-500000">Under $500k</SelectItem>
                             <SelectItem value="500000-1000000">$500k - $1M</SelectItem>
                             <SelectItem value="1000000-2000000">$1M - $2M</SelectItem>
@@ -129,7 +129,7 @@ const Listings = () => {
                         </SelectTrigger>
                         <SelectContent>
                           <SelectGroup>
-                            <SelectItem value="">Any Type</SelectItem>
+                            <SelectItem value="any">Any Type</SelectItem>
                             <SelectItem value="house">House</SelectItem>
                             <SelectItem value="condo">Condo</SelectItem>
                             <SelectItem value="townhouse">Townhouse</SelectItem>
