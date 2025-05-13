@@ -1,111 +1,56 @@
 
-import React, { useState, useEffect } from 'react';
+import React, { useEffect } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
 import PageHeader from '@/components/PageHeader';
-import PropertyCard from '@/components/PropertyCard';
 import PropertySearch from '@/components/PropertySearch';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { 
-  Select,
-  SelectContent, 
-  SelectGroup, 
-  SelectItem, 
-  SelectTrigger, 
-  SelectValue 
-} from '@/components/ui/select';
+import FiltersSidebar from '@/components/properties/FiltersSidebar';
+import PropertyGrid from '@/components/properties/PropertyGrid';
+import PropertyCTA from '@/components/properties/PropertyCTA';
 import { properties } from '@/data/properties';
-import { Property } from '@/types/Property';
+import { usePropertyFilters } from '@/hooks/usePropertyFilters';
 import { useToast } from "@/components/ui/use-toast";
 
 const Listings = () => {
   const [searchParams] = useSearchParams();
-  const [filteredProperties, setFilteredProperties] = useState<Property[]>(properties);
-  const [priceRangeFilter, setPriceRangeFilter] = useState<string>(searchParams.get('price') || '');
-  const [propertyTypeFilter, setPropertyTypeFilter] = useState<string>(searchParams.get('type') || '');
-  const [statusFilter, setStatusFilter] = useState<string>('for-sale');
-  const [sortOrder, setSortOrder] = useState<string>('price-asc');
-  const [locationFilter, setLocationFilter] = useState<string>(searchParams.get('location') || '');
   const { toast } = useToast();
 
   // Initialize filters from search params
+  const initialTypeFilter = searchParams.get('type') || '';
+  const initialPriceFilter = searchParams.get('price') || '';
+  const initialLocationFilter = searchParams.get('location') || '';
+
+  // Use the custom hook for property filtering
+  const {
+    filteredProperties,
+    locationFilter,
+    setLocationFilter,
+    priceRangeFilter,
+    setPriceRangeFilter,
+    propertyTypeFilter,
+    setPropertyTypeFilter,
+    statusFilter,
+    setStatusFilter,
+    sortOrder,
+    setSortOrder,
+    resetFilters
+  } = usePropertyFilters({
+    properties,
+    initialLocationFilter,
+    initialPriceFilter,
+    initialTypeFilter
+  });
+
+  // Show toast notification when search parameters are provided
   useEffect(() => {
-    const typeParam = searchParams.get('type');
-    const priceParam = searchParams.get('price');
-    const locationParam = searchParams.get('location');
-
-    if (typeParam) setPropertyTypeFilter(typeParam);
-    if (priceParam) setPriceRangeFilter(priceParam);
-    if (locationParam) setLocationFilter(locationParam);
-
-    // Show toast if search parameters were provided
-    if (typeParam || priceParam || locationParam) {
+    if (initialTypeFilter || initialPriceFilter || initialLocationFilter) {
       toast({
         title: "Search filters applied",
         description: "Showing properties matching your criteria.",
       });
     }
   }, [searchParams]);
-
-  useEffect(() => {
-    // Apply filters
-    let results = [...properties];
-    
-    // Filter by location (case insensitive search)
-    if (locationFilter) {
-      const searchTerm = locationFilter.toLowerCase();
-      results = results.filter(p => 
-        p.address.toLowerCase().includes(searchTerm) || 
-        p.city.toLowerCase().includes(searchTerm)
-      );
-    }
-    
-    // Filter by price range
-    if (priceRangeFilter && priceRangeFilter !== 'any') {
-      if (priceRangeFilter === '0-500000') {
-        results = results.filter(p => p.price < 500000);
-      } else if (priceRangeFilter === '500000-1000000') {
-        results = results.filter(p => p.price >= 500000 && p.price <= 1000000);
-      } else if (priceRangeFilter === '1000000-2000000') {
-        results = results.filter(p => p.price >= 1000000 && p.price <= 2000000);
-      } else if (priceRangeFilter === '2000000+') {
-        results = results.filter(p => p.price > 2000000);
-      }
-    }
-
-    // Filter by property type
-    if (propertyTypeFilter && propertyTypeFilter !== 'any') {
-      results = results.filter(p => p.propertyType === propertyTypeFilter);
-    }
-
-    // Filter by status
-    if (statusFilter) {
-      results = results.filter(p => p.status === statusFilter);
-    }
-
-    // Sort results
-    if (sortOrder === 'price-asc') {
-      results.sort((a, b) => a.price - b.price);
-    } else if (sortOrder === 'price-desc') {
-      results.sort((a, b) => b.price - a.price);
-    } else if (sortOrder === 'newest') {
-      // In a real app, you'd sort by date added
-      // For demo purposes, we'll just use the existing order
-    }
-
-    setFilteredProperties(results);
-  }, [priceRangeFilter, propertyTypeFilter, statusFilter, sortOrder, locationFilter]);
-
-  // Reset all filters
-  const resetFilters = () => {
-    setPriceRangeFilter('');
-    setPropertyTypeFilter('');
-    setStatusFilter('for-sale');
-    setSortOrder('price-asc');
-    setLocationFilter('');
-  };
 
   return (
     <div className="min-h-screen flex flex-col">
@@ -132,141 +77,34 @@ const Listings = () => {
             <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
               {/* Filters Sidebar */}
               <div className="lg:col-span-1">
-                <div className="bg-white p-6 rounded-lg shadow-sm">
-                  <h3 className="text-xl font-bold text-realtor-navy mb-4">Filters</h3>
-                  
-                  <div className="space-y-6">
-                    {/* Location Filter */}
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-2">Location</label>
-                      <Input 
-                        placeholder="City, Address, etc."
-                        value={locationFilter}
-                        onChange={(e) => setLocationFilter(e.target.value)}
-                        className="w-full"
-                      />
-                    </div>
-                    
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-2">Price Range</label>
-                      <Select value={priceRangeFilter} onValueChange={setPriceRangeFilter}>
-                        <SelectTrigger>
-                          <SelectValue placeholder="Select price range" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectGroup>
-                            <SelectItem value="any">Any Price</SelectItem>
-                            <SelectItem value="0-500000">Under $500k</SelectItem>
-                            <SelectItem value="500000-1000000">$500k - $1M</SelectItem>
-                            <SelectItem value="1000000-2000000">$1M - $2M</SelectItem>
-                            <SelectItem value="2000000+">$2M+</SelectItem>
-                          </SelectGroup>
-                        </SelectContent>
-                      </Select>
-                    </div>
-
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-2">Property Type</label>
-                      <Select value={propertyTypeFilter} onValueChange={setPropertyTypeFilter}>
-                        <SelectTrigger>
-                          <SelectValue placeholder="Select property type" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectGroup>
-                            <SelectItem value="any">Any Type</SelectItem>
-                            <SelectItem value="house">House</SelectItem>
-                            <SelectItem value="condo">Condo</SelectItem>
-                            <SelectItem value="townhouse">Townhouse</SelectItem>
-                            <SelectItem value="land">Land</SelectItem>
-                          </SelectGroup>
-                        </SelectContent>
-                      </Select>
-                    </div>
-
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-2">Status</label>
-                      <Select value={statusFilter} onValueChange={setStatusFilter}>
-                        <SelectTrigger>
-                          <SelectValue placeholder="Select status" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectGroup>
-                            <SelectItem value="for-sale">For Sale</SelectItem>
-                            <SelectItem value="for-rent">For Rent</SelectItem>
-                            <SelectItem value="sold">Sold</SelectItem>
-                            <SelectItem value="pending">Pending</SelectItem>
-                          </SelectGroup>
-                        </SelectContent>
-                      </Select>
-                    </div>
-
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-2">Sort By</label>
-                      <Select value={sortOrder} onValueChange={setSortOrder}>
-                        <SelectTrigger>
-                          <SelectValue placeholder="Sort order" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectGroup>
-                            <SelectItem value="price-asc">Price (Low to High)</SelectItem>
-                            <SelectItem value="price-desc">Price (High to Low)</SelectItem>
-                            <SelectItem value="newest">Newest</SelectItem>
-                          </SelectGroup>
-                        </SelectContent>
-                      </Select>
-                    </div>
-
-                    <Button 
-                      onClick={resetFilters}
-                      variant="outline" 
-                      className="w-full border-realtor-navy text-realtor-navy hover:bg-realtor-navy hover:text-white"
-                    >
-                      Reset Filters
-                    </Button>
-                  </div>
-                </div>
+                <FiltersSidebar
+                  locationFilter={locationFilter}
+                  setLocationFilter={setLocationFilter}
+                  priceRangeFilter={priceRangeFilter}
+                  setPriceRangeFilter={setPriceRangeFilter}
+                  propertyTypeFilter={propertyTypeFilter}
+                  setPropertyTypeFilter={setPropertyTypeFilter}
+                  statusFilter={statusFilter}
+                  setStatusFilter={setStatusFilter}
+                  sortOrder={sortOrder}
+                  setSortOrder={setSortOrder}
+                  resetFilters={resetFilters}
+                />
               </div>
 
               {/* Property Listings */}
               <div className="lg:col-span-3">
-                <div className="flex justify-between items-center mb-6">
-                  <h3 className="text-xl font-bold text-realtor-navy">
-                    {filteredProperties.length} {filteredProperties.length === 1 ? 'Property' : 'Properties'} Found
-                  </h3>
-                </div>
-
-                {filteredProperties.length > 0 ? (
-                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                    {filteredProperties.map(property => (
-                      <PropertyCard key={property.id} property={property} />
-                    ))}
-                  </div>
-                ) : (
-                  <div className="bg-white p-8 rounded-lg text-center">
-                    <h3 className="text-xl font-medium text-gray-800 mb-2">No properties found</h3>
-                    <p className="text-gray-600 mb-4">Try adjusting your filters to see more results.</p>
-                    <Button onClick={resetFilters} className="bg-realtor-gold hover:bg-realtor-gold/90 text-realtor-navy">
-                      Clear Filters
-                    </Button>
-                  </div>
-                )}
+                <PropertyGrid 
+                  filteredProperties={filteredProperties}
+                  resetFilters={resetFilters}
+                />
               </div>
             </div>
           </div>
         </section>
 
         {/* CTA Section */}
-        <section className="py-16 bg-realtor-navy">
-          <div className="container mx-auto px-4 text-center">
-            <h2 className="text-3xl font-bold text-white mb-4">Found a Property You Like?</h2>
-            <p className="text-xl text-white/80 mb-8 max-w-2xl mx-auto">
-              Schedule a viewing to see the property in person and get all your questions answered.
-            </p>
-            <Button size="lg" className="bg-realtor-gold hover:bg-realtor-gold/90 text-realtor-navy font-medium">
-              Book a Viewing
-            </Button>
-          </div>
-        </section>
+        <PropertyCTA />
       </main>
 
       <Footer />
