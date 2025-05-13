@@ -55,5 +55,32 @@ export const blogPosts: BlogPostProps[] = [
     author: "Jigar Patel",
     image: "https://images.unsplash.com/photo-1556912172-45b7abe8b7e1?ixlib=rb-4.0.3",
     category: "Home Improvement"
+  },
+  {
+    id: "7",
+    title: "The Future of Toronto's Luxury Real Estate Market",
+    excerpt: "Toronto's luxury market is evolving rapidly. Discover the emerging trends in high-end properties and what buyers are looking for in premium homes.",
+    date: "January 28, 2025",
+    author: "Jigar Patel",
+    image: "https://images.unsplash.com/photo-1512917774080-9991f1c4c750?ixlib=rb-4.0.3",
+    category: "Luxury Properties"
+  },
+  {
+    id: "8",
+    title: "How the 2025 Housing Policy Changes Affect You",
+    excerpt: "Recent policy changes at federal and provincial levels will impact homeowners and buyers. Here's what you need to know about these regulatory shifts.",
+    date: "January 15, 2025",
+    author: "Jigar Patel",
+    image: "https://images.unsplash.com/photo-1542889601-399c4f3a8402?ixlib=rb-4.0.3",
+    category: "Market Trends"
+  },
+  {
+    id: "9",
+    title: "The Complete Guide to Mortgage Pre-Approval",
+    excerpt: "Getting pre-approved for a mortgage is a crucial first step in the home buying process. Learn how to navigate this important financial milestone.",
+    date: "December 10, 2024",
+    author: "Jigar Patel",
+    image: "https://images.unsplash.com/photo-1554224155-6726b3ff858f?ixlib=rb-4.0.3",
+    category: "Mortgages"
   }
 ];

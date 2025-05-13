@@ -19,7 +19,7 @@ import { Search } from 'lucide-react';
 
 const Blog = () => {
   const [searchQuery, setSearchQuery] = useState('');
-  const [categoryFilter, setCategoryFilter] = useState('');
+  const [categoryFilter, setCategoryFilter] = useState('all-categories');
 
   // Get all unique categories
   const categories = Array.from(new Set(blogPosts.map(post => post.category)));
@@ -30,7 +30,7 @@ const Blog = () => {
       post.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
       post.excerpt.toLowerCase().includes(searchQuery.toLowerCase());
     
-    const matchesCategory = categoryFilter === '' || post.category === categoryFilter;
+    const matchesCategory = categoryFilter === 'all-categories' || post.category === categoryFilter;
     
     return matchesSearch && matchesCategory;
   });
@@ -95,7 +95,7 @@ const Blog = () => {
                 <h3 className="text-2xl font-bold text-realtor-navy mb-4">No Articles Found</h3>
                 <p className="text-gray-600 mb-6">No articles match your current search criteria.</p>
                 <Button 
-                  onClick={() => { setSearchQuery(''); setCategoryFilter(''); }}
+                  onClick={() => { setSearchQuery(''); setCategoryFilter('all-categories'); }}
                   className="bg-realtor-gold hover:bg-realtor-gold/90 text-realtor-navy"
                 >
                   Clear Filters

@@ -14,6 +14,7 @@ import HomeValuation from "./pages/HomeValuation";
 import Calculators from "./pages/Calculators";
 import Contact from "./pages/Contact";
 import Blog from "./pages/Blog";
+import BlogPostPage from "./pages/BlogPostPage";
 import ServicesPage from "./pages/ServicesPage";
 import Properties from "./pages/Properties";
 import NotFound from "./pages/NotFound";
@@ -39,6 +40,7 @@ const App = () => (
           <Route path="/calculators" element={<Calculators />} />
           <Route path="/contact" element={<Contact />} />
           <Route path="/blog" element={<Blog />} />
+          <Route path="/blog/:id" element={<BlogPostPage />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>
