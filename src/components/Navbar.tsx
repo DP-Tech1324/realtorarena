@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
@@ -5,7 +6,6 @@ import { Phone, Menu, X } from 'lucide-react';
 
 const Navbar = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const [isScrolled, setIsScrolled] = useState(false);
   const location = useLocation();
 
   const toggleMenu = () => {
@@ -13,48 +13,17 @@ const Navbar = () => {
   };
 
   useEffect(() => {
-    const handleScroll = () => {
-      if (window.scrollY > 20) {
-        setIsScrolled(true);
-      } else {
-        setIsScrolled(false);
-      }
-    };
-
-    window.addEventListener('scroll', handleScroll);
-    
-    // Initial check for non-home pages to always show solid background
-    const isHomePage = location.pathname === '/' || location.pathname === '/home';
-    if (!isHomePage) {
-      setIsScrolled(true);
-    } else {
-      setIsScrolled(window.scrollY > 20);
-    }
-
-    return () => window.removeEventListener('scroll', handleScroll);
-  }, [location.pathname]);
-
-  useEffect(() => {
     // Close mobile menu when route changes
     setIsMenuOpen(false);
-    
-    // Check if we're on a page other than home to keep navbar solid
-    const isHomePage = location.pathname === '/' || location.pathname === '/home';
-    if (!isHomePage) {
-      setIsScrolled(true);
-    } else {
-      setIsScrolled(window.scrollY > 20);
-    }
   }, [location]);
 
   return (
-    <nav className={`w-full fixed top-0 left-0 right-0 z-50 transition-all duration-300 
-      ${isScrolled ? 'bg-white shadow-md py-2' : 'bg-transparent py-4'}`}>
+    <nav className="w-full fixed top-0 left-0 right-0 z-50 bg-white shadow-md py-2">
       <div className="container mx-auto px-4">
         <div className="flex justify-between items-center">
           {/* Logo */}
           <Link to="/" className="flex items-center">
-            <h1 className={`text-2xl font-bold ${isScrolled ? 'text-realtor-navy' : 'text-white'}`}>
+            <h1 className="text-2xl font-bold text-realtor-navy">
               <span className="text-realtor-gold">Jigar </span>Patel
             </h1>
           </Link>
@@ -63,43 +32,43 @@ const Navbar = () => {
           <div className="hidden md:flex items-center space-x-6">
             <Link 
               to="/" 
-              className={`${isScrolled ? 'text-realtor-navy' : 'text-white'} hover:text-realtor-gold transition-colors duration-200`}
+              className="text-realtor-navy hover:text-realtor-gold transition-colors duration-200"
             >
               Home
             </Link>
             <Link 
               to="/listings" 
-              className={`${isScrolled ? 'text-realtor-navy' : 'text-white'} hover:text-realtor-gold transition-colors duration-200`}
+              className="text-realtor-navy hover:text-realtor-gold transition-colors duration-200"
             >
               Listings
             </Link>
             <Link 
               to="/buyers" 
-              className={`${isScrolled ? 'text-realtor-navy' : 'text-white'} hover:text-realtor-gold transition-colors duration-200`}
+              className="text-realtor-navy hover:text-realtor-gold transition-colors duration-200"
             >
               Buyers
             </Link>
             <Link 
               to="/sellers" 
-              className={`${isScrolled ? 'text-realtor-navy' : 'text-white'} hover:text-realtor-gold transition-colors duration-200`}
+              className="text-realtor-navy hover:text-realtor-gold transition-colors duration-200"
             >
               Sellers
             </Link>
             <Link 
               to="/about" 
-              className={`${isScrolled ? 'text-realtor-navy' : 'text-white'} hover:text-realtor-gold transition-colors duration-200`}
+              className="text-realtor-navy hover:text-realtor-gold transition-colors duration-200"
             >
               About
             </Link>
             <Link 
               to="/blog" 
-              className={`${isScrolled ? 'text-realtor-navy' : 'text-white'} hover:text-realtor-gold transition-colors duration-200`}
+              className="text-realtor-navy hover:text-realtor-gold transition-colors duration-200"
             >
               Blog
             </Link>
             <Link 
               to="/contact" 
-              className={`${isScrolled ? 'text-realtor-navy' : 'text-white'} hover:text-realtor-gold transition-colors duration-200`}
+              className="text-realtor-navy hover:text-realtor-gold transition-colors duration-200"
             >
               Contact
             </Link>
@@ -107,11 +76,7 @@ const Navbar = () => {
 
           {/* Call to Action Button */}
           <div className="hidden md:flex items-center">
-            <Button className={`flex items-center gap-2 
-              ${isScrolled ? 
-                'bg-realtor-gold hover:bg-realtor-gold/90 text-realtor-navy' : 
-                'bg-white hover:bg-white/90 text-realtor-navy'}`}
-            >
+            <Button className="flex items-center gap-2 bg-realtor-gold hover:bg-realtor-gold/90 text-realtor-navy">
               <Phone size={16} />
               <span>(647) 555-1234</span>
             </Button>
@@ -123,7 +88,7 @@ const Navbar = () => {
               variant="ghost" 
               size="icon" 
               onClick={toggleMenu}
-              className={isScrolled ? 'text-realtor-navy' : 'text-white'}
+              className="text-realtor-navy"
             >
               {isMenuOpen ? <X size={24} /> : <Menu size={24} />}
             </Button>

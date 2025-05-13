@@ -17,6 +17,7 @@ import {
 } from '@/components/ui/select';
 import { properties } from '@/data/properties';
 import { Property } from '@/types/Property';
+import { useToast } from "@/components/ui/use-toast";
 
 const Listings = () => {
   const [searchParams] = useSearchParams();
@@ -25,13 +26,43 @@ const Listings = () => {
   const [propertyTypeFilter, setPropertyTypeFilter] = useState<string>(searchParams.get('type') || '');
   const [statusFilter, setStatusFilter] = useState<string>('for-sale');
   const [sortOrder, setSortOrder] = useState<string>('price-asc');
+  const [locationFilter, setLocationFilter] = useState<string>(searchParams.get('location') || '');
+  const { toast } = useToast();
+
+  // Initialize filters from search params
+  useEffect(() => {
+    const typeParam = searchParams.get('type');
+    const priceParam = searchParams.get('price');
+    const locationParam = searchParams.get('location');
+
+    if (typeParam) setPropertyTypeFilter(typeParam);
+    if (priceParam) setPriceRangeFilter(priceParam);
+    if (locationParam) setLocationFilter(locationParam);
+
+    // Show toast if search parameters were provided
+    if (typeParam || priceParam || locationParam) {
+      toast({
+        title: "Search filters applied",
+        description: "Showing properties matching your criteria.",
+      });
+    }
+  }, [searchParams]);
 
   useEffect(() => {
     // Apply filters
     let results = [...properties];
     
+    // Filter by location (case insensitive search)
+    if (locationFilter) {
+      const searchTerm = locationFilter.toLowerCase();
+      results = results.filter(p => 
+        p.address.toLowerCase().includes(searchTerm) || 
+        p.city.toLowerCase().includes(searchTerm)
+      );
+    }
+    
     // Filter by price range
-    if (priceRangeFilter) {
+    if (priceRangeFilter && priceRangeFilter !== 'any') {
       if (priceRangeFilter === '0-500000') {
         results = results.filter(p => p.price < 500000);
       } else if (priceRangeFilter === '500000-1000000') {
@@ -44,7 +75,7 @@ const Listings = () => {
     }
 
     // Filter by property type
-    if (propertyTypeFilter) {
+    if (propertyTypeFilter && propertyTypeFilter !== 'any') {
       results = results.filter(p => p.propertyType === propertyTypeFilter);
     }
 
@@ -64,7 +95,7 @@ const Listings = () => {
     }
 
     setFilteredProperties(results);
-  }, [priceRangeFilter, propertyTypeFilter, statusFilter, sortOrder]);
+  }, [priceRangeFilter, propertyTypeFilter, statusFilter, sortOrder, locationFilter]);
 
   // Reset all filters
   const resetFilters = () => {
@@ -72,6 +103,7 @@ const Listings = () => {
     setPropertyTypeFilter('');
     setStatusFilter('for-sale');
     setSortOrder('price-asc');
+    setLocationFilter('');
   };
 
   return (
@@ -103,6 +135,17 @@ const Listings = () => {
                   <h3 className="text-xl font-bold text-realtor-navy mb-4">Filters</h3>
                   
                   <div className="space-y-6">
+                    {/* Location Filter */}
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-2">Location</label>
+                      <Input 
+                        placeholder="City, Address, etc."
+                        value={locationFilter}
+                        onChange={(e) => setLocationFilter(e.target.value)}
+                        className="w-full"
+                      />
+                    </div>
+                    
                     <div>
                       <label className="block text-sm font-medium text-gray-700 mb-2">Price Range</label>
                       <Select value={priceRangeFilter} onValueChange={setPriceRangeFilter}>

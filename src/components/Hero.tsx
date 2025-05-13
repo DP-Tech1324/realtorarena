@@ -1,15 +1,7 @@
 
 import React, { useEffect, useRef } from 'react';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { 
-  Select,
-  SelectContent, 
-  SelectGroup, 
-  SelectItem, 
-  SelectTrigger, 
-  SelectValue 
-} from '@/components/ui/select';
+import PropertySearch from '@/components/PropertySearch';
 import { 
   Carousel, 
   CarouselContent, 
@@ -17,12 +9,9 @@ import {
   CarouselNext, 
   CarouselPrevious 
 } from "@/components/ui/carousel";
-import { Search, ArrowRight } from 'lucide-react';
+import { ArrowRight } from 'lucide-react';
 
 const Hero = () => {
-  const [priceRange, setPriceRange] = React.useState("");
-  const [propertyType, setPropertyType] = React.useState("");
-  const [location, setLocation] = React.useState("");
   const [activeIndex, setActiveIndex] = React.useState(0);
   const autoPlayRef = useRef<NodeJS.Timeout | null>(null);
 
@@ -86,57 +75,10 @@ const Hero = () => {
           </p>
 
           {/* Property Search Form */}
-          <div className="bg-white p-6 rounded-lg shadow-lg max-w-4xl mx-auto animate-fade-in" style={{ animationDelay: "0.4s" }}>
-            <div className="grid grid-cols-1 md:grid-cols-12 gap-4">
-              <div className="md:col-span-5">
-                <Input 
-                  placeholder="Enter location, ZIP, or neighborhood" 
-                  className="w-full border-2 border-gray-200 focus:border-realtor-gold h-11" 
-                  value={location}
-                  onChange={(e) => setLocation(e.target.value)}
-                />
-              </div>
-              <div className="md:col-span-3">
-                <Select value={propertyType} onValueChange={setPropertyType}>
-                  <SelectTrigger className="h-11 border-2 border-gray-200 focus:border-realtor-gold">
-                    <SelectValue placeholder="Property Type" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectGroup>
-                      <SelectItem value="all-types">All Types</SelectItem>
-                      <SelectItem value="house">House</SelectItem>
-                      <SelectItem value="apartment">Apartment</SelectItem>
-                      <SelectItem value="condo">Condo</SelectItem>
-                      <SelectItem value="townhouse">Townhouse</SelectItem>
-                      <SelectItem value="land">Land</SelectItem>
-                    </SelectGroup>
-                  </SelectContent>
-                </Select>
-              </div>
-              <div className="md:col-span-3">
-                <Select value={priceRange} onValueChange={setPriceRange}>
-                  <SelectTrigger className="h-11 border-2 border-gray-200 focus:border-realtor-gold">
-                    <SelectValue placeholder="Price Range" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectGroup>
-                      <SelectItem value="all-prices">All Prices</SelectItem>
-                      <SelectItem value="0-500000">Under $500k</SelectItem>
-                      <SelectItem value="500000-1000000">$500k - $1M</SelectItem>
-                      <SelectItem value="1000000-2000000">$1M - $2M</SelectItem>
-                      <SelectItem value="2000000+">$2M+</SelectItem>
-                    </SelectGroup>
-                  </SelectContent>
-                </Select>
-              </div>
-              <div className="md:col-span-1">
-                <Button className="w-full h-11 bg-realtor-gold hover:bg-realtor-gold/90 text-realtor-navy transition-all duration-300 hover:shadow-md">
-                  <Search size={20} />
-                </Button>
-              </div>
-            </div>
+          <div className="animate-fade-in" style={{ animationDelay: "0.4s" }}>
+            <PropertySearch variant="hero" className="max-w-4xl mx-auto" />
             <div className="mt-4 flex justify-end">
-              <Button variant="link" className="text-realtor-navy flex items-center gap-1 hover:text-realtor-gold">
+              <Button variant="link" className="text-white flex items-center gap-1 hover:text-realtor-gold">
                 Advanced Search <ArrowRight size={16} />
               </Button>
             </div>

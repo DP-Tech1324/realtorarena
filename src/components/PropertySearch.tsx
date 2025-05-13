@@ -13,7 +13,12 @@ import {
 import { Search } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 
-const PropertySearch: React.FC = () => {
+interface PropertySearchProps {
+  className?: string;
+  variant?: 'default' | 'hero';
+}
+
+const PropertySearch: React.FC<PropertySearchProps> = ({ className = '', variant = 'default' }) => {
   const [location, setLocation] = useState("");
   const [propertyType, setPropertyType] = useState("");
   const [priceRange, setPriceRange] = useState("");
@@ -32,25 +37,27 @@ const PropertySearch: React.FC = () => {
     navigate(`/listings?${params.toString()}`);
   };
 
+  const isHero = variant === 'hero';
+
   return (
-    <div className="bg-white p-6 rounded-lg shadow-lg max-w-4xl mx-auto">
+    <div className={`bg-white p-6 rounded-lg shadow-lg ${className}`}>
       <form onSubmit={handleSearch} className="grid grid-cols-1 md:grid-cols-12 gap-4">
         <div className="md:col-span-5">
           <Input 
             placeholder="Enter location, city, or postal code" 
-            className="w-full" 
+            className={`w-full ${isHero ? 'border-2 border-gray-200 focus:border-realtor-gold h-11' : ''}`}
             value={location}
             onChange={(e) => setLocation(e.target.value)}
           />
         </div>
         <div className="md:col-span-3">
           <Select value={propertyType} onValueChange={setPropertyType}>
-            <SelectTrigger>
+            <SelectTrigger className={isHero ? 'h-11 border-2 border-gray-200 focus:border-realtor-gold' : ''}>
               <SelectValue placeholder="Property Type" />
             </SelectTrigger>
             <SelectContent>
               <SelectGroup>
-                <SelectItem value="all-types">All Types</SelectItem>
+                <SelectItem value="any">All Types</SelectItem>
                 <SelectItem value="house">House</SelectItem>
                 <SelectItem value="condo">Condo</SelectItem>
                 <SelectItem value="townhouse">Townhouse</SelectItem>
@@ -61,12 +68,12 @@ const PropertySearch: React.FC = () => {
         </div>
         <div className="md:col-span-3">
           <Select value={priceRange} onValueChange={setPriceRange}>
-            <SelectTrigger>
+            <SelectTrigger className={isHero ? 'h-11 border-2 border-gray-200 focus:border-realtor-gold' : ''}>
               <SelectValue placeholder="Price Range" />
             </SelectTrigger>
             <SelectContent>
               <SelectGroup>
-                <SelectItem value="all-prices">All Prices</SelectItem>
+                <SelectItem value="any">All Prices</SelectItem>
                 <SelectItem value="0-500000">Under $500k</SelectItem>
                 <SelectItem value="500000-1000000">$500k - $1M</SelectItem>
                 <SelectItem value="1000000-2000000">$1M - $2M</SelectItem>
@@ -76,7 +83,7 @@ const PropertySearch: React.FC = () => {
           </Select>
         </div>
         <div className="md:col-span-1">
-          <Button type="submit" className="w-full bg-realtor-gold hover:bg-realtor-gold/90 text-realtor-navy">
+          <Button type="submit" className={`w-full ${isHero ? 'h-11' : ''} bg-realtor-gold hover:bg-realtor-gold/90 text-realtor-navy`}>
             <Search size={20} />
           </Button>
         </div>
