@@ -7,6 +7,7 @@ import PageHeader from '@/components/PageHeader';
 import PropertyCard from '@/components/PropertyCard';
 import PropertySearch from '@/components/PropertySearch';
 import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
 import { 
   Select,
   SelectContent, 
