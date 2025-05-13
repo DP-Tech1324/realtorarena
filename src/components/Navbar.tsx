@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
@@ -23,12 +22,29 @@ const Navbar = () => {
     };
 
     window.addEventListener('scroll', handleScroll);
+    
+    // Initial check for non-home pages to always show solid background
+    const isHomePage = location.pathname === '/' || location.pathname === '/home';
+    if (!isHomePage) {
+      setIsScrolled(true);
+    } else {
+      setIsScrolled(window.scrollY > 20);
+    }
+
     return () => window.removeEventListener('scroll', handleScroll);
-  }, []);
+  }, [location.pathname]);
 
   useEffect(() => {
     // Close mobile menu when route changes
     setIsMenuOpen(false);
+    
+    // Check if we're on a page other than home to keep navbar solid
+    const isHomePage = location.pathname === '/' || location.pathname === '/home';
+    if (!isHomePage) {
+      setIsScrolled(true);
+    } else {
+      setIsScrolled(window.scrollY > 20);
+    }
   }, [location]);
 
   return (

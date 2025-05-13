@@ -1,9 +1,7 @@
 
 import React from 'react';
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { ArrowRight } from 'lucide-react';
 import { Link } from 'react-router-dom';
+import { Button } from '@/components/ui/button';
 
 export interface BlogPostProps {
   id: string;
@@ -13,41 +11,51 @@ export interface BlogPostProps {
   author: string;
   image: string;
   category: string;
+  content?: string;
 }
 
-interface BlogCardProps {
+interface BlogPostComponentProps {
   post: BlogPostProps;
 }
 
-const BlogPost: React.FC<BlogCardProps> = ({ post }) => {
+const BlogPost: React.FC<BlogPostComponentProps> = ({ post }) => {
   return (
-    <Card className="overflow-hidden h-full flex flex-col hover:shadow-lg transition-shadow duration-300">
-      <div className="h-52 overflow-hidden">
-        <img 
-          src={post.image} 
-          alt={post.title} 
-          className="w-full h-full object-cover transition-transform duration-300 hover:scale-105"
-        />
-      </div>
-      <CardHeader>
-        <div className="text-sm text-realtor-gold font-medium mb-1">{post.category}</div>
-        <CardTitle className="text-xl">{post.title}</CardTitle>
-        <CardDescription className="flex justify-between items-center">
-          <span>{post.date}</span>
-          <span>By {post.author}</span>
-        </CardDescription>
-      </CardHeader>
-      <CardContent className="flex-grow">
-        <p className="text-gray-600">{post.excerpt}</p>
-      </CardContent>
-      <CardFooter className="pt-0">
+    <div className="bg-white rounded-lg overflow-hidden shadow-md hover:shadow-lg transition-shadow">
+      <Link to={`/blog/${post.id}`}>
+        <div className="h-48 overflow-hidden">
+          <img 
+            src={post.image} 
+            alt={post.title} 
+            className="w-full h-full object-cover transition-transform duration-500 hover:scale-105"
+          />
+        </div>
+      </Link>
+      <div className="p-6">
+        <div className="flex items-center justify-between mb-3">
+          <span className="text-sm text-gray-500">{post.date}</span>
+          <span className="bg-realtor-gold/80 text-realtor-navy text-xs px-2 py-1 rounded-full">
+            {post.category}
+          </span>
+        </div>
         <Link to={`/blog/${post.id}`}>
-          <Button variant="ghost" className="p-0 h-auto text-realtor-navy hover:text-realtor-gold flex items-center gap-1 font-medium">
-            Read More <ArrowRight size={16} />
-          </Button>
+          <h3 className="text-xl font-bold mb-3 hover:text-realtor-gold transition-colors">
+            {post.title}
+          </h3>
         </Link>
-      </CardFooter>
-    </Card>
+        <p className="text-gray-600 mb-4 line-clamp-3">{post.excerpt}</p>
+        <div className="flex items-center justify-between">
+          <span className="text-sm font-medium">By {post.author}</span>
+          <Button 
+            variant="outline" 
+            size="sm" 
+            className="text-realtor-navy hover:text-realtor-gold"
+            asChild
+          >
+            <Link to={`/blog/${post.id}`}>Read More</Link>
+          </Button>
+        </div>
+      </div>
+    </div>
   );
 };
 
