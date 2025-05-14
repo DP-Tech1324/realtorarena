@@ -23,21 +23,25 @@ const PropertyCard: React.FC<PropertyCardProps> = ({ property, showViewDetails =
   return (
     <Card className="overflow-hidden bg-white hover:shadow-xl transition-shadow duration-300">
       <div className="relative h-60">
-        <img 
-          src={property.images[0]} 
-          alt={property.title}
-          className="w-full h-full object-cover"
-        />
-        <div className="absolute top-3 left-3 bg-realtor-navy text-white py-1 px-3 rounded-full text-sm font-medium">
-          {property.status === 'for-sale' ? 'For Sale' : 
-           property.status === 'for-rent' ? 'For Rent' : 
-           property.status === 'sold' ? 'Sold' : 'Pending'}
-        </div>
+        <Link to={`/properties/${property.id}`}>
+          <img 
+            src={property.images[0]} 
+            alt={property.title}
+            className="w-full h-full object-cover"
+          />
+          <div className="absolute top-3 left-3 bg-realtor-navy text-white py-1 px-3 rounded-full text-sm font-medium">
+            {property.status === 'for-sale' ? 'For Sale' : 
+             property.status === 'for-rent' ? 'For Rent' : 
+             property.status === 'sold' ? 'Sold' : 'Pending'}
+          </div>
+        </Link>
       </div>
 
       <CardContent className="p-5">
         <div className="mb-2">
-          <h3 className="font-bold text-xl text-realtor-navy truncate">{property.title}</h3>
+          <Link to={`/properties/${property.id}`}>
+            <h3 className="font-bold text-xl text-realtor-navy truncate hover:text-realtor-gold transition-colors">{property.title}</h3>
+          </Link>
           <div className="flex items-center text-gray-600 mb-1">
             <MapPin size={16} className="mr-1" />
             <p className="text-sm truncate">
