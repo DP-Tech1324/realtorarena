@@ -1,6 +1,5 @@
-
 import React, { useState } from 'react';
-import { useParams, Link } from 'react-router-dom';
+import { useParams, Link, useNavigate } from 'react-router-dom';
 import { AspectRatio } from '@/components/ui/aspect-ratio';
 import { Button } from '@/components/ui/button';
 import {
@@ -11,23 +10,48 @@ import {
   DialogTitle,
 } from '@/components/ui/dialog';
 import { Bed, Bath, Home, MapPin, Calendar, ArrowLeft } from 'lucide-react';
-import { properties } from '@/data/properties';
-import { Property } from '@/types/Property';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
 import ConsultationForm from '@/components/ConsultationForm';
-import { useToast } from '@/components/ui/use-toast';
+import { useToast } from '@/hooks/use-toast';
+import { useProperties } from '@/hooks/useProperties';
 
 const PropertyDetails = () => {
   const { propertyId } = useParams();
+  const navigate = useNavigate();
   const { toast } = useToast();
   const [openBookingDialog, setOpenBookingDialog] = useState(false);
   
-  // Find the property based on ID from URL
-  const property = properties.find((p) => p.id === propertyId);
+  const { usePropertyById } = useProperties();
+  const { data: property, isLoading, error } = usePropertyById(propertyId || '');
 
-  // If property not found
-  if (!property) {
+  const handleBookTourClick = () => {
+    setOpenBookingDialog(true);
+  };
+
+  const formatPrice = (price: number): string => {
+    return new Intl.NumberFormat('en-CA', {
+      style: 'currency',
+      currency: 'CAD',
+      maximumFractionDigits: 0,
+    }).format(price);
+  };
+
+  // Handle loading state
+  if (isLoading) {
+    return (
+      <div className="min-h-screen flex flex-col">
+        <Navbar />
+        <div className="flex-grow flex items-center justify-center pt-[72px]">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-realtor-gold"></div>
+        </div>
+        <Footer />
+      </div>
+    );
+  }
+
+  // Handle error state
+  if (error || !property) {
     return (
       <div className="min-h-screen flex flex-col">
         <Navbar />
@@ -47,18 +71,6 @@ const PropertyDetails = () => {
       </div>
     );
   }
-
-  const handleBookTourClick = () => {
-    setOpenBookingDialog(true);
-  };
-
-  const formatPrice = (price: number): string => {
-    return new Intl.NumberFormat('en-CA', {
-      style: 'currency',
-      currency: 'CAD',
-      maximumFractionDigits: 0,
-    }).format(price);
-  };
 
   return (
     <div className="min-h-screen flex flex-col">
@@ -186,7 +198,11 @@ const PropertyDetails = () => {
             </DialogDescription>
           </DialogHeader>
           <div className="py-4">
-            <ConsultationForm defaultType="buyer" />
+            <ConsultationForm 
+              defaultType="buyer" 
+              propertyId={property.id}
+              onSubmitSuccess={() => setOpenBookingDialog(false)}
+            />
           </div>
         </DialogContent>
       </Dialog>

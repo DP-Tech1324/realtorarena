@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -31,6 +30,7 @@ import {
 import { format } from 'date-fns';
 import { CalendarIcon } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { useConsultations } from '@/hooks/useConsultations';
 
 const formSchema = z.object({
   name: z.string().min(2, {
@@ -58,9 +58,15 @@ type FormValues = z.infer<typeof formSchema>;
 
 interface ConsultationFormProps {
   defaultType?: string;
+  propertyId?: string;
+  onSubmitSuccess?: () => void;
 }
 
-const ConsultationForm: React.FC<ConsultationFormProps> = ({ defaultType }) => {
+const ConsultationForm: React.FC<ConsultationFormProps> = ({ 
+  defaultType,
+  propertyId,
+  onSubmitSuccess 
+}) => {
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -69,11 +75,19 @@ const ConsultationForm: React.FC<ConsultationFormProps> = ({ defaultType }) => {
     },
   });
 
+  const { useSubmitConsultation } = useConsultations();
+  const { mutate: submitConsultation, isPending } = useSubmitConsultation();
+
   const onSubmit = (data: FormValues) => {
-    console.log(data);
-    // Here you would typically send the data to your server or API
-    alert('Consultation request submitted! We will contact you shortly.');
-    form.reset();
+    submitConsultation({
+      ...data,
+      propertyId
+    }, {
+      onSuccess: () => {
+        form.reset();
+        if (onSubmitSuccess) onSubmitSuccess();
+      }
+    });
   };
 
   return (
@@ -235,8 +249,12 @@ const ConsultationForm: React.FC<ConsultationFormProps> = ({ defaultType }) => {
           )}
         />
 
-        <Button type="submit" className="w-full md:w-auto bg-realtor-gold hover:bg-realtor-gold/90 text-realtor-navy font-semibold">
-          Schedule Consultation
+        <Button 
+          type="submit" 
+          className="w-full md:w-auto bg-realtor-gold hover:bg-realtor-gold/90 text-realtor-navy font-semibold"
+          disabled={isPending}
+        >
+          {isPending ? 'Scheduling...' : 'Schedule Consultation'}
         </Button>
       </form>
     </Form>
