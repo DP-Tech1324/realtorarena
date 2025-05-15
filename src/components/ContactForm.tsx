@@ -48,6 +48,8 @@ const ContactForm: React.FC = () => {
   const { mutate: submitContactForm, isPending } = useSubmitContactForm();
 
   const onSubmit = (data: FormValues) => {
+    console.log('Form submitted with data:', data);
+    
     // Ensure all required fields are present and properly typed
     const contactData: ContactFormData = {
       name: data.name,
@@ -56,8 +58,11 @@ const ContactForm: React.FC = () => {
       message: data.message
     };
     
-    submitContactForm(contactData);
-    console.log(data);
+    submitContactForm(contactData, {
+      onSuccess: () => {
+        form.reset();
+      }
+    });
   };
 
   return (

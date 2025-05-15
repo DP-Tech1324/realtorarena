@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -70,6 +71,9 @@ const ConsultationForm: React.FC<ConsultationFormProps> = ({
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
     defaultValues: {
+      name: "",
+      email: "",
+      phone: "",
       consultationType: defaultType || "",
       message: "",
     },
@@ -79,6 +83,8 @@ const ConsultationForm: React.FC<ConsultationFormProps> = ({
   const { mutate: submitConsultation, isPending } = useSubmitConsultation();
 
   const onSubmit = (data: FormValues) => {
+    console.log('Consultation form submitted with data:', data);
+    
     // Ensure all required fields are present with proper types before submission
     submitConsultation({
       name: data.name,

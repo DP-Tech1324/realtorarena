@@ -12,18 +12,29 @@ export interface ContactFormData {
 
 export function useContactForm() {
   const submitContactForm = async (data: ContactFormData) => {
-    const { error } = await supabase
-      .from('contact_messages')
-      .insert({
-        name: data.name,
-        email: data.email,
-        phone: data.phone,
-        message: data.message
-      });
-      
-    if (error) throw error;
+    console.log('Submitting contact form data:', data);
     
-    return { success: true };
+    try {
+      const { data: result, error } = await supabase
+        .from('contact_messages')
+        .insert({
+          name: data.name,
+          email: data.email,
+          phone: data.phone,
+          message: data.message
+        });
+        
+      if (error) {
+        console.error('Supabase error:', error);
+        throw error;
+      }
+      
+      console.log('Contact form submitted successfully:', result);
+      return { success: true };
+    } catch (error) {
+      console.error('Error in submitContactForm:', error);
+      throw error;
+    }
   };
   
   const useSubmitContactForm = () => 
@@ -35,10 +46,11 @@ export function useContactForm() {
           description: "Thank you for contacting us! We will get back to you soon.",
         });
       },
-      onError: (error) => {
+      onError: (error: any) => {
+        console.error('Mutation error:', error);
         toast({
           title: "Error sending message",
-          description: error.message,
+          description: error.message || "Failed to send your message. Please try again.",
           variant: "destructive"
         });
       }
