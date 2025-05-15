@@ -79,9 +79,16 @@ const ConsultationForm: React.FC<ConsultationFormProps> = ({
   const { mutate: submitConsultation, isPending } = useSubmitConsultation();
 
   const onSubmit = (data: FormValues) => {
+    // Ensure all required fields are present with proper types before submission
     submitConsultation({
-      ...data,
-      propertyId
+      name: data.name,
+      email: data.email,
+      phone: data.phone,
+      consultationType: data.consultationType,
+      date: data.date,
+      time: data.time,
+      message: data.message,
+      propertyId: propertyId || undefined
     }, {
       onSuccess: () => {
         form.reset();
