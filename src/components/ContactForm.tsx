@@ -14,6 +14,7 @@ import {
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
+import { useContactForm } from '@/hooks/useContactForm';
 
 const formSchema = z.object({
   name: z.string().min(2, {
@@ -40,11 +41,12 @@ const ContactForm: React.FC = () => {
     },
   });
 
+  const { useSubmitContactForm } = useContactForm();
+  const { mutate: submitContactForm, isPending } = useSubmitContactForm();
+
   const onSubmit = (data: FormValues) => {
+    submitContactForm(data);
     console.log(data);
-    // Here you would typically send the data to your server or API
-    alert('Message sent! We will get back to you shortly.');
-    form.reset();
   };
 
   return (
@@ -112,8 +114,12 @@ const ContactForm: React.FC = () => {
           )}
         />
 
-        <Button type="submit" className="w-full md:w-auto bg-realtor-gold hover:bg-realtor-gold/90 text-realtor-navy font-semibold">
-          Send Message
+        <Button 
+          type="submit" 
+          className="w-full md:w-auto bg-realtor-gold hover:bg-realtor-gold/90 text-realtor-navy font-semibold"
+          disabled={isPending}
+        >
+          {isPending ? 'Sending...' : 'Send Message'}
         </Button>
       </form>
     </Form>
