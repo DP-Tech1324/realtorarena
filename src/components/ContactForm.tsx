@@ -14,7 +14,7 @@ import {
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
-import { useContactForm } from '@/hooks/useContactForm';
+import { useContactForm, ContactFormData } from '@/hooks/useContactForm';
 
 const formSchema = z.object({
   name: z.string().min(2, {
@@ -37,6 +37,9 @@ const ContactForm: React.FC = () => {
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
     defaultValues: {
+      name: "",
+      email: "",
+      phone: "",
       message: "",
     },
   });
@@ -45,7 +48,15 @@ const ContactForm: React.FC = () => {
   const { mutate: submitContactForm, isPending } = useSubmitContactForm();
 
   const onSubmit = (data: FormValues) => {
-    submitContactForm(data);
+    // Ensure all required fields are present and properly typed
+    const contactData: ContactFormData = {
+      name: data.name,
+      email: data.email,
+      phone: data.phone,
+      message: data.message
+    };
+    
+    submitContactForm(contactData);
     console.log(data);
   };
 

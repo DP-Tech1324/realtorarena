@@ -3,7 +3,7 @@ import { useMutation } from '@tanstack/react-query';
 import { supabase } from '@/lib/supabase';
 import { toast } from '@/hooks/use-toast';
 
-interface ContactFormData {
+export interface ContactFormData {
   name: string;
   email: string;
   phone: string;
