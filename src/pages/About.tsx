@@ -1,3 +1,11 @@
+import Image from "@/components/ui/Image";
+
+import RECOLogo from "@/assets/images/logos/relator.jpeg";
+import CREALogo from "@/assets/images/logos/relator.jpeg";
+import TRREBLogo from "@/assets/images/logos/TERB.jpg";
+import RLPLogo from "@/assets/images/logos/Jigar_Patel_Logo.png";
+
+
 import React from 'react';
 import { Link } from 'react-router-dom';
 import Navbar from '@/components/Navbar';
@@ -149,35 +157,43 @@ const About = () => {
         </section>
 
         {/* Credentials Section */}
-        <section className="py-16 bg-white">
-          <div className="container mx-auto px-4">
-            <div className="text-center mb-12">
-              <h2 className="text-3xl font-bold text-realtor-navy mb-3">Professional Credentials</h2>
-              <p className="text-lg text-gray-600 max-w-2xl mx-auto">
-                Education, certifications, and affiliations that enhance my service to you
-              </p>
-            </div>
+<section className="py-16 bg-white">
+  <div className="container mx-auto px-4">
+    <div className="text-center mb-12">
+      <h2 className="text-3xl font-bold text-realtor-navy mb-3">Professional Credentials</h2>
+      <p className="text-lg text-gray-600 max-w-2xl mx-auto">
+        Education, certifications, and affiliations that enhance my service to you
+      </p>
+    </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-              <div className="text-center p-6 border border-gray-200 rounded-lg">
-                <p className="font-bold text-realtor-navy mb-2">Licensed Realtor</p>
-                <p className="text-gray-600">Real Estate Council of Ontario</p>
-              </div>
-              <div className="text-center p-6 border border-gray-200 rounded-lg">
-                <p className="font-bold text-realtor-navy mb-2">Member</p>
-                <p className="text-gray-600">Canadian Real Estate Association</p>
-              </div>
-              <div className="text-center p-6 border border-gray-200 rounded-lg">
-                <p className="font-bold text-realtor-navy mb-2">Member</p>
-                <p className="text-gray-600">Toronto Regional Real Estate Board</p>
-              </div>
-              <div className="text-center p-6 border border-gray-200 rounded-lg">
-                <p className="font-bold text-realtor-navy mb-2">Top Producer</p>
-                <p className="text-gray-600">Royal LePage Diamond Award</p>
-              </div>
-            </div>
-          </div>
-        </section>
+    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+      <div className="text-center p-6 border border-gray-200 rounded-lg">
+        <Image src={RECOLogo} alt="RECO" className="w-16 h-16 mx-auto mb-4" />
+        <p className="font-bold text-realtor-navy mb-2">Licensed Realtor</p>
+        <p className="text-gray-600">Real Estate Council of Ontario</p>
+      </div>
+
+      <div className="text-center p-6 border border-gray-200 rounded-lg">
+        <Image src={CREALogo} alt="CREA" className="w-16 h-16 mx-auto mb-4" />
+        <p className="font-bold text-realtor-navy mb-2">Member</p>
+        <p className="text-gray-600">Canadian Real Estate Association</p>
+      </div>
+
+      <div className="text-center p-6 border border-gray-200 rounded-lg">
+        <Image src={TRREBLogo} alt="TRREB" className="w-16 h-16 mx-auto mb-4" />
+        <p className="font-bold text-realtor-navy mb-2">Member</p>
+        <p className="text-gray-600">Toronto Regional Real Estate Board</p>
+      </div>
+
+      <div className="text-center p-6 border border-gray-200 rounded-lg">
+        <Image src={RLPLogo} alt="Royal LePage Award" className="w-16 h-16 mx-auto mb-4" />
+        <p className="font-bold text-realtor-navy mb-2">Top Producer</p>
+        <p className="text-gray-600">Royal LePage Diamond Award</p>
+      </div>
+    </div>
+  </div>
+</section>
+
 
         {/* CTA Section */}
         <section className="py-16 bg-realtor-navy">
