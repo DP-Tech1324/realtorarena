@@ -52,7 +52,7 @@ const PropertySearch: React.FC<PropertySearchProps> = ({ className = '', variant
         </div>
         <div className="md:col-span-3">
           <Select value={propertyType} onValueChange={setPropertyType}>
-            <SelectTrigger className={isHero ? 'h-11 border-2 border-gray-200 focus:border-realtor-gold' : ''}>
+            <SelectTrigger className={`${isHero ? 'h-11 border-2 border-gray-200 focus:border-realtor-gold' : ''}`}>
               <SelectValue placeholder="Property Type" />
             </SelectTrigger>
             <SelectContent>
@@ -68,7 +68,7 @@ const PropertySearch: React.FC<PropertySearchProps> = ({ className = '', variant
         </div>
         <div className="md:col-span-3">
           <Select value={priceRange} onValueChange={setPriceRange}>
-            <SelectTrigger className={isHero ? 'h-11 border-2 border-gray-200 focus:border-realtor-gold' : ''}>
+            <SelectTrigger className={`${isHero ? 'h-11 border-2 border-gray-200 focus:border-realtor-gold' : ''}`}>
               <SelectValue placeholder="Price Range" />
             </SelectTrigger>
             <SelectContent>
@@ -83,7 +83,11 @@ const PropertySearch: React.FC<PropertySearchProps> = ({ className = '', variant
           </Select>
         </div>
         <div className="md:col-span-1">
-          <Button type="submit" className={`w-full ${isHero ? 'h-11' : ''} bg-realtor-gold hover:bg-realtor-gold/90 text-realtor-navy`}>
+          <Button 
+            type="submit" 
+            variant="realtor-gold" 
+            className={`w-full ${isHero ? 'h-11' : ''} shadow-md`}
+          >
             <Search size={20} />
           </Button>
         </div>

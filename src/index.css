@@ -164,14 +164,30 @@
   box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1);
 }
 
-/* Button hover effects */
-.btn-hover-effect {
-  transition: all 0.3s ease;
+/* Button styling enhancements */
+button, .btn, a[role="button"] {
+  @apply opacity-100 transition-all duration-200 ease-in-out;
 }
 
-.btn-hover-effect:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+button:hover, .btn:hover, a[role="button"]:hover {
+  @apply -translate-y-0.5;
+}
+
+/* Button variants */
+.btn-realtor-primary {
+  @apply bg-realtor-navy text-white hover:bg-realtor-navy/90 shadow-md;
+}
+
+.btn-realtor-secondary {
+  @apply bg-realtor-gold text-realtor-navy hover:bg-realtor-gold/90 shadow-md;
+}
+
+.btn-realtor-outline {
+  @apply border-2 border-realtor-navy text-realtor-navy bg-transparent hover:bg-realtor-navy/10 shadow-sm;
+}
+
+.btn-realtor-ghost {
+  @apply text-realtor-navy bg-transparent hover:bg-realtor-navy/10;
 }
 
 /* Smooth scrolling */
