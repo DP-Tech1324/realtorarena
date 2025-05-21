@@ -39,13 +39,13 @@ const services: Record<string, ServiceType> = {
       'Thorough management of paperwork and closing process'
     ],
     process: [
-      {step: 'Initial Consultation', description: 'We'll discuss your goals, timeline, and property details to create a customized selling strategy.'},
-      {step: 'Property Preparation', description: 'I'll provide recommendations on repairs, staging, and improvements to maximize your property's appeal.'},
+      {step: 'Initial Consultation', description: 'We\'ll discuss your goals, timeline, and property details to create a customized selling strategy.'},
+      {step: 'Property Preparation', description: 'I\'ll provide recommendations on repairs, staging, and improvements to maximize your property\'s appeal.'},
       {step: 'Marketing Launch', description: 'Your property will be professionally photographed and marketed across multiple channels to generate maximum interest.'},
-      {step: 'Showings & Open Houses', description: 'I'll coordinate and conduct all showings, highlighting your property's best features to potential buyers.'},
-      {step: 'Offer Reviews', description: 'We'll carefully analyze all offers, considering price, terms, and buyer qualifications.'},
-      {step: 'Negotiation', description: 'I'll leverage my expertise to negotiate the best possible terms for your sale.'},
-      {step: 'Closing Process', description: 'I'll manage all paperwork and coordinate with all parties to ensure a smooth closing process.'}
+      {step: 'Showings & Open Houses', description: 'I\'ll coordinate and conduct all showings, highlighting your property\'s best features to potential buyers.'},
+      {step: 'Offer Reviews', description: 'We\'ll carefully analyze all offers, considering price, terms, and buyer qualifications.'},
+      {step: 'Negotiation', description: 'I\'ll leverage my expertise to negotiate the best possible terms for your sale.'},
+      {step: 'Closing Process', description: 'I\'ll manage all paperwork and coordinate with all parties to ensure a smooth closing process.'}
     ]
   },
   'property-acquisition': {
@@ -56,7 +56,7 @@ const services: Record<string, ServiceType> = {
     fullDescription: [
       'Finding your ideal property requires more than just browsing listings. My property acquisition service offers a strategic approach to identifying, evaluating, and securing the perfect property for your needs.',
       'I provide access to all available listings—including pre-market opportunities—and offer expert guidance throughout the entire process, from initial search to final closing.',
-      'With my deep knowledge of local neighborhoods, market values, and negotiation tactics, I'll help you make a confident and informed purchase decision.'
+      'With my deep knowledge of local neighborhoods, market values, and negotiation tactics, I\'ll help you make a confident and informed purchase decision.'
     ],
     benefits: [
       'Access to all available properties, including off-market opportunities',
@@ -68,13 +68,13 @@ const services: Record<string, ServiceType> = {
       'Management of all paperwork and closing details'
     ],
     process: [
-      {step: 'Needs Assessment', description: 'We'll discuss your must-haves, nice-to-haves, budget, and timeline to create a focused search strategy.'},
-      {step: 'Property Search', description: 'I'll identify suitable properties matching your criteria, including off-market opportunities.'},
-      {step: 'Property Tours', description: 'We'll tour selected properties together, with my expert eye pointing out potential issues and opportunities.'},
-      {step: 'Offer Strategy', description: 'Once we've found the right property, I'll develop a strategic offer based on market analysis.'},
-      {step: 'Due Diligence', description: 'I'll coordinate inspections and help evaluate findings to ensure you know exactly what you're purchasing.'},
-      {step: 'Negotiation', description: 'I'll negotiate price, terms, and conditions to protect your interests and secure the best deal.'},
-      {step: 'Closing Coordination', description: 'I'll manage all aspects of the closing process to ensure a smooth transfer of ownership.'}
+      {step: 'Needs Assessment', description: 'We\'ll discuss your must-haves, nice-to-haves, budget, and timeline to create a focused search strategy.'},
+      {step: 'Property Search', description: 'I\'ll identify suitable properties matching your criteria, including off-market opportunities.'},
+      {step: 'Property Tours', description: 'We\'ll tour selected properties together, with my expert eye pointing out potential issues and opportunities.'},
+      {step: 'Offer Strategy', description: 'Once we\'ve found the right property, I\'ll develop a strategic offer based on market analysis.'},
+      {step: 'Due Diligence', description: 'I\'ll coordinate inspections and help evaluate findings to ensure you know exactly what you\'re purchasing.'},
+      {step: 'Negotiation', description: 'I\'ll negotiate price, terms, and conditions to protect your interests and secure the best deal.'},
+      {step: 'Closing Coordination', description: 'I\'ll manage all aspects of the closing process to ensure a smooth transfer of ownership.'}
     ]
   },
   'relocation-services': {
@@ -97,13 +97,13 @@ const services: Record<string, ServiceType> = {
       'Ongoing support after your move to help you settle in'
     ],
     process: [
-      {step: 'Initial Consultation', description: 'We'll discuss your relocation timeline, needs, and concerns to develop a personalized plan.'},
-      {step: 'Area Orientation', description: 'I'll provide detailed information about neighborhoods, schools, amenities, and transportation options.'},
-      {step: 'Housing Options', description: 'Based on your preferences, I'll identify suitable permanent housing options or temporary accommodations.'},
-      {step: 'Virtual/In-Person Tours', description: 'We'll tour properties and neighborhoods either virtually or in person depending on your situation.'},
-      {step: 'Service Connections', description: 'I'll connect you with trusted local services to help with your move and settling in.'},
-      {step: 'Transaction Coordination', description: 'I'll manage the purchase or rental process, with special attention to remote signing and document handling if needed.'},
-      {step: 'Follow-up Support', description: 'After your move, I'll continue to be a resource for you as you settle into your new community.'}
+      {step: 'Initial Consultation', description: 'We\'ll discuss your relocation timeline, needs, and concerns to develop a personalized plan.'},
+      {step: 'Area Orientation', description: 'I\'ll provide detailed information about neighborhoods, schools, amenities, and transportation options.'},
+      {step: 'Housing Options', description: 'Based on your preferences, I\'ll identify suitable permanent housing options or temporary accommodations.'},
+      {step: 'Virtual/In-Person Tours', description: 'We\'ll tour properties and neighborhoods either virtually or in person depending on your situation.'},
+      {step: 'Service Connections', description: 'I\'ll connect you with trusted local services to help with your move and settling in.'},
+      {step: 'Transaction Coordination', description: 'I\'ll manage the purchase or rental process, with special attention to remote signing and document handling if needed.'},
+      {step: 'Follow-up Support', description: 'After your move, I\'ll continue to be a resource for you as you settle into your new community.'}
     ]
   }
 };
