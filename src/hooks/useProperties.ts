@@ -1,5 +1,5 @@
 
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { Property } from '@/types/Property';
 import { properties as localProperties } from '@/data/properties';
 import { supabase } from '@/integrations/supabase/client';
@@ -24,7 +24,26 @@ const validatePropertyStatus = (status: string): 'for-sale' | 'for-rent' | 'sold
   return 'for-sale';
 };
 
+// Type for new property creation
+export interface PropertyCreateInput {
+  title: string;
+  address: string;
+  city: string;
+  province: string;
+  price: number;
+  bedrooms: number;
+  bathrooms: number;
+  squareFeet: number;
+  propertyType: 'house' | 'condo' | 'townhouse' | 'land';
+  status: 'for-sale' | 'for-rent' | 'sold' | 'pending';
+  featured?: boolean;
+  description?: string;
+  images: string[];
+}
+
 export function useProperties() {
+  const queryClient = useQueryClient();
+
   // Use Supabase properties table if it exists, otherwise fall back to local data
   const fetchProperties = async (): Promise<Property[]> => {
     try {
@@ -189,6 +208,149 @@ export function useProperties() {
     }
   };
 
+  // Create a new property
+  const createProperty = async (propertyData: PropertyCreateInput): Promise<Property> => {
+    console.log('Creating new property:', propertyData);
+    
+    try {
+      // Generate a new UUID for the property
+      const id = crypto.randomUUID();
+      
+      const { data, error } = await supabase
+        .from('properties')
+        .insert({
+          id: id,
+          title: propertyData.title,
+          address: propertyData.address,
+          city: propertyData.city,
+          province: propertyData.province,
+          price: propertyData.price,
+          bedrooms: propertyData.bedrooms,
+          bathrooms: propertyData.bathrooms,
+          square_feet: propertyData.squareFeet,
+          property_type: propertyData.propertyType,
+          status: propertyData.status,
+          featured: propertyData.featured || false,
+          description: propertyData.description || '',
+          images: propertyData.images
+        })
+        .select()
+        .single();
+      
+      if (error) {
+        console.error('Error creating property:', error);
+        throw error;
+      }
+      
+      // Map the Supabase return object to our Property type
+      const newProperty: Property = {
+        id: data.id,
+        title: data.title,
+        address: data.address,
+        city: data.city,
+        province: data.province,
+        price: data.price,
+        bedrooms: data.bedrooms,
+        bathrooms: data.bathrooms,
+        squareFeet: data.square_feet,
+        propertyType: validatePropertyType(data.property_type),
+        status: validatePropertyStatus(data.status),
+        featured: data.featured || false,
+        description: data.description || '',
+        images: data.images as string[] || []
+      };
+      
+      console.log('Property created successfully:', newProperty);
+      return newProperty;
+    } catch (error) {
+      console.error('Failed to create property:', error);
+      throw error;
+    }
+  };
+  
+  // Delete a property
+  const deleteProperty = async (id: string): Promise<void> => {
+    console.log('Deleting property with ID:', id);
+    
+    try {
+      const { error } = await supabase
+        .from('properties')
+        .delete()
+        .eq('id', id);
+      
+      if (error) {
+        console.error('Error deleting property:', error);
+        throw error;
+      }
+      
+      console.log('Property deleted successfully');
+    } catch (error) {
+      console.error('Failed to delete property:', error);
+      throw error;
+    }
+  };
+
+  // Update a property
+  const updateProperty = async (id: string, propertyData: Partial<PropertyCreateInput>): Promise<Property> => {
+    console.log('Updating property with ID:', id, 'with data:', propertyData);
+    
+    try {
+      // Prepare update data
+      const updateData: any = {};
+      
+      // Only include fields that are provided
+      if (propertyData.title !== undefined) updateData.title = propertyData.title;
+      if (propertyData.address !== undefined) updateData.address = propertyData.address;
+      if (propertyData.city !== undefined) updateData.city = propertyData.city;
+      if (propertyData.province !== undefined) updateData.province = propertyData.province;
+      if (propertyData.price !== undefined) updateData.price = propertyData.price;
+      if (propertyData.bedrooms !== undefined) updateData.bedrooms = propertyData.bedrooms;
+      if (propertyData.bathrooms !== undefined) updateData.bathrooms = propertyData.bathrooms;
+      if (propertyData.squareFeet !== undefined) updateData.square_feet = propertyData.squareFeet;
+      if (propertyData.propertyType !== undefined) updateData.property_type = propertyData.propertyType;
+      if (propertyData.status !== undefined) updateData.status = propertyData.status;
+      if (propertyData.featured !== undefined) updateData.featured = propertyData.featured;
+      if (propertyData.description !== undefined) updateData.description = propertyData.description;
+      if (propertyData.images !== undefined) updateData.images = propertyData.images;
+      
+      const { data, error } = await supabase
+        .from('properties')
+        .update(updateData)
+        .eq('id', id)
+        .select()
+        .single();
+      
+      if (error) {
+        console.error('Error updating property:', error);
+        throw error;
+      }
+      
+      // Map the Supabase return object to our Property type
+      const updatedProperty: Property = {
+        id: data.id,
+        title: data.title,
+        address: data.address,
+        city: data.city,
+        province: data.province,
+        price: data.price,
+        bedrooms: data.bedrooms,
+        bathrooms: data.bathrooms,
+        squareFeet: data.square_feet,
+        propertyType: validatePropertyType(data.property_type),
+        status: validatePropertyStatus(data.status),
+        featured: data.featured || false,
+        description: data.description || '',
+        images: data.images as string[] || []
+      };
+      
+      console.log('Property updated successfully:', updatedProperty);
+      return updatedProperty;
+    } catch (error) {
+      console.error('Failed to update property:', error);
+      throw error;
+    }
+  };
+
   return {
     useAllProperties: () => 
       useQuery({
@@ -207,6 +369,38 @@ export function useProperties() {
         queryKey: ['property', id],
         queryFn: () => fetchPropertyById(id),
         enabled: !!id
+      }),
+      
+    useCreateProperty: () => 
+      useMutation({
+        mutationFn: createProperty,
+        onSuccess: () => {
+          // Invalidate queries to refetch the updated data
+          queryClient.invalidateQueries({ queryKey: ['properties'] });
+          queryClient.invalidateQueries({ queryKey: ['featuredProperties'] });
+        }
+      }),
+      
+    useDeleteProperty: () => 
+      useMutation({
+        mutationFn: deleteProperty,
+        onSuccess: () => {
+          // Invalidate queries to refetch the updated data
+          queryClient.invalidateQueries({ queryKey: ['properties'] });
+          queryClient.invalidateQueries({ queryKey: ['featuredProperties'] });
+        }
+      }),
+      
+    useUpdateProperty: () => 
+      useMutation({
+        mutationFn: ({ id, data }: { id: string, data: Partial<PropertyCreateInput> }) => 
+          updateProperty(id, data),
+        onSuccess: (data) => {
+          // Invalidate specific queries
+          queryClient.invalidateQueries({ queryKey: ['properties'] });
+          queryClient.invalidateQueries({ queryKey: ['featuredProperties'] });
+          queryClient.invalidateQueries({ queryKey: ['property', data.id] });
+        }
       })
   };
 }
