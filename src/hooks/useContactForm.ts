@@ -1,6 +1,6 @@
 
 import { useMutation } from '@tanstack/react-query';
-import { supabase } from '@/lib/supabase';
+import { supabase } from '@/integrations/supabase/client';
 import { toast } from '@/hooks/use-toast';
 
 export interface ContactFormData {
@@ -15,6 +15,8 @@ export function useContactForm() {
     console.log('Submitting contact form data:', data);
     
     try {
+      // With the new RLS policies, anonymous users can submit contact requests
+      // but only admins can view them
       const { data: result, error } = await supabase
         .from('contact_messages')
         .insert({
