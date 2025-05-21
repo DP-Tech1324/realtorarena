@@ -1,6 +1,6 @@
 
 import { useMutation } from '@tanstack/react-query';
-import { supabase } from '@/lib/supabase';
+import { supabase } from '@/integrations/supabase/client';
 import { toast } from '@/hooks/use-toast';
 
 export interface ConsultationFormData {
@@ -22,6 +22,7 @@ export function useConsultations() {
       const { data: result, error } = await supabase
         .from('consultations')
         .insert({
+          id: crypto.randomUUID(), // Generate a UUID for the id field
           name: data.name,
           email: data.email,
           phone: data.phone,

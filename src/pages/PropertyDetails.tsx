@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+
+import React, { useState, useEffect } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
 import { AspectRatio } from '@/components/ui/aspect-ratio';
 import { Button } from '@/components/ui/button';
@@ -15,15 +16,31 @@ import Footer from '@/components/Footer';
 import ConsultationForm from '@/components/ConsultationForm';
 import { useToast } from '@/hooks/use-toast';
 import { useProperties } from '@/hooks/useProperties';
+import { properties as localProperties } from '@/data/properties';
+import { Property } from '@/types/Property';
 
 const PropertyDetails = () => {
   const { propertyId } = useParams();
   const navigate = useNavigate();
   const { toast } = useToast();
   const [openBookingDialog, setOpenBookingDialog] = useState(false);
+  const [localProperty, setLocalProperty] = useState<Property | null>(null);
   
   const { usePropertyById } = useProperties();
   const { data: property, isLoading, error } = usePropertyById(propertyId || '');
+  
+  // Fallback to local properties if Supabase fetch fails
+  useEffect(() => {
+    if (error && propertyId) {
+      const foundProperty = localProperties.find(p => p.id === propertyId);
+      if (foundProperty) {
+        setLocalProperty(foundProperty);
+      }
+    }
+  }, [error, propertyId]);
+
+  // Use either the fetched property or the local fallback
+  const displayProperty = property || localProperty;
 
   const handleBookTourClick = () => {
     setOpenBookingDialog(true);
@@ -50,8 +67,8 @@ const PropertyDetails = () => {
     );
   }
 
-  // Handle error state
-  if (error || !property) {
+  // Handle error state - show property not found only if we don't have a local fallback
+  if ((error && !localProperty) || (!property && !localProperty)) {
     return (
       <div className="min-h-screen flex flex-col">
         <Navbar />
@@ -72,6 +89,9 @@ const PropertyDetails = () => {
     );
   }
 
+  // If we don't have a property to display (either from API or local), don't render the rest
+  if (!displayProperty) return null;
+
   return (
     <div className="min-h-screen flex flex-col">
       <Navbar />
@@ -85,14 +105,14 @@ const PropertyDetails = () => {
             </Link>
             <div className="flex flex-col md:flex-row justify-between items-start md:items-end">
               <div>
-                <h1 className="text-2xl md:text-3xl font-bold text-realtor-navy mb-2">{property.title}</h1>
+                <h1 className="text-2xl md:text-3xl font-bold text-realtor-navy mb-2">{displayProperty.title}</h1>
                 <div className="flex items-center text-gray-600 mb-2">
                   <MapPin size={16} className="mr-1" />
-                  <span>{property.address}, {property.city}, {property.province}</span>
+                  <span>{displayProperty.address}, {displayProperty.city}, {displayProperty.province}</span>
                 </div>
               </div>
               <div className="text-realtor-gold font-bold text-xl md:text-2xl mt-2 md:mt-0">
-                {formatPrice(property.price)}
+                {formatPrice(displayProperty.price)}
               </div>
             </div>
           </div>
@@ -105,18 +125,18 @@ const PropertyDetails = () => {
               <div className="md:col-span-2">
                 <AspectRatio ratio={16 / 9} className="overflow-hidden rounded-md">
                   <img 
-                    src={property.images[0]} 
-                    alt={property.title} 
+                    src={displayProperty.images[0]} 
+                    alt={displayProperty.title} 
                     className="object-cover w-full h-full"
                   />
                 </AspectRatio>
               </div>
               <div className="grid grid-cols-2 gap-4">
-                {property.images.slice(1, 5).map((image, index) => (
+                {displayProperty.images.slice(1, 5).map((image, index) => (
                   <AspectRatio key={index} ratio={4/3} className="overflow-hidden rounded-md">
                     <img 
                       src={image} 
-                      alt={`${property.title} - Image ${index + 2}`} 
+                      alt={`${displayProperty.title} - Image ${index + 2}`} 
                       className="object-cover w-full h-full"
                     />
                   </AspectRatio>
@@ -138,30 +158,30 @@ const PropertyDetails = () => {
                     <div className="flex flex-col items-center p-4 bg-gray-50 rounded-md">
                       <Bed className="text-realtor-navy mb-2" size={24} />
                       <span className="text-gray-600 text-sm">Bedrooms</span>
-                      <span className="font-bold text-realtor-navy">{property.bedrooms}</span>
+                      <span className="font-bold text-realtor-navy">{displayProperty.bedrooms}</span>
                     </div>
                     <div className="flex flex-col items-center p-4 bg-gray-50 rounded-md">
                       <Bath className="text-realtor-navy mb-2" size={24} />
                       <span className="text-gray-600 text-sm">Bathrooms</span>
-                      <span className="font-bold text-realtor-navy">{property.bathrooms}</span>
+                      <span className="font-bold text-realtor-navy">{displayProperty.bathrooms}</span>
                     </div>
                     <div className="flex flex-col items-center p-4 bg-gray-50 rounded-md">
                       <Home className="text-realtor-navy mb-2" size={24} />
                       <span className="text-gray-600 text-sm">Area</span>
-                      <span className="font-bold text-realtor-navy">{property.squareFeet} sq ft</span>
+                      <span className="font-bold text-realtor-navy">{displayProperty.squareFeet} sq ft</span>
                     </div>
                     <div className="flex flex-col items-center p-4 bg-gray-50 rounded-md">
                       <MapPin className="text-realtor-navy mb-2" size={24} />
                       <span className="text-gray-600 text-sm">Type</span>
-                      <span className="font-bold text-realtor-navy capitalize">{property.propertyType}</span>
+                      <span className="font-bold text-realtor-navy capitalize">{displayProperty.propertyType}</span>
                     </div>
                   </div>
                   
                   <h3 className="text-lg font-semibold text-realtor-navy mb-3">Description</h3>
-                  <p className="text-gray-600 mb-6">{property.description}</p>
+                  <p className="text-gray-600 mb-6">{displayProperty.description}</p>
                   
                   <h3 className="text-lg font-semibold text-realtor-navy mb-3">Location</h3>
-                  <p className="text-gray-600">{property.address}, {property.city}, {property.province}</p>
+                  <p className="text-gray-600">{displayProperty.address}, {displayProperty.city}, {displayProperty.province}</p>
                 </div>
               </div>
               
@@ -194,13 +214,13 @@ const PropertyDetails = () => {
           <DialogHeader>
             <DialogTitle className="text-xl text-realtor-navy">Book a Tour</DialogTitle>
             <DialogDescription>
-              Complete the form below to schedule a tour of {property.title}
+              Complete the form below to schedule a tour of {displayProperty.title}
             </DialogDescription>
           </DialogHeader>
           <div className="py-4">
             <ConsultationForm 
               defaultType="buyer" 
-              propertyId={property.id}
+              propertyId={displayProperty.id}
               onSubmitSuccess={() => setOpenBookingDialog(false)}
             />
           </div>
