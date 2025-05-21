@@ -28,6 +28,19 @@ export function useConsultations() {
       
       console.log('Preparing to insert with id:', id);
       console.log('Formatted date:', formattedDate);
+      console.log('Property ID:', data.propertyId || null);
+      
+      // Validate propertyId to ensure it's a valid UUID or null
+      let propertyIdValue = null;
+      if (data.propertyId && data.propertyId.trim() !== '') {
+        // Only use the propertyId if it's a valid UUID format
+        const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+        if (uuidRegex.test(data.propertyId)) {
+          propertyIdValue = data.propertyId;
+        } else {
+          console.warn('Invalid property ID format, setting to null:', data.propertyId);
+        }
+      }
       
       // Insert consultation into Supabase
       const { error } = await supabase
@@ -41,7 +54,7 @@ export function useConsultations() {
           date: formattedDate,
           time: data.time,
           message: data.message || null,
-          property_id: data.propertyId || null
+          property_id: propertyIdValue
         });
         
       if (error) {
@@ -62,6 +75,10 @@ export function useConsultations() {
       mutationFn: submitConsultation,
       onSuccess: (data) => {
         console.log('Mutation successful:', data);
+        toast({
+          title: "Consultation request submitted",
+          description: "We will contact you shortly to confirm your appointment.",
+        });
       },
       onError: (error: any) => {
         console.error('Mutation error:', error);

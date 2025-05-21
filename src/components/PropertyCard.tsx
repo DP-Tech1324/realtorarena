@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -26,15 +27,20 @@ const PropertyCard: React.FC<PropertyCardProps> = ({ property, showViewDetails =
   const [openContactDialog, setOpenContactDialog] = useState(false);
   const { toast } = useToast();
 
+  // Log the property ID to help with debugging
+  console.log("Property Card rendering with ID:", property.id);
+
   const handleBookTourClick = (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
+    console.log("Opening booking dialog for property:", property.id);
     setOpenBookingDialog(true);
   };
 
   const handleContactAgentClick = (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
+    console.log("Opening contact dialog for property:", property.id);
     setOpenContactDialog(true);
   };
 

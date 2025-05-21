@@ -34,8 +34,11 @@ const ConsultationForm: React.FC<ConsultationFormProps> = ({
   const { useSubmitConsultation } = useConsultations();
   const { mutate: submitConsultation, isPending } = useSubmitConsultation();
 
+  console.log("ConsultationForm rendered with propertyId:", propertyId);
+
   const onSubmit = (data: FormValues) => {
     console.log('Consultation form submitted with data:', data);
+    console.log('Property ID being submitted:', propertyId);
     
     // Ensure all required fields are present with proper types before submission
     submitConsultation({
