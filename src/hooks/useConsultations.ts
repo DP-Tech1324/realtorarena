@@ -24,7 +24,7 @@ export function useConsultations() {
       const formattedDate = format(data.date, 'yyyy-MM-dd');
       
       // Insert consultation into Supabase
-      const { data: result, error } = await supabase
+      const { error } = await supabase
         .from('consultations')
         .insert({
           name: data.name,
@@ -54,10 +54,7 @@ export function useConsultations() {
     useMutation({
       mutationFn: submitConsultation,
       onSuccess: () => {
-        toast({
-          title: "Consultation request submitted",
-          description: "We will contact you shortly to confirm your appointment.",
-        });
+        console.log('Mutation successful');
       },
       onError: (error: any) => {
         console.error('Mutation error:', error);

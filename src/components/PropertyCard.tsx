@@ -7,6 +7,7 @@ import { Property } from '@/types/Property';
 import { Link } from 'react-router-dom';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import ConsultationForm from '@/components/ConsultationForm';
+import { useToast } from '@/hooks/use-toast';
 
 interface PropertyCardProps {
   property: Property;
@@ -24,6 +25,7 @@ const formatPrice = (price: number): string => {
 const PropertyCard: React.FC<PropertyCardProps> = ({ property, showViewDetails = true }) => {
   const [openBookingDialog, setOpenBookingDialog] = useState(false);
   const [openContactDialog, setOpenContactDialog] = useState(false);
+  const { toast } = useToast();
 
   const handleBookTourClick = (e: React.MouseEvent) => {
     e.preventDefault();
@@ -35,6 +37,22 @@ const PropertyCard: React.FC<PropertyCardProps> = ({ property, showViewDetails =
     e.preventDefault();
     e.stopPropagation();
     setOpenContactDialog(true);
+  };
+
+  const handleFormSubmitSuccess = (type: 'booking' | 'contact') => {
+    if (type === 'booking') {
+      setOpenBookingDialog(false);
+      toast({
+        title: "Tour scheduled successfully",
+        description: `We've received your request for a tour of ${property.title}. Our agent will contact you shortly.`,
+      });
+    } else {
+      setOpenContactDialog(false);
+      toast({
+        title: "Message sent successfully",
+        description: `Thank you for your interest in ${property.title}. Our agent will contact you shortly.`,
+      });
+    }
   };
 
   return (
@@ -130,7 +148,7 @@ const PropertyCard: React.FC<PropertyCardProps> = ({ property, showViewDetails =
             <ConsultationForm 
               defaultType="buyer" 
               propertyId={property.id}
-              onSubmitSuccess={() => setOpenBookingDialog(false)}
+              onSubmitSuccess={() => handleFormSubmitSuccess('booking')}
             />
           </div>
         </DialogContent>
@@ -149,7 +167,7 @@ const PropertyCard: React.FC<PropertyCardProps> = ({ property, showViewDetails =
             <ConsultationForm 
               defaultType="buyer" 
               propertyId={property.id}
-              onSubmitSuccess={() => setOpenContactDialog(false)}
+              onSubmitSuccess={() => handleFormSubmitSuccess('contact')}
             />
           </div>
         </DialogContent>

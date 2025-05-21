@@ -32,6 +32,7 @@ import { format } from 'date-fns';
 import { CalendarIcon } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useConsultations } from '@/hooks/useConsultations';
+import { useToast } from '@/hooks/use-toast';
 
 const formSchema = z.object({
   name: z.string().min(2, {
@@ -68,6 +69,7 @@ const ConsultationForm: React.FC<ConsultationFormProps> = ({
   propertyId,
   onSubmitSuccess 
 }) => {
+  const { toast } = useToast();
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -93,12 +95,27 @@ const ConsultationForm: React.FC<ConsultationFormProps> = ({
       consultationType: data.consultationType,
       date: data.date,
       time: data.time,
-      message: data.message,
-      propertyId: propertyId || undefined
+      message: data.message || "",
+      propertyId: propertyId
     }, {
       onSuccess: () => {
         form.reset();
-        if (onSubmitSuccess) onSubmitSuccess();
+        if (onSubmitSuccess) {
+          onSubmitSuccess();
+        } else {
+          toast({
+            title: "Consultation request submitted",
+            description: "We will contact you shortly to confirm your appointment.",
+          });
+        }
+      },
+      onError: (error) => {
+        console.error("Form submission error:", error);
+        toast({
+          title: "Error submitting request",
+          description: "There was a problem submitting your request. Please try again.",
+          variant: "destructive"
+        });
       }
     });
   };
