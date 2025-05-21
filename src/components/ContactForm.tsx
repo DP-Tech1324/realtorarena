@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -14,6 +13,7 @@ import {
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
+import { useContactForm, ContactFormData } from '@/hooks/useContactForm';
 
 const formSchema = z.object({
   name: z.string().min(2, {
@@ -36,15 +36,32 @@ const ContactForm: React.FC = () => {
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
     defaultValues: {
+      name: "",
+      email: "",
+      phone: "",
       message: "",
     },
   });
 
+  const { useSubmitContactForm } = useContactForm();
+  const { mutate: submitContactForm, isPending } = useSubmitContactForm();
+
   const onSubmit = (data: FormValues) => {
-    console.log(data);
-    // Here you would typically send the data to your server or API
-    alert('Message sent! We will get back to you shortly.');
-    form.reset();
+    console.log('Form submitted with data:', data);
+    
+    // Ensure all required fields are present and properly typed
+    const contactData: ContactFormData = {
+      name: data.name,
+      email: data.email,
+      phone: data.phone, // We still collect this for potential future use
+      message: data.message
+    };
+    
+    submitContactForm(contactData, {
+      onSuccess: () => {
+        form.reset();
+      }
+    });
   };
 
   return (
@@ -112,8 +129,12 @@ const ContactForm: React.FC = () => {
           )}
         />
 
-        <Button type="submit" className="w-full md:w-auto bg-realtor-gold hover:bg-realtor-gold/90 text-realtor-navy font-semibold">
-          Send Message
+        <Button 
+          type="submit" 
+          className="w-full md:w-auto bg-realtor-gold hover:bg-realtor-gold/90 text-realtor-navy font-semibold"
+          disabled={isPending}
+        >
+          {isPending ? 'Sending...' : 'Send Message'}
         </Button>
       </form>
     </Form>

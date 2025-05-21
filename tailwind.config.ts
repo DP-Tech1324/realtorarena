@@ -66,9 +66,14 @@ export default {
 				// Realtor website custom colors
 				realtor: {
 					'navy': '#0F3460',
+					'navy-dark': '#0A264A',
+					'navy-light': '#1A4A80',
 					'gold': '#E6B325',
+					'gold-dark': '#C99B1E',
+					'gold-light': '#F2C94C',
 					'light-gray': '#F5F5F5',
 					'dark-gray': '#333333',
+					'medium-gray': '#777777',
 					'white': '#FFFFFF',
 				}
 			},
@@ -80,6 +85,11 @@ export default {
 			fontFamily: {
 				'playfair': ['Playfair Display', 'serif'],
 				'inter': ['Inter', 'sans-serif'],
+			},
+			boxShadow: {
+				'realtor': '0 4px 6px -1px rgba(15, 52, 96, 0.1), 0 2px 4px -1px rgba(15, 52, 96, 0.06)',
+				'realtor-md': '0 6px 12px -1px rgba(15, 52, 96, 0.1), 0 4px 6px -1px rgba(15, 52, 96, 0.06)',
+				'realtor-lg': '0 10px 15px -3px rgba(15, 52, 96, 0.1), 0 4px 6px -2px rgba(15, 52, 96, 0.05)',
 			},
 			keyframes: {
 				'accordion-down': {
