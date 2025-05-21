@@ -18,12 +18,12 @@ export function useContactForm() {
       // With the new RLS policies, anonymous users can submit contact requests
       // but only admins can view them
       const { data: result, error } = await supabase
-        .from('contact_messages')
+        .from('contact_requests')
         .insert({
           name: data.name,
           email: data.email,
-          phone: data.phone,
           message: data.message
+          // Note: phone field is omitted as it doesn't exist in the database schema
         });
         
       if (error) {
