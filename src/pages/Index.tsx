@@ -4,6 +4,7 @@ import Navbar from '@/components/Navbar';
 import Hero from '@/components/Hero';
 import FeaturedProperties from '@/components/FeaturedProperties';
 import Services from '@/components/Services';
+import ServicesLinkWrapper from '@/components/ServicesLinkWrapper';
 import Agents from '@/components/Agents';
 import Testimonials from '@/components/Testimonials';
 import ContactForm from '@/components/ContactForm';
@@ -17,6 +18,7 @@ const Index = () => {
         <Hero />
         <FeaturedProperties />
         <Services />
+        <ServicesLinkWrapper />
         <Agents />
         <Testimonials />
         <div className="bg-realtor-light-gray py-16">

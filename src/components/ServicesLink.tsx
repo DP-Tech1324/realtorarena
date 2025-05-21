@@ -20,16 +20,17 @@ const ServicesLink: React.FC<ServicesLinkProps> = ({
   children = 'Learn More' 
 }) => {
   return (
-    <Link to={`/services/${serviceId}`}>
-      <Button 
-        variant={variant === 'outline' ? 'outline' : 'realtor'} 
-        size={size}
-        className={className}
-      >
+    <Button 
+      variant={variant === 'outline' ? 'outline' : 'realtor'} 
+      size={size}
+      className={className}
+      asChild
+    >
+      <Link to={`/services/${serviceId}`}>
         {children}
         <ArrowRight className="ml-2 h-4 w-4" />
-      </Button>
-    </Link>
+      </Link>
+    </Button>
   );
 };
 

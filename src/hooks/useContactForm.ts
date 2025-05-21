@@ -16,7 +16,7 @@ export function useContactForm() {
     
     try {
       // Insert contact request into Supabase
-      const { error } = await supabase
+      const { data: insertedData, error } = await supabase
         .from('contact_requests')
         .insert({
           id: crypto.randomUUID(), // Generate a UUID for the id field

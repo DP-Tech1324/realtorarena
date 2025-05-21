@@ -6,7 +6,7 @@ import ServicesLink from './ServicesLink';
  * This component adds functionality to the Services' "Learn More" buttons
  * by replacing them with working links to individual service pages.
  * 
- * It must be included in ServicesPage.tsx after the Services component.
+ * It must be included in ServicesPage.tsx and Index.tsx after the Services component.
  */
 const ServicesLinkWrapper: React.FC = () => {
   // Run once when component mounts

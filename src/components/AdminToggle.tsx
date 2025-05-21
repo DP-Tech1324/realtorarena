@@ -1,15 +1,21 @@
 
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { useToast } from "@/components/ui/use-toast";
 
 const AdminToggle = () => {
   const { toast } = useToast();
-  const isAdmin = localStorage.getItem('isAdmin') === 'true';
+  const [isAdmin, setIsAdmin] = useState(false);
+  
+  // Check admin status on component mount
+  useEffect(() => {
+    setIsAdmin(localStorage.getItem('isAdmin') === 'true');
+  }, []);
 
   const toggleAdminStatus = () => {
     const newStatus = !isAdmin;
     localStorage.setItem('isAdmin', String(newStatus));
+    setIsAdmin(newStatus);
     
     toast({
       title: newStatus ? "Admin Mode Activated" : "Admin Mode Deactivated",
@@ -17,9 +23,6 @@ const AdminToggle = () => {
         ? "You now have access to property management." 
         : "You no longer have access to property management.",
     });
-    
-    // Force refresh to update UI
-    window.location.reload();
   };
 
   return (
