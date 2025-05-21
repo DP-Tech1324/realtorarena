@@ -23,10 +23,17 @@ export function useConsultations() {
       // Format the date for Supabase (YYYY-MM-DD)
       const formattedDate = format(data.date, 'yyyy-MM-dd');
       
+      // Generate a UUID for the consultation record
+      const id = crypto.randomUUID();
+      
+      console.log('Preparing to insert with id:', id);
+      console.log('Formatted date:', formattedDate);
+      
       // Insert consultation into Supabase
       const { error } = await supabase
         .from('consultations')
         .insert({
+          id: id,
           name: data.name,
           email: data.email,
           phone: data.phone,
@@ -42,8 +49,8 @@ export function useConsultations() {
         throw error;
       }
       
-      console.log('Consultation submitted successfully');
-      return { success: true };
+      console.log('Consultation submitted successfully with ID:', id);
+      return { success: true, id };
     } catch (error) {
       console.error('Error in submitConsultation:', error);
       throw error;
@@ -53,8 +60,8 @@ export function useConsultations() {
   const useSubmitConsultation = () => 
     useMutation({
       mutationFn: submitConsultation,
-      onSuccess: () => {
-        console.log('Mutation successful');
+      onSuccess: (data) => {
+        console.log('Mutation successful:', data);
       },
       onError: (error: any) => {
         console.error('Mutation error:', error);

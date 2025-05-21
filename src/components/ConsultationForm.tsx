@@ -99,6 +99,7 @@ const ConsultationForm: React.FC<ConsultationFormProps> = ({
       propertyId: propertyId
     }, {
       onSuccess: () => {
+        console.log("Form submission successful");
         form.reset();
         if (onSubmitSuccess) {
           onSubmitSuccess();
