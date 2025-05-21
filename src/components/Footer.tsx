@@ -1,10 +1,45 @@
 
-import React from 'react';
+import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Facebook, Instagram, Linkedin, Twitter, Mail, Phone, MapPin } from 'lucide-react';
+import { Button } from './ui/button';
+import { Input } from './ui/input';
+import { toast } from '@/hooks/use-toast';
 
 const Footer = () => {
   const currentYear = new Date().getFullYear();
+  const [email, setEmail] = useState('');
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  
+  const handleSubscribe = (e: React.FormEvent) => {
+    e.preventDefault();
+    
+    // Basic email validation
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!email || !emailRegex.test(email)) {
+      toast({
+        title: "Invalid email",
+        description: "Please enter a valid email address.",
+        variant: "destructive"
+      });
+      return;
+    }
+    
+    setIsSubmitting(true);
+    
+    // Simulate API call for newsletter subscription
+    setTimeout(() => {
+      console.log('Newsletter subscription for:', email);
+      
+      toast({
+        title: "Subscription successful!",
+        description: "Thank you for subscribing to our newsletter.",
+      });
+      
+      setEmail('');
+      setIsSubmitting(false);
+    }, 1000);
+  };
   
   return (
     <footer className="bg-realtor-navy text-white">
@@ -82,16 +117,23 @@ const Footer = () => {
             <p className="text-white/80 mb-4">
               Subscribe to my newsletter for market updates and real estate tips.
             </p>
-            <div className="flex">
-              <input 
+            <form onSubmit={handleSubscribe} className="flex">
+              <Input 
                 type="email" 
                 placeholder="Your email" 
-                className="px-4 py-2 rounded-l text-black flex-grow"
+                className="rounded-l text-black flex-grow"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                disabled={isSubmitting}
               />
-              <button className="bg-realtor-gold text-realtor-navy px-4 py-2 rounded-r font-medium">
-                Subscribe
-              </button>
-            </div>
+              <Button 
+                type="submit"
+                className="bg-realtor-gold text-realtor-navy rounded-r font-medium" 
+                disabled={isSubmitting}
+              >
+                {isSubmitting ? 'Subscribing...' : 'Subscribe'}
+              </Button>
+            </form>
           </div>
         </div>
 
