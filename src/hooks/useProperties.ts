@@ -4,6 +4,26 @@ import { Property } from '@/types/Property';
 import { properties as localProperties } from '@/data/properties';
 import { supabase } from '@/integrations/supabase/client';
 
+// Helper to validate property type
+const validatePropertyType = (type: string): 'house' | 'condo' | 'townhouse' | 'land' => {
+  if (['house', 'condo', 'townhouse', 'land'].includes(type)) {
+    return type as 'house' | 'condo' | 'townhouse' | 'land';
+  }
+  // Default to house if invalid type received
+  console.warn(`Invalid property type: ${type}, defaulting to 'house'`);
+  return 'house';
+};
+
+// Helper to validate property status
+const validatePropertyStatus = (status: string): 'for-sale' | 'for-rent' | 'sold' | 'pending' => {
+  if (['for-sale', 'for-rent', 'sold', 'pending'].includes(status)) {
+    return status as 'for-sale' | 'for-rent' | 'sold' | 'pending';
+  }
+  // Default to for-sale if invalid status received
+  console.warn(`Invalid property status: ${status}, defaulting to 'for-sale'`);
+  return 'for-sale';
+};
+
 export function useProperties() {
   // Use Supabase properties table if it exists, otherwise fall back to local data
   const fetchProperties = async (): Promise<Property[]> => {
@@ -31,8 +51,8 @@ export function useProperties() {
           bedrooms: prop.bedrooms,
           bathrooms: prop.bathrooms,
           squareFeet: prop.square_feet,
-          propertyType: prop.property_type,
-          status: prop.status,
+          propertyType: validatePropertyType(prop.property_type),
+          status: validatePropertyStatus(prop.status),
           featured: prop.featured || false,
           description: prop.description || '',
           images: prop.images as string[] || []
@@ -108,8 +128,8 @@ export function useProperties() {
           bedrooms: prop.bedrooms,
           bathrooms: prop.bathrooms,
           squareFeet: prop.square_feet,
-          propertyType: prop.property_type,
-          status: prop.status,
+          propertyType: validatePropertyType(prop.property_type),
+          status: validatePropertyStatus(prop.status),
           featured: prop.featured || false,
           description: prop.description || '',
           images: prop.images as string[] || []
@@ -150,8 +170,8 @@ export function useProperties() {
         bedrooms: data.bedrooms,
         bathrooms: data.bathrooms,
         squareFeet: data.square_feet,
-        propertyType: data.property_type,
-        status: data.status,
+        propertyType: validatePropertyType(data.property_type),
+        status: validatePropertyStatus(data.status),
         featured: data.featured || false,
         description: data.description || '',
         images: data.images as string[] || []
