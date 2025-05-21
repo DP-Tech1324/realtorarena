@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
 import { AspectRatio } from '@/components/ui/aspect-ratio';
@@ -24,6 +23,7 @@ const PropertyDetails = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
   const [openBookingDialog, setOpenBookingDialog] = useState(false);
+  const [openContactDialog, setOpenContactDialog] = useState(false);
   const [localProperty, setLocalProperty] = useState<Property | null>(null);
   
   const { usePropertyById } = useProperties();
@@ -44,6 +44,10 @@ const PropertyDetails = () => {
 
   const handleBookTourClick = () => {
     setOpenBookingDialog(true);
+  };
+
+  const handleContactAgentClick = () => {
+    setOpenContactDialog(true);
   };
 
   const formatPrice = (price: number): string => {
@@ -196,7 +200,11 @@ const PropertyDetails = () => {
                     <Calendar className="mr-2 h-4 w-4" />
                     Book a Tour
                   </Button>
-                  <Button variant="outline" className="w-full border-realtor-navy text-realtor-navy hover:bg-realtor-navy hover:text-white">
+                  <Button 
+                    variant="outline" 
+                    className="w-full border-realtor-navy text-realtor-navy hover:bg-realtor-navy hover:text-white"
+                    onClick={handleContactAgentClick}
+                  >
                     Request More Info
                   </Button>
                 </div>
@@ -222,6 +230,25 @@ const PropertyDetails = () => {
               defaultType="buyer" 
               propertyId={displayProperty.id}
               onSubmitSuccess={() => setOpenBookingDialog(false)}
+            />
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      {/* Contact Agent Dialog */}
+      <Dialog open={openContactDialog} onOpenChange={setOpenContactDialog}>
+        <DialogContent className="sm:max-w-[600px]">
+          <DialogHeader>
+            <DialogTitle className="text-xl text-realtor-navy">Request Property Information</DialogTitle>
+            <DialogDescription>
+              Have questions about {displayProperty.title}? I'll get back to you promptly.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="py-4">
+            <ConsultationForm 
+              defaultType="buyer" 
+              propertyId={displayProperty.id}
+              onSubmitSuccess={() => setOpenContactDialog(false)}
             />
           </div>
         </DialogContent>

@@ -21,6 +21,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
+import { toast } from '@/hooks/use-toast';
+import { supabase } from '@/integrations/supabase/client';
 
 const formSchema = z.object({
   name: z.string().min(2, {
@@ -63,11 +65,50 @@ const HomeValuationForm: React.FC = () => {
     },
   });
 
-  const onSubmit = (data: FormValues) => {
-    console.log(data);
-    // Here you would typically send the data to your server or API
-    alert('Home valuation request submitted! We will contact you shortly with your home valuation.');
-    form.reset();
+  const onSubmit = async (data: FormValues) => {
+    console.log('Home valuation form submitted with data:', data);
+    
+    try {
+      // Insert valuation request into Supabase
+      const { error } = await supabase
+        .from('contact_requests')
+        .insert({
+          id: crypto.randomUUID(),
+          name: data.name,
+          email: data.email,
+          message: `Property Valuation Request - 
+            Address: ${data.address}, ${data.city}, ${data.postalCode}
+            Property Type: ${data.propertyType}
+            Bedrooms: ${data.bedrooms || 'Not specified'}
+            Bathrooms: ${data.bathrooms || 'Not specified'}
+            Square Feet: ${data.squareFeet || 'Not specified'}
+            Year Built: ${data.yearBuilt || 'Not specified'}
+            Renovations: ${data.renovations || 'None specified'}
+            Additional Info: ${data.additionalInfo || 'None provided'}`
+        });
+        
+      if (error) {
+        console.error('Supabase error:', error);
+        toast({
+          title: "Error submitting valuation request",
+          description: error.message || "Failed to submit your valuation request. Please try again.",
+          variant: "destructive"
+        });
+      } else {
+        toast({
+          title: "Valuation Request Submitted",
+          description: "Thank you! We'll analyze your property and contact you shortly with your home valuation.",
+        });
+        form.reset();
+      }
+    } catch (error: any) {
+      console.error('Error submitting valuation form:', error);
+      toast({
+        title: "Error submitting valuation request",
+        description: error.message || "An unexpected error occurred. Please try again.",
+        variant: "destructive"
+      });
+    }
   };
 
   return (
