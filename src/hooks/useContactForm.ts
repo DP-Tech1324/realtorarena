@@ -15,9 +15,8 @@ export function useContactForm() {
     console.log('Submitting contact form data:', data);
     
     try {
-      // With the new RLS policies, anonymous users can submit contact requests
-      // but only admins can view them
-      const { data: result, error } = await supabase
+      // Insert contact request into Supabase
+      const { error } = await supabase
         .from('contact_requests')
         .insert({
           id: crypto.randomUUID(), // Generate a UUID for the id field
@@ -32,7 +31,7 @@ export function useContactForm() {
         throw error;
       }
       
-      console.log('Contact form submitted successfully:', result);
+      console.log('Contact form submitted successfully');
       return { success: true };
     } catch (error) {
       console.error('Error in submitContactForm:', error);

@@ -5,13 +5,14 @@ import { Facebook, Instagram, Linkedin, Twitter, Mail, Phone, MapPin } from 'luc
 import { Button } from './ui/button';
 import { Input } from './ui/input';
 import { toast } from '@/hooks/use-toast';
+import { supabase } from '@/integrations/supabase/client';
 
 const Footer = () => {
   const currentYear = new Date().getFullYear();
   const [email, setEmail] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
   
-  const handleSubscribe = (e: React.FormEvent) => {
+  const handleSubscribe = async (e: React.FormEvent) => {
     e.preventDefault();
     
     // Basic email validation
@@ -27,18 +28,45 @@ const Footer = () => {
     
     setIsSubmitting(true);
     
-    // Simulate API call for newsletter subscription
-    setTimeout(() => {
-      console.log('Newsletter subscription for:', email);
+    try {
+      // Store the email in Supabase newsletter_subscriptions table
+      const { error } = await supabase
+        .from('newsletter_subscriptions')
+        .insert({ email });
       
+      if (error) {
+        if (error.code === '23505') { // Unique violation error code
+          toast({
+            title: "Already subscribed",
+            description: "This email is already subscribed to our newsletter.",
+            variant: "default"
+          });
+        } else {
+          console.error('Error subscribing to newsletter:', error);
+          toast({
+            title: "Subscription failed",
+            description: "There was an error subscribing to the newsletter. Please try again.",
+            variant: "destructive"
+          });
+        }
+      } else {
+        toast({
+          title: "Subscription successful!",
+          description: "Thank you for subscribing to our newsletter.",
+        });
+        
+        setEmail('');
+      }
+    } catch (error) {
+      console.error('Unexpected error:', error);
       toast({
-        title: "Subscription successful!",
-        description: "Thank you for subscribing to our newsletter.",
+        title: "Subscription failed",
+        description: "There was an error subscribing to the newsletter. Please try again.",
+        variant: "destructive"
       });
-      
-      setEmail('');
+    } finally {
       setIsSubmitting(false);
-    }, 1000);
+    }
   };
   
   return (

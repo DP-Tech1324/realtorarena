@@ -30,6 +30,53 @@ export type Database = {
         }
         Relationships: []
       }
+      consultations: {
+        Row: {
+          consultation_type: string
+          created_at: string | null
+          date: string
+          email: string
+          id: string
+          message: string | null
+          name: string
+          phone: string
+          property_id: string | null
+          time: string
+        }
+        Insert: {
+          consultation_type: string
+          created_at?: string | null
+          date: string
+          email: string
+          id?: string
+          message?: string | null
+          name: string
+          phone: string
+          property_id?: string | null
+          time: string
+        }
+        Update: {
+          consultation_type?: string
+          created_at?: string | null
+          date?: string
+          email?: string
+          id?: string
+          message?: string | null
+          name?: string
+          phone?: string
+          property_id?: string | null
+          time?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "consultations_property_id_fkey"
+            columns: ["property_id"]
+            isOneToOne: false
+            referencedRelation: "properties"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       contact_requests: {
         Row: {
           created_at: string | null
@@ -51,6 +98,78 @@ export type Database = {
           id?: string
           message?: string | null
           name?: string
+        }
+        Relationships: []
+      }
+      newsletter_subscriptions: {
+        Row: {
+          created_at: string | null
+          email: string
+          id: string
+        }
+        Insert: {
+          created_at?: string | null
+          email: string
+          id?: string
+        }
+        Update: {
+          created_at?: string | null
+          email?: string
+          id?: string
+        }
+        Relationships: []
+      }
+      properties: {
+        Row: {
+          address: string
+          bathrooms: number
+          bedrooms: number
+          city: string
+          created_at: string | null
+          description: string | null
+          featured: boolean | null
+          id: string
+          images: Json
+          price: number
+          property_type: string
+          province: string
+          square_feet: number
+          status: string
+          title: string
+        }
+        Insert: {
+          address: string
+          bathrooms: number
+          bedrooms: number
+          city: string
+          created_at?: string | null
+          description?: string | null
+          featured?: boolean | null
+          id?: string
+          images?: Json
+          price: number
+          property_type: string
+          province: string
+          square_feet: number
+          status: string
+          title: string
+        }
+        Update: {
+          address?: string
+          bathrooms?: number
+          bedrooms?: number
+          city?: string
+          created_at?: string | null
+          description?: string | null
+          featured?: boolean | null
+          id?: string
+          images?: Json
+          price?: number
+          property_type?: string
+          province?: string
+          square_feet?: number
+          status?: string
+          title?: string
         }
         Relationships: []
       }

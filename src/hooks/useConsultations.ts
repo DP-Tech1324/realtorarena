@@ -1,6 +1,8 @@
 
 import { useMutation } from '@tanstack/react-query';
 import { toast } from '@/hooks/use-toast';
+import { supabase } from '@/integrations/supabase/client';
+import { format } from 'date-fns';
 
 export interface ConsultationFormData {
   name: string;
@@ -18,9 +20,29 @@ export function useConsultations() {
     console.log('Submitting consultation data:', data);
     
     try {
-      // Since the consultations table doesn't exist in Supabase yet,
-      // we'll just simulate a successful submission
-      console.log('Consultation submitted successfully (simulation)');
+      // Format the date for Supabase (YYYY-MM-DD)
+      const formattedDate = format(data.date, 'yyyy-MM-dd');
+      
+      // Insert consultation into Supabase
+      const { data: result, error } = await supabase
+        .from('consultations')
+        .insert({
+          name: data.name,
+          email: data.email,
+          phone: data.phone,
+          consultation_type: data.consultationType,
+          date: formattedDate,
+          time: data.time,
+          message: data.message || null,
+          property_id: data.propertyId || null
+        });
+        
+      if (error) {
+        console.error('Supabase error:', error);
+        throw error;
+      }
+      
+      console.log('Consultation submitted successfully');
       return { success: true };
     } catch (error) {
       console.error('Error in submitConsultation:', error);
