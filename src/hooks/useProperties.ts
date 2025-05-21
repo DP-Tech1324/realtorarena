@@ -1,90 +1,32 @@
 
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { supabase } from '@/integrations/supabase/client';
+import { useQuery } from '@tanstack/react-query';
 import { Property } from '@/types/Property';
+import { properties as localProperties } from '@/data/properties';
 
 export function useProperties() {
-  const queryClient = useQueryClient();
-  
+  // Using local properties data since properties table doesn't exist in Supabase yet
   const fetchProperties = async (): Promise<Property[]> => {
-    const { data, error } = await supabase
-      .from('properties')
-      .select('*')
-      .order('created_at', { ascending: false });
-      
-    if (error) throw new Error(error.message);
-    
-    // Map database fields to our frontend Property type
-    return data.map(item => ({
-      id: item.id,
-      title: item.title,
-      address: item.address,
-      city: item.city,
-      province: item.province,
-      price: item.price,
-      bedrooms: item.bedrooms,
-      bathrooms: item.bathrooms,
-      squareFeet: item.square_feet,
-      propertyType: item.property_type,
-      status: item.status,
-      featured: item.featured,
-      description: item.description,
-      images: item.images
-    }));
+    // Return local data
+    console.log('Fetching properties from local data');
+    return localProperties;
   };
   
   const fetchFeaturedProperties = async (): Promise<Property[]> => {
-    const { data, error } = await supabase
-      .from('properties')
-      .select('*')
-      .eq('featured', true)
-      .order('created_at', { ascending: false });
-      
-    if (error) throw new Error(error.message);
-    
-    return data.map(item => ({
-      id: item.id,
-      title: item.title,
-      address: item.address,
-      city: item.city,
-      province: item.province,
-      price: item.price,
-      bedrooms: item.bedrooms,
-      bathrooms: item.bathrooms,
-      squareFeet: item.square_feet,
-      propertyType: item.property_type,
-      status: item.status,
-      featured: item.featured,
-      description: item.description,
-      images: item.images
-    }));
+    // Return filtered local data
+    console.log('Fetching featured properties from local data');
+    return localProperties.filter(property => property.featured);
   };
   
   const fetchPropertyById = async (id: string): Promise<Property> => {
-    const { data, error } = await supabase
-      .from('properties')
-      .select('*')
-      .eq('id', id)
-      .single();
-      
-    if (error) throw new Error(error.message);
+    // Find property by id in local data
+    console.log(`Fetching property with id ${id} from local data`);
+    const property = localProperties.find(p => p.id === id);
     
-    return {
-      id: data.id,
-      title: data.title,
-      address: data.address,
-      city: data.city,
-      province: data.province,
-      price: data.price,
-      bedrooms: data.bedrooms,
-      bathrooms: data.bathrooms,
-      squareFeet: data.square_feet,
-      propertyType: data.property_type,
-      status: data.status,
-      featured: data.featured,
-      description: data.description,
-      images: data.images
-    };
+    if (!property) {
+      throw new Error(`Property with id ${id} not found`);
+    }
+    
+    return property;
   };
 
   return {
