@@ -1,31 +1,15 @@
 
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { useToast } from "@/components/ui/use-toast";
 import { ShieldCheck, LogOut } from 'lucide-react';
+import { useAuth } from '@/contexts/AuthContext';
 
 const AdminNav = () => {
   const { toast } = useToast();
   const navigate = useNavigate();
-  const [isAdmin, setIsAdmin] = useState(false);
-  
-  // Check admin status on component mount and when localStorage changes
-  useEffect(() => {
-    const checkAdminStatus = () => {
-      setIsAdmin(localStorage.getItem('isAdmin') === 'true');
-    };
-    
-    // Initial check
-    checkAdminStatus();
-    
-    // Listen for storage changes
-    window.addEventListener('storage', checkAdminStatus);
-    
-    return () => {
-      window.removeEventListener('storage', checkAdminStatus);
-    };
-  }, []);
+  const { isAdmin, signOut } = useAuth();
 
   const handleAdminPanelClick = (e: React.MouseEvent) => {
     if (!isAdmin) {
@@ -38,13 +22,9 @@ const AdminNav = () => {
     }
   };
 
-  const handleLogout = () => {
-    localStorage.removeItem('isAdmin');
-    setIsAdmin(false);
-    toast({
-      title: "Logged Out",
-      description: "You have been logged out of admin mode.",
-    });
+  const handleLogout = async () => {
+    await signOut();
+    navigate('/');
   };
 
   return (
@@ -72,9 +52,9 @@ const AdminNav = () => {
             Admin Panel
           </Link>
         ) : (
-          <Link to="/admin">
+          <Link to="/auth">
             <ShieldCheck className="mr-2 h-4 w-4" />
-            Admin Panel
+            Admin Login
           </Link>
         )}
       </Button>

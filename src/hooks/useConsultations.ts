@@ -1,94 +1,112 @@
 
-import { useMutation } from '@tanstack/react-query';
-import { toast } from '@/hooks/use-toast';
+import { useMutation, useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
-import { format } from 'date-fns';
+import { useToast } from '@/hooks/use-toast';
 
-export interface ConsultationFormData {
+// Define the interface for consultation data
+export interface ConsultationData {
   name: string;
   email: string;
   phone: string;
   consultationType: string;
-  date: Date;
-  time: string;
+  date?: string;
+  time?: string;
   message?: string;
   propertyId?: string;
 }
 
+export interface Consultation extends ConsultationData {
+  id: string;
+  created_at: string;
+}
+
 export function useConsultations() {
-  const submitConsultation = async (data: ConsultationFormData) => {
+  const { toast } = useToast();
+
+  // Submit a new consultation request
+  const submitConsultation = async (data: ConsultationData) => {
     console.log('Submitting consultation data:', data);
     
     try {
-      // Format the date for Supabase (YYYY-MM-DD)
-      const formattedDate = format(data.date, 'yyyy-MM-dd');
-      
-      // Generate a UUID for the consultation record
-      const id = crypto.randomUUID();
-      
-      console.log('Preparing to insert with id:', id);
-      console.log('Formatted date:', formattedDate);
-      console.log('Property ID:', data.propertyId || null);
-      
-      // Validate propertyId to ensure it's a valid UUID or null
-      let propertyIdValue = null;
-      if (data.propertyId && data.propertyId.trim() !== '') {
-        // Only use the propertyId if it's a valid UUID format
-        const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
-        if (uuidRegex.test(data.propertyId)) {
-          propertyIdValue = data.propertyId;
-        } else {
-          console.warn('Invalid property ID format, setting to null:', data.propertyId);
-        }
-      }
-      
-      // Insert consultation into Supabase
-      const { data: insertedData, error } = await supabase
+      const { error } = await supabase
         .from('consultations')
         .insert({
-          id: id,
           name: data.name,
           email: data.email,
           phone: data.phone,
           consultation_type: data.consultationType,
-          date: formattedDate,
+          date: data.date,
           time: data.time,
-          message: data.message || null,
-          property_id: propertyIdValue
+          message: data.message || '',
+          property_id: data.propertyId || null
         });
-        
+      
       if (error) {
-        console.error('Supabase error:', error);
+        console.error('Error submitting consultation:', error);
         throw error;
       }
       
-      console.log('Consultation submitted successfully with ID:', id);
-      return { success: true, id };
+      return { success: true };
     } catch (error) {
       console.error('Error in submitConsultation:', error);
       throw error;
     }
   };
-  
+
+  // Fetch all consultations
+  const fetchConsultations = async (): Promise<Consultation[]> => {
+    const { data, error } = await supabase
+      .from('consultations')
+      .select('*')
+      .order('created_at', { ascending: false });
+    
+    if (error) {
+      console.error('Error fetching consultations:', error);
+      throw error;
+    }
+    
+    return data.map((item: any) => ({
+      id: item.id,
+      name: item.name,
+      email: item.email,
+      phone: item.phone,
+      consultationType: item.consultation_type,
+      date: item.date,
+      time: item.time,
+      message: item.message,
+      propertyId: item.property_id,
+      created_at: item.created_at
+    }));
+  };
+
+  // Define the mutation for submitting consultation requests
   const useSubmitConsultation = () => 
     useMutation({
       mutationFn: submitConsultation,
-      onSuccess: (data) => {
-        console.log('Mutation successful:', data);
+      onSuccess: () => {
         toast({
-          title: "Consultation request submitted",
-          description: "We will contact you shortly to confirm your appointment.",
+          title: "Consultation requested",
+          description: "Thank you! Your consultation request has been submitted.",
         });
       },
       onError: (error: any) => {
-        console.error('Mutation error:', error);
         toast({
-          title: "Error submitting consultation",
+          title: "Error requesting consultation",
           description: error.message || "Failed to submit your consultation request. Please try again.",
           variant: "destructive"
         });
       }
     });
-  
-  return { useSubmitConsultation };
+
+  // Query for fetching all consultations
+  const useAllConsultations = () => 
+    useQuery({
+      queryKey: ['consultations'],
+      queryFn: fetchConsultations
+    });
+
+  return { 
+    useSubmitConsultation,
+    useAllConsultations
+  };
 }

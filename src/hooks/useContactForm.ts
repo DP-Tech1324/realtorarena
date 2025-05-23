@@ -1,7 +1,7 @@
 
 import { useMutation } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
-import { toast } from '@/hooks/use-toast';
+import { useToast } from '@/hooks/use-toast';
 
 export interface ContactFormData {
   name: string;
@@ -11,19 +11,20 @@ export interface ContactFormData {
 }
 
 export function useContactForm() {
+  const { toast } = useToast();
+  
   const submitContactForm = async (data: ContactFormData) => {
     console.log('Submitting contact form data:', data);
     
     try {
       // Insert contact request into Supabase
-      const { data: insertedData, error } = await supabase
-        .from('contact_requests')
+      const { error } = await supabase
+        .from('inquiries')
         .insert({
-          id: crypto.randomUUID(), // Generate a UUID for the id field
           name: data.name,
           email: data.email,
+          phone: data.phone,
           message: data.message
-          // Note: phone field is omitted as it doesn't exist in the database schema
         });
         
       if (error) {

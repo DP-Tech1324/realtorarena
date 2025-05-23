@@ -5,130 +5,116 @@ import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
 import PageHeader from '@/components/PageHeader';
 import { useToast } from "@/components/ui/use-toast";
-import { 
-  Table, 
-  TableBody, 
-  TableCell, 
-  TableHead, 
-  TableHeader, 
-  TableRow 
-} from "@/components/ui/table";
-import { 
-  Card, 
-  CardContent, 
-  CardHeader, 
-  CardTitle 
-} from '@/components/ui/card';
-import { 
-  Tabs, 
-  TabsContent, 
-  TabsList, 
-  TabsTrigger 
-} from '@/components/ui/tabs';
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { 
-  MessageSquare, 
-  Calendar, 
-  Check, 
-  X, 
-  Eye 
-} from 'lucide-react';
+import { Badge } from '@/components/ui/badge';
+import { MessageSquare, Trash, Eye } from 'lucide-react';
+import { supabase } from '@/integrations/supabase/client';
+import { useAuth } from '@/contexts/AuthContext';
 import {
   Dialog,
   DialogContent,
   DialogDescription,
   DialogHeader,
   DialogTitle,
-  DialogClose,
 } from "@/components/ui/dialog";
+import { format } from 'date-fns';
 
-// Mock contact form submissions
-const mockContactRequests = [
-  { id: '1', name: 'James Wilson', email: 'james@example.com', message: 'I\'m interested in buying property in the downtown area. Can you provide more information about current listings?', date: '2024-05-20', status: 'Unread' },
-  { id: '2', name: 'Jennifer Lopez', email: 'jennifer@example.com', message: 'I would like to schedule a showing for the luxury villa on Oak Street.', date: '2024-05-18', status: 'Read' },
-  { id: '3', name: 'Robert Johnson', email: 'robert@example.com', message: 'Can you send me more details about your selling process?', date: '2024-05-15', status: 'Replied' },
-  { id: '4', name: 'Mary Smith', email: 'mary@example.com', message: 'I have some questions about the property at 456 Queen Street.', date: '2024-05-10', status: 'Read' },
-];
-
-// Mock consultation requests
-const mockConsultations = [
-  { id: '1', name: 'Michael Brown', email: 'michael@example.com', phone: '555-123-4567', propertyId: '2', date: '2024-06-01', time: '10:00 AM', message: 'I want to discuss selling my current home and buying a new one.', consultationType: 'Selling', status: 'Scheduled' },
-  { id: '2', name: 'Emma Davis', email: 'emma@example.com', phone: '555-234-5678', propertyId: '3', date: '2024-05-28', time: '2:30 PM', message: 'Looking for advice on mortgage options.', consultationType: 'Buying', status: 'Pending' },
-  { id: '3', name: 'David Garcia', email: 'david@example.com', phone: '555-345-6789', propertyId: null, date: '2024-05-26', time: '1:00 PM', message: 'Need guidance on first-time home buying.', consultationType: 'Buying', status: 'Completed' },
-  { id: '4', name: 'Lisa Taylor', email: 'lisa@example.com', phone: '555-456-7890', propertyId: '1', date: '2024-05-25', time: '4:00 PM', message: 'Want to discuss investment property options.', consultationType: 'Investment', status: 'Cancelled' },
-];
+interface Inquiry {
+  id: string;
+  name: string;
+  email: string;
+  phone?: string;
+  message: string;
+  listing_id?: string;
+  created_at: string;
+  status?: string;
+}
 
 const InquiriesManagement = () => {
-  const [isAdmin, setIsAdmin] = useState(false);
-  const [contactRequests, setContactRequests] = useState(mockContactRequests);
-  const [consultations, setConsultations] = useState(mockConsultations);
-  const [selectedInquiry, setSelectedInquiry] = useState<any>(null);
+  const { isAdmin, isLoading, user } = useAuth();
+  const [inquiries, setInquiries] = useState<Inquiry[]>([]);
+  const [selectedInquiry, setSelectedInquiry] = useState<Inquiry | null>(null);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [isLoadingInquiries, setIsLoadingInquiries] = useState(true);
   const { toast } = useToast();
-  
-  // Check if user is admin
-  useEffect(() => {
-    const checkAdminStatus = () => {
-      setIsAdmin(localStorage.getItem('isAdmin') === 'true');
-    };
-    
-    checkAdminStatus();
-    
-    // Listen for storage changes
-    window.addEventListener('storage', checkAdminStatus);
-    
-    return () => {
-      window.removeEventListener('storage', checkAdminStatus);
-    };
-  }, []);
 
-  // If not admin, redirect to homepage
+  // Fetch inquiries from Supabase
+  useEffect(() => {
+    const fetchInquiries = async () => {
+      if (!user) return;
+      
+      try {
+        setIsLoadingInquiries(true);
+        const { data, error } = await supabase
+          .from('inquiries')
+          .select('*')
+          .order('created_at', { ascending: false });
+          
+        if (error) throw error;
+        
+        setInquiries(data || []);
+      } catch (error: any) {
+        toast({
+          title: "Error",
+          description: `Failed to load inquiries: ${error.message}`,
+          variant: "destructive",
+        });
+      } finally {
+        setIsLoadingInquiries(false);
+      }
+    };
+    
+    if (user) {
+      fetchInquiries();
+    }
+  }, [user]);
+
+  // If still checking authentication or not admin, show loading or redirect
+  if (isLoading) {
+    return (
+      <div className="flex justify-center items-center min-h-screen">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-realtor-gold"></div>
+      </div>
+    );
+  }
+
   if (!isAdmin) {
     toast({
       title: "Access Denied",
       description: "You need administrator privileges to access this page.",
       variant: "destructive",
     });
-    return <Navigate to="/admin" />;
+    return <Navigate to="/" />;
   }
   
-  const handleMarkAsRead = (id: string) => {
-    const updatedRequests = contactRequests.map(request => 
-      request.id === id ? { ...request, status: 'Read' } : request
-    );
-    setContactRequests(updatedRequests);
-    toast({
-      title: "Status Updated",
-      description: "Inquiry marked as read."
-    });
-  };
-  
-  const handleUpdateConsultationStatus = (id: string, status: string) => {
-    const updatedConsultations = consultations.map(consultation => 
-      consultation.id === id ? { ...consultation, status } : consultation
-    );
-    setConsultations(updatedConsultations);
-    toast({
-      title: "Status Updated",
-      description: `Consultation marked as ${status.toLowerCase()}.`
-    });
-  };
-  
-  const handleViewDetails = (item: any, type: 'contact' | 'consultation') => {
-    setSelectedInquiry({ ...item, type });
+  const handleViewInquiry = (inquiry: Inquiry) => {
+    setSelectedInquiry(inquiry);
     setIsDialogOpen(true);
   };
   
-  const getStatusColor = (status: string) => {
-    switch(status) {
-      case 'Unread': return 'bg-red-100 text-red-800';
-      case 'Read': return 'bg-blue-100 text-blue-800';
-      case 'Replied': return 'bg-green-100 text-green-800';
-      case 'Scheduled': return 'bg-green-100 text-green-800';
-      case 'Pending': return 'bg-yellow-100 text-yellow-800';
-      case 'Completed': return 'bg-teal-100 text-teal-800';
-      case 'Cancelled': return 'bg-gray-100 text-gray-800';
-      default: return 'bg-gray-100 text-gray-800';
+  const handleDeleteInquiry = async (id: string) => {
+    try {
+      const { error } = await supabase
+        .from('inquiries')
+        .delete()
+        .eq('id', id);
+      
+      if (error) throw error;
+      
+      setInquiries(inquiries.filter(inquiry => inquiry.id !== id));
+      
+      toast({
+        title: "Inquiry Deleted",
+        description: "The inquiry has been successfully removed."
+      });
+    } catch (error: any) {
+      toast({
+        title: "Error",
+        description: `Failed to delete inquiry: ${error.message}`,
+        variant: "destructive",
+      });
     }
   };
 
@@ -138,244 +124,130 @@ const InquiriesManagement = () => {
       <main className="flex-grow pt-[72px]">
         <PageHeader 
           title="Inquiries Management" 
-          subtitle="Manage contact form submissions and consultation requests"
+          subtitle="View and manage inquiries from potential clients"
           showCta={false}
         />
         
         <div className="container mx-auto px-4 py-12">
-          <Tabs defaultValue="contacts" className="w-full">
-            <TabsList className="mb-6">
-              <TabsTrigger value="contacts" className="flex items-center">
-                <MessageSquare className="mr-2 h-4 w-4" /> Contact Requests
-              </TabsTrigger>
-              <TabsTrigger value="consultations" className="flex items-center">
-                <Calendar className="mr-2 h-4 w-4" /> Consultation Requests
-              </TabsTrigger>
-            </TabsList>
-            
-            <TabsContent value="contacts">
-              <Card>
-                <CardHeader>
-                  <CardTitle>Contact Form Submissions</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <div className="rounded-md border overflow-hidden">
-                    <Table>
-                      <TableHeader>
-                        <TableRow>
-                          <TableHead>Name</TableHead>
-                          <TableHead>Email</TableHead>
-                          <TableHead>Date</TableHead>
-                          <TableHead>Status</TableHead>
-                          <TableHead className="text-right">Actions</TableHead>
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <MessageSquare className="h-5 w-5 text-realtor-gold" /> 
+                Contact Inquiries
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              {isLoadingInquiries ? (
+                <div className="flex justify-center py-10">
+                  <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-realtor-navy"></div>
+                </div>
+              ) : inquiries.length === 0 ? (
+                <div className="text-center py-8 text-gray-500">
+                  No inquiries available at the moment.
+                </div>
+              ) : (
+                <div className="rounded-md border overflow-hidden">
+                  <Table>
+                    <TableHeader>
+                      <TableRow>
+                        <TableHead>Name</TableHead>
+                        <TableHead>Email</TableHead>
+                        <TableHead>Phone</TableHead>
+                        <TableHead>Date</TableHead>
+                        <TableHead>Status</TableHead>
+                        <TableHead className="text-right">Actions</TableHead>
+                      </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                      {inquiries.map((inquiry) => (
+                        <TableRow key={inquiry.id}>
+                          <TableCell className="font-medium">{inquiry.name}</TableCell>
+                          <TableCell>{inquiry.email}</TableCell>
+                          <TableCell>{inquiry.phone || 'N/A'}</TableCell>
+                          <TableCell>{format(new Date(inquiry.created_at), 'PPP')}</TableCell>
+                          <TableCell>
+                            <Badge 
+                              className={
+                                inquiry.status === 'responded' ? 'bg-green-100 text-green-800' : 
+                                inquiry.status === 'in-progress' ? 'bg-yellow-100 text-yellow-800' : 
+                                'bg-blue-100 text-blue-800'
+                              }
+                            >
+                              {inquiry.status || 'New'}
+                            </Badge>
+                          </TableCell>
+                          <TableCell className="text-right">
+                            <Button
+                              variant="ghost"
+                              size="icon"
+                              onClick={() => handleViewInquiry(inquiry)}
+                              className="mr-1"
+                            >
+                              <Eye className="h-4 w-4 text-blue-600" />
+                            </Button>
+                            <Button
+                              variant="ghost"
+                              size="icon"
+                              onClick={() => handleDeleteInquiry(inquiry.id)}
+                            >
+                              <Trash className="h-4 w-4 text-red-600" />
+                            </Button>
+                          </TableCell>
                         </TableRow>
-                      </TableHeader>
-                      <TableBody>
-                        {contactRequests.map((request) => (
-                          <TableRow key={request.id}>
-                            <TableCell className="font-medium">{request.name}</TableCell>
-                            <TableCell>{request.email}</TableCell>
-                            <TableCell>{request.date}</TableCell>
-                            <TableCell>
-                              <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${getStatusColor(request.status)}`}>
-                                {request.status}
-                              </span>
-                            </TableCell>
-                            <TableCell className="text-right">
-                              <Button
-                                variant="ghost"
-                                size="icon"
-                                onClick={() => handleViewDetails(request, 'contact')}
-                                className="mr-1"
-                              >
-                                <Eye className="h-4 w-4 text-blue-600" />
-                              </Button>
-                              {request.status === 'Unread' && (
-                                <Button
-                                  variant="ghost"
-                                  size="icon"
-                                  onClick={() => handleMarkAsRead(request.id)}
-                                >
-                                  <Check className="h-4 w-4 text-green-600" />
-                                </Button>
-                              )}
-                            </TableCell>
-                          </TableRow>
-                        ))}
-                      </TableBody>
-                    </Table>
+                      ))}
+                    </TableBody>
+                  </Table>
+                </div>
+              )}
+            </CardContent>
+          </Card>
+          
+          {/* Inquiry Detail Dialog */}
+          <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+            <DialogContent className="max-w-md">
+              <DialogHeader>
+                <DialogTitle>Inquiry Details</DialogTitle>
+                <DialogDescription>
+                  Submitted on {selectedInquiry ? format(new Date(selectedInquiry.created_at), 'PPP') : ''}
+                </DialogDescription>
+              </DialogHeader>
+              
+              {selectedInquiry && (
+                <div className="space-y-4 mt-2">
+                  <div>
+                    <h3 className="font-semibold text-sm text-gray-500">From</h3>
+                    <p className="font-medium">{selectedInquiry.name}</p>
                   </div>
-                </CardContent>
-              </Card>
-            </TabsContent>
-            
-            <TabsContent value="consultations">
-              <Card>
-                <CardHeader>
-                  <CardTitle>Consultation Requests</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <div className="rounded-md border overflow-hidden">
-                    <Table>
-                      <TableHeader>
-                        <TableRow>
-                          <TableHead>Name</TableHead>
-                          <TableHead>Type</TableHead>
-                          <TableHead>Date</TableHead>
-                          <TableHead>Time</TableHead>
-                          <TableHead>Status</TableHead>
-                          <TableHead className="text-right">Actions</TableHead>
-                        </TableRow>
-                      </TableHeader>
-                      <TableBody>
-                        {consultations.map((consultation) => (
-                          <TableRow key={consultation.id}>
-                            <TableCell className="font-medium">{consultation.name}</TableCell>
-                            <TableCell>{consultation.consultationType}</TableCell>
-                            <TableCell>{consultation.date}</TableCell>
-                            <TableCell>{consultation.time}</TableCell>
-                            <TableCell>
-                              <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${getStatusColor(consultation.status)}`}>
-                                {consultation.status}
-                              </span>
-                            </TableCell>
-                            <TableCell className="text-right">
-                              <Button
-                                variant="ghost"
-                                size="icon"
-                                onClick={() => handleViewDetails(consultation, 'consultation')}
-                                className="mr-1"
-                              >
-                                <Eye className="h-4 w-4 text-blue-600" />
-                              </Button>
-                              
-                              {consultation.status === 'Pending' && (
-                                <>
-                                  <Button
-                                    variant="ghost"
-                                    size="icon"
-                                    onClick={() => handleUpdateConsultationStatus(consultation.id, 'Scheduled')}
-                                    className="mr-1"
-                                  >
-                                    <Check className="h-4 w-4 text-green-600" />
-                                  </Button>
-                                  <Button
-                                    variant="ghost"
-                                    size="icon"
-                                    onClick={() => handleUpdateConsultationStatus(consultation.id, 'Cancelled')}
-                                  >
-                                    <X className="h-4 w-4 text-red-600" />
-                                  </Button>
-                                </>
-                              )}
-                            </TableCell>
-                          </TableRow>
-                        ))}
-                      </TableBody>
-                    </Table>
+                  
+                  <div>
+                    <h3 className="font-semibold text-sm text-gray-500">Contact Information</h3>
+                    <p>Email: {selectedInquiry.email}</p>
+                    <p>Phone: {selectedInquiry.phone || 'Not provided'}</p>
                   </div>
-                </CardContent>
-              </Card>
-            </TabsContent>
-          </Tabs>
+                  
+                  <div>
+                    <h3 className="font-semibold text-sm text-gray-500">Message</h3>
+                    <p className="whitespace-pre-wrap">{selectedInquiry.message}</p>
+                  </div>
+                  
+                  {selectedInquiry.listing_id && (
+                    <div>
+                      <h3 className="font-semibold text-sm text-gray-500">Related Property</h3>
+                      <a 
+                        href={`/properties/${selectedInquiry.listing_id}`} 
+                        className="text-realtor-gold hover:underline"
+                        target="_blank" 
+                        rel="noopener noreferrer"
+                      >
+                        View Property
+                      </a>
+                    </div>
+                  )}
+                </div>
+              )}
+            </DialogContent>
+          </Dialog>
         </div>
-        
-        <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-          <DialogContent className="max-w-md">
-            <DialogHeader>
-              <DialogTitle>
-                {selectedInquiry?.type === 'contact' ? 'Contact Request Details' : 'Consultation Request Details'}
-              </DialogTitle>
-              <DialogDescription>
-                Submitted on {selectedInquiry?.date}
-              </DialogDescription>
-            </DialogHeader>
-            
-            <div className="space-y-4">
-              <div>
-                <h3 className="font-semibold">Name</h3>
-                <p>{selectedInquiry?.name}</p>
-              </div>
-              
-              <div>
-                <h3 className="font-semibold">Email</h3>
-                <p>{selectedInquiry?.email}</p>
-              </div>
-              
-              {selectedInquiry?.type === 'consultation' && (
-                <>
-                  <div>
-                    <h3 className="font-semibold">Phone</h3>
-                    <p>{selectedInquiry?.phone}</p>
-                  </div>
-                  
-                  <div>
-                    <h3 className="font-semibold">Appointment</h3>
-                    <p>{selectedInquiry?.date} at {selectedInquiry?.time}</p>
-                  </div>
-                  
-                  <div>
-                    <h3 className="font-semibold">Consultation Type</h3>
-                    <p>{selectedInquiry?.consultationType}</p>
-                  </div>
-                </>
-              )}
-              
-              <div>
-                <h3 className="font-semibold">Message</h3>
-                <p className="text-sm text-gray-700 whitespace-pre-wrap">{selectedInquiry?.message}</p>
-              </div>
-              
-              <div>
-                <h3 className="font-semibold">Status</h3>
-                <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
-                  selectedInquiry && getStatusColor(selectedInquiry.status)
-                }`}>
-                  {selectedInquiry?.status}
-                </span>
-              </div>
-            </div>
-            
-            <div className="flex justify-end gap-2 mt-4">
-              {selectedInquiry?.type === 'contact' && selectedInquiry?.status === 'Unread' && (
-                <Button 
-                  onClick={() => {
-                    handleMarkAsRead(selectedInquiry.id);
-                    setIsDialogOpen(false);
-                  }}
-                  className="bg-realtor-navy hover:bg-realtor-navy/90"
-                >
-                  Mark as Read
-                </Button>
-              )}
-              {selectedInquiry?.type === 'consultation' && selectedInquiry?.status === 'Pending' && (
-                <>
-                  <Button 
-                    onClick={() => {
-                      handleUpdateConsultationStatus(selectedInquiry.id, 'Scheduled');
-                      setIsDialogOpen(false);
-                    }}
-                    className="bg-green-600 hover:bg-green-700"
-                  >
-                    Schedule
-                  </Button>
-                  <Button 
-                    onClick={() => {
-                      handleUpdateConsultationStatus(selectedInquiry.id, 'Cancelled');
-                      setIsDialogOpen(false);
-                    }}
-                    className="bg-red-600 hover:bg-red-700"
-                  >
-                    Cancel
-                  </Button>
-                </>
-              )}
-              <DialogClose asChild>
-                <Button variant="outline">Close</Button>
-              </DialogClose>
-            </div>
-          </DialogContent>
-        </Dialog>
       </main>
       <Footer />
     </div>
