@@ -6,7 +6,6 @@ import FeaturedProperties from '@/components/FeaturedProperties';
 import Services from '@/components/Services';
 import ServicesLinkWrapper from '@/components/ServicesLinkWrapper';
 import LivePropertySearch from '@/components/LivePropertySearch';
-import CustomEmbed from '@/components/CustomEmbed';
 import Agents from '@/components/Agents';
 import Testimonials from '@/components/Testimonials';
 import ContactForm from '@/components/ContactForm';
@@ -22,7 +21,6 @@ const Home = () => {
         <Services />
         <ServicesLinkWrapper />
         <LivePropertySearch />
-        <CustomEmbed />
         <Agents />
         <Testimonials />
         <div className="bg-realtor-light-gray py-16">

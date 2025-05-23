@@ -18,7 +18,8 @@ import {
   Upload, 
   Users, 
   MessageSquare, 
-  BarChart3
+  BarChart3,
+  Code
 } from 'lucide-react';
 import AdminToggle from '@/components/AdminToggle';
 import { useToast } from '@/components/ui/use-toast';
@@ -192,6 +193,27 @@ const AdminPanel = () => {
                 <CardFooter>
                   <Button asChild className="w-full bg-realtor-navy hover:bg-realtor-navy/90">
                     <Link to="/admin/analytics">View Analytics</Link>
+                  </Button>
+                </CardFooter>
+              </Card>
+              
+              {/* Embed Management Card */}
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <Code className="h-5 w-5 text-realtor-gold" />
+                    Embed Management
+                  </CardTitle>
+                  <CardDescription>Manage iframes and custom embeds</CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <p className="text-sm text-gray-500">
+                    Configure Royal LePage listings iframe and other custom embed codes.
+                  </p>
+                </CardContent>
+                <CardFooter>
+                  <Button asChild className="w-full bg-realtor-navy hover:bg-realtor-navy/90">
+                    <Link to="/admin/embeds">Manage Embeds</Link>
                   </Button>
                 </CardFooter>
               </Card>

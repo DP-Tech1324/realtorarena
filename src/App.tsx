@@ -27,6 +27,7 @@ import ImageManagement from '@/pages/ImageManagement';
 import UserManagement from '@/pages/UserManagement';
 import InquiriesManagement from '@/pages/InquiriesManagement';
 import AnalyticsPage from '@/pages/AnalyticsPage';
+import EmbedManagement from '@/pages/EmbedManagement';
 
 // Create a client
 const queryClient = new QueryClient();
@@ -47,6 +48,7 @@ function App() {
         <Route path="/admin/users" element={<UserManagement />} />
         <Route path="/admin/inquiries" element={<InquiriesManagement />} />
         <Route path="/admin/analytics" element={<AnalyticsPage />} />
+        <Route path="/admin/embeds" element={<EmbedManagement />} />
         <Route path="/contact" element={<Contact />} />
         <Route path="/contact-us" element={<ContactPage />} />
         <Route path="/blog" element={<Blog />} />
