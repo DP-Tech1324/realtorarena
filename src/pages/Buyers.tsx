@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Link } from 'react-router-dom';
 import Navbar from '@/components/Navbar';
@@ -315,7 +314,7 @@ const Buyers = () => {
               <Card className="hover:shadow-lg transition-shadow">
                 <CardHeader className="text-center">
                   <div className="mx-auto w-12 h-12 bg-realtor-gold/20 rounded-full flex items-center justify-center mb-4">
-                    <Calculator className="h-6 w-6 text-realtor-gold" />
+                    <DollarSign className="h-6 w-6 text-realtor-gold" />
                   </div>
                   <CardTitle>Mortgage Calculator</CardTitle>
                 </CardHeader>
