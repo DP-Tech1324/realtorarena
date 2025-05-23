@@ -161,15 +161,38 @@ const Navbar = () => {
             </li>
 
             <li>
-              <Link 
-                to="/resources" 
-                className={cn(
-                  "hover:text-realtor-gold transition-colors",
-                  location.pathname === '/resources' ? "text-realtor-gold font-semibold" : ""
-                )}
-              >
-                Resources
-              </Link>
+              <DropdownMenu>
+                <DropdownMenuTrigger className={cn(
+                  "flex items-center hover:text-realtor-gold transition-colors",
+                  location.pathname === '/resources' ||
+                  location.pathname.includes('/resources/') ||
+                  location.pathname === '/buyers' ||
+                  location.pathname === '/sellers' ||
+                  location.pathname === '/calculators' ||
+                  location.pathname === '/home-valuation'
+                    ? "text-realtor-gold font-semibold"
+                    : ""
+                )}>
+                  Resources <ChevronDown className="h-4 w-4 ml-1" />
+                </DropdownMenuTrigger>
+                <DropdownMenuContent>
+                  <DropdownMenuItem asChild>
+                    <Link to="/resources">All Resources</Link>
+                  </DropdownMenuItem>
+                  <DropdownMenuItem asChild>
+                    <Link to="/buyers">For Buyers</Link>
+                  </DropdownMenuItem>
+                  <DropdownMenuItem asChild>
+                    <Link to="/sellers">For Sellers</Link>
+                  </DropdownMenuItem>
+                  <DropdownMenuItem asChild>
+                    <Link to="/calculators">Mortgage Calculator</Link>
+                  </DropdownMenuItem>
+                  <DropdownMenuItem asChild>
+                    <Link to="/home-valuation">Home Valuation</Link>
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
             </li>
             
             <li>
