@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Link, Navigate } from 'react-router-dom';
 import Navbar from '@/components/Navbar';
@@ -14,7 +13,7 @@ import {
   CardTitle,
 } from '@/components/ui/card';
 import { 
-  Buildings, 
+  Building, 
   Upload, 
   Users, 
   MessageSquare, 
@@ -77,7 +76,7 @@ const AdminPanel = () => {
               <Card>
                 <CardHeader>
                   <CardTitle className="flex items-center gap-2">
-                    <Buildings className="h-5 w-5 text-realtor-gold" />
+                    <Building className="h-5 w-5 text-realtor-gold" />
                     Property Management
                   </CardTitle>
                   <CardDescription>Add, edit, or remove properties</CardDescription>
