@@ -1,16 +1,39 @@
-const Commercial = () => (
-  <section className="max-w-4xl mx-auto p-6">
-    <h1 className="text-3xl font-bold mb-4">Commercial Real Estate</h1>
-    <p className="text-gray-600 mb-4">
-      Our commercial real estate services support business owners, investors, and developers in securing spaces that drive growth and returns. From office buildings to retail units, we understand the unique dynamics of commercial transactions.
-    </p>
-    <ul className="list-disc pl-6 text-gray-700 space-y-2">
-      <li>Retail, office, and industrial leasing</li>
-      <li>Commercial property acquisitions and sales</li>
-      <li>Market valuation and investment analysis</li>
-      <li>Tenant representation and lease negotiation</li>
-    </ul>
-  </section>
-);
+import React from 'react';
+import Navbar from '@/components/Navbar';
+import Footer from '@/components/Footer';
+import PageHeader from '@/components/PageHeader';
+
+const Commercial = () => {
+  return (
+    <div className="min-h-screen flex flex-col">
+      <Navbar />
+
+      <main className="flex-grow pt-[72px]">
+        <PageHeader 
+          title="Commercial Real Estate" 
+          subtitle="Spaces that drive business growth and investment success." 
+          bgImage="https://images.unsplash.com/photo-1505691938895-1758d7feb511?auto=format&fit=crop&w=1600&q=80"
+        />
+
+        <section className="py-12">
+          <div className="container mx-auto px-4 prose max-w-none text-gray-700">
+            <p className="mb-4">
+              We serve entrepreneurs, developers, and investors looking for prime commercial opportunities. Our team supports everything 
+              from leasing to acquisitions with market intelligence and deal strategy.
+            </p>
+            <ul className="list-disc pl-6 space-y-2">
+              <li>Retail storefronts, office space, and industrial properties</li>
+              <li>Tenant and landlord representation</li>
+              <li>Income analysis and cap rate projections</li>
+              <li>Site selection and zoning consultation</li>
+            </ul>
+          </div>
+        </section>
+      </main>
+
+      <Footer />
+    </div>
+  );
+};
 
 export default Commercial;

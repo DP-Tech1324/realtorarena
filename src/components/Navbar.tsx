@@ -130,17 +130,46 @@ const Navbar = () => {
               </DropdownMenu>
             </li>
 
-            <li>
-              <Link 
-                to="/services" 
-                className={cn(
-                  "hover:text-realtor-gold transition-colors",
-                  location.pathname.startsWith('/services') ? "text-realtor-gold font-semibold" : ""
-                )}
-              >
-                Services
-              </Link>
-            </li>
+            <DropdownMenu>
+  <DropdownMenuTrigger className={cn(
+    "flex items-center hover:text-realtor-gold transition-colors",
+    location.pathname.startsWith('/services') ||
+    location.pathname === '/PropertySales' ||
+    location.pathname === '/PropertyAcquisition' ||
+    location.pathname === '/Relocation' ||
+    location.pathname === '/Investment' ||
+    location.pathname === '/Luxury' ||
+    location.pathname === '/Commercial'
+      ? "text-realtor-gold font-semibold"
+      : ""
+  )}>
+    Services <ChevronDown className="h-4 w-4 ml-1" />
+  </DropdownMenuTrigger>
+  <DropdownMenuContent>
+    <DropdownMenuItem asChild>
+      <Link to="/services">Overview</Link>
+    </DropdownMenuItem>
+    <DropdownMenuItem asChild>
+      <Link to="/PropertySales">Property Sales</Link>
+    </DropdownMenuItem>
+    <DropdownMenuItem asChild>
+      <Link to="/PropertyAcquisition">Property Acquisition</Link>
+    </DropdownMenuItem>
+    <DropdownMenuItem asChild>
+      <Link to="/Relocation">Relocation Services</Link>
+    </DropdownMenuItem>
+    <DropdownMenuItem asChild>
+      <Link to="/Investment">Investment Properties</Link>
+    </DropdownMenuItem>
+    <DropdownMenuItem asChild>
+      <Link to="/Luxury">Luxury Properties</Link>
+    </DropdownMenuItem>
+    <DropdownMenuItem asChild>
+      <Link to="/Commercial">Commercial Real Estate</Link>
+    </DropdownMenuItem>
+  </DropdownMenuContent>
+</DropdownMenu>
+
             
             <li>
               <Link 

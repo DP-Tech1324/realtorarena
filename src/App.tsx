@@ -33,6 +33,12 @@ import ProtectedRoute from '@/components/ProtectedRoute';
 import RlpSearch from '@/pages/RlpSearch';
 import Resources from '@/pages/Resources';
 import Favorites from '@/pages/Favorites';
+import PropertySales from './pages/PropertySales';
+import PropertyAcquisition from './pages/PropertyAcquisition';
+import Relocation from './pages/Relocation';
+import Investment from './pages/Investment';
+import Luxury from './pages/Luxury';
+import Commercial from './pages/Commercial';
 
 // Create a client
 const queryClient = new QueryClient();
@@ -93,6 +99,12 @@ function App() {
           <Route path="/rlp-search" element={<RlpSearch />} />
           <Route path="/resources" element={<Resources />} />
           <Route path="/favorites" element={<Favorites />} />
+          <Route path="/PropertySales" element={<PropertySales />} />
+          <Route path="/PropertyAcquisition" element={<PropertyAcquisition />} />
+          <Route path="/Relocation" element={<Relocation />} />
+          <Route path="/Investment" element={<Investment />} />
+          <Route path="/Luxury" element={<Luxury />} />
+          <Route path="/Commercial" element={<Commercial />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
         <Toaster />
