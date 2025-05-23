@@ -1,17 +1,11 @@
 
 import React, { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { Menu, X, ChevronDown } from 'lucide-react';
+import { Menu, X } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 import { useIsMobile } from '@/hooks/use-mobile';
 import AdminNav from '@/components/AdminNav';
-import { 
-  DropdownMenu, 
-  DropdownMenuContent, 
-  DropdownMenuItem, 
-  DropdownMenuTrigger 
-} from "@/components/ui/dropdown-menu";
 import { useAuth } from '@/contexts/AuthContext';
 
 const Navbar = () => {
@@ -78,120 +72,26 @@ const Navbar = () => {
             </li>
 
             <li>
-              <DropdownMenu>
-                <DropdownMenuTrigger className={cn(
-                  "flex items-center hover:text-realtor-gold transition-colors",
-                  location.pathname.includes('/listings') || location.pathname.includes('/properties') || location.pathname === '/rlp-search' || location.pathname === '/favorites' 
-                    ? "text-realtor-gold font-semibold" 
-                    : ""
-                )}>
-                  Properties <ChevronDown className="h-4 w-4 ml-1" />
-                </DropdownMenuTrigger>
-                <DropdownMenuContent>
-                  <DropdownMenuItem asChild>
-                    <Link to="/listings" className="w-full">Featured Listings</Link>
-                  </DropdownMenuItem>
-                  <DropdownMenuItem asChild>
-                    <Link to="/rlp-search" className="w-full">RLP Search</Link>
-                  </DropdownMenuItem>
-                  {user && (
-                    <DropdownMenuItem asChild>
-                      <Link to="/favorites" className="w-full">My Favorites</Link>
-                    </DropdownMenuItem>
-                  )}
-                </DropdownMenuContent>
-              </DropdownMenu>
-            </li>
-
-            <li>
-              <DropdownMenu>
-                <DropdownMenuTrigger className={cn(
-                  "flex items-center hover:text-realtor-gold transition-colors",
-                  location.pathname === '/buyers' || location.pathname === '/sellers' || location.pathname === '/resources'
-                    ? "text-realtor-gold font-semibold" 
-                    : ""
-                )}>
-                  Resources <ChevronDown className="h-4 w-4 ml-1" />
-                </DropdownMenuTrigger>
-                <DropdownMenuContent>
-                  <DropdownMenuItem asChild>
-                    <Link to="/buyers" className="w-full">For Buyers</Link>
-                  </DropdownMenuItem>
-                  <DropdownMenuItem asChild>
-                    <Link to="/sellers" className="w-full">For Sellers</Link>
-                  </DropdownMenuItem>
-                  <DropdownMenuItem asChild>
-                    <Link to="/resources" className="w-full">Resources & Guides</Link>
-                  </DropdownMenuItem>
-                  <DropdownMenuItem asChild>
-                    <Link to="/calculators" className="w-full">Mortgage Calculator</Link>
-                  </DropdownMenuItem>
-                </DropdownMenuContent>
-              </DropdownMenu>
-            </li>
-
-            <DropdownMenu>
-  <DropdownMenuTrigger className={cn(
-    "flex items-center hover:text-realtor-gold transition-colors",
-    location.pathname.startsWith('/services') ||
-    location.pathname === '/PropertySales' ||
-    location.pathname === '/PropertyAcquisition' ||
-    location.pathname === '/Relocation' ||
-    location.pathname === '/Investment' ||
-    location.pathname === '/Luxury' ||
-    location.pathname === '/Commercial'
-      ? "text-realtor-gold font-semibold"
-      : ""
-  )}>
-    Services <ChevronDown className="h-4 w-4 ml-1" />
-  </DropdownMenuTrigger>
-  <DropdownMenuContent>
-    <DropdownMenuItem asChild>
-      <Link to="/services">Overview</Link>
-    </DropdownMenuItem>
-    <DropdownMenuItem asChild>
-      <Link to="/PropertySales">Property Sales</Link>
-    </DropdownMenuItem>
-    <DropdownMenuItem asChild>
-      <Link to="/PropertyAcquisition">Property Acquisition</Link>
-    </DropdownMenuItem>
-    <DropdownMenuItem asChild>
-      <Link to="/Relocation">Relocation Services</Link>
-    </DropdownMenuItem>
-    <DropdownMenuItem asChild>
-      <Link to="/Investment">Investment Properties</Link>
-    </DropdownMenuItem>
-    <DropdownMenuItem asChild>
-      <Link to="/Luxury">Luxury Properties</Link>
-    </DropdownMenuItem>
-    <DropdownMenuItem asChild>
-      <Link to="/Commercial">Commercial Real Estate</Link>
-    </DropdownMenuItem>
-  </DropdownMenuContent>
-</DropdownMenu>
-
-            
-            <li>
               <Link 
-                to="/agents" 
+                to="/listings" 
                 className={cn(
                   "hover:text-realtor-gold transition-colors",
-                  location.pathname === '/agents' ? "text-realtor-gold font-semibold" : ""
+                  location.pathname === '/listings' ? "text-realtor-gold font-semibold" : ""
                 )}
               >
-                Agents
+                Properties
               </Link>
             </li>
-            
+
             <li>
               <Link 
-                to="/blog" 
+                to="/services" 
                 className={cn(
                   "hover:text-realtor-gold transition-colors",
-                  location.pathname.startsWith('/blog') ? "text-realtor-gold font-semibold" : ""
+                  location.pathname === '/services' ? "text-realtor-gold font-semibold" : ""
                 )}
               >
-                Blog
+                Services
               </Link>
             </li>
             

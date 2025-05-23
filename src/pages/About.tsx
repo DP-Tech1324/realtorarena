@@ -1,3 +1,4 @@
+
 import React from 'react';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
@@ -5,7 +6,6 @@ import PageHeader from '@/components/PageHeader';
 import { Button } from '@/components/ui/button';
 import { Link } from 'react-router-dom';
 import { Phone, Mail, Award, Users, ThumbsUp, School } from 'lucide-react';
-import AdminToggle from '@/components/AdminToggle';
 
 const About = () => {
   return (
@@ -150,15 +150,6 @@ const About = () => {
                       View Listings
                     </Button>
                   </Link>
-                </div>
-                
-                {/* Admin Toggle (keep for development purposes) */}
-                <div className="mt-12 p-4 bg-gray-100 rounded-lg">
-                  <h3 className="text-lg font-semibold mb-2">Developer Tools</h3>
-                  <p className="text-sm text-gray-600 mb-4">
-                    This is just for demonstration purposes. In a real application, you would implement proper authentication.
-                  </p>
-                  <AdminToggle />
                 </div>
               </div>
             </div>
