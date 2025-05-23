@@ -24,6 +24,9 @@ import NotFound from '@/pages/NotFound';
 import ScrollToTop from '@/components/ScrollToTop';
 import AdminPanel from '@/pages/AdminPanel';
 import ImageManagement from '@/pages/ImageManagement';
+import UserManagement from '@/pages/UserManagement';
+import InquiriesManagement from '@/pages/InquiriesManagement';
+import AnalyticsPage from '@/pages/AnalyticsPage';
 
 // Create a client
 const queryClient = new QueryClient();
@@ -41,6 +44,9 @@ function App() {
         <Route path="/manage-properties" element={<PropertyManagement />} />
         <Route path="/admin" element={<AdminPanel />} />
         <Route path="/admin/images" element={<ImageManagement />} />
+        <Route path="/admin/users" element={<UserManagement />} />
+        <Route path="/admin/inquiries" element={<InquiriesManagement />} />
+        <Route path="/admin/analytics" element={<AnalyticsPage />} />
         <Route path="/contact" element={<Contact />} />
         <Route path="/contact-us" element={<ContactPage />} />
         <Route path="/blog" element={<Blog />} />
