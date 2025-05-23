@@ -2,6 +2,7 @@
 import { useMutation, useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
+import { format } from 'date-fns';
 
 // Define the interface for consultation data
 export interface ConsultationData {
@@ -9,7 +10,7 @@ export interface ConsultationData {
   email: string;
   phone: string;
   consultationType: string;
-  date?: string;
+  date?: Date;
   time?: string;
   message?: string;
   propertyId?: string;
@@ -28,6 +29,9 @@ export function useConsultations() {
     console.log('Submitting consultation data:', data);
     
     try {
+      // Format the date to ISO string if it exists
+      const formattedDate = data.date ? format(data.date, 'yyyy-MM-dd') : null;
+      
       const { error } = await supabase
         .from('consultations')
         .insert({
@@ -35,7 +39,7 @@ export function useConsultations() {
           email: data.email,
           phone: data.phone,
           consultation_type: data.consultationType,
-          date: data.date,
+          date: formattedDate,
           time: data.time,
           message: data.message || '',
           property_id: data.propertyId || null
