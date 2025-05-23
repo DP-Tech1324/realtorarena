@@ -5,20 +5,55 @@ import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
 import PageHeader from '@/components/PageHeader';
 import { Button } from '@/components/ui/button';
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { useToast } from "@/components/ui/use-toast";
-import { Building, PenSquare, Trash, Plus } from 'lucide-react';
+import { Dialog, DialogContent } from '@/components/ui/dialog';
+import { useToast } from "@/hooks/use-toast";
+import { Building, Plus } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
-import { properties as localProperties } from '@/data/properties';
-import { Property } from '@/types/Property';
-import { useProperties } from '@/hooks/useProperties';
+import { usePropertyManagement } from '@/hooks/usePropertyManagement';
+import { PropertyForm } from '@/components/property-management/PropertyForm';
+import { PropertyFilters } from '@/components/property-management/PropertyFilters';
+import { PropertyGrid } from '@/components/property-management/PropertyGrid';
+
+interface Property {
+  id: string;
+  title: string;
+  address: string;
+  city: string;
+  province: string;
+  price: number;
+  bedrooms: number;
+  bathrooms: number;
+  square_feet: number;
+  property_type: string;
+  status: string;
+  featured: boolean;
+  images: string[];
+  description?: string;
+}
 
 const PropertyManagement = () => {
   const [isAdmin, setIsAdmin] = useState(false);
   const [properties, setProperties] = useState<Property[]>([]);
+  const [filteredProperties, setFilteredProperties] = useState<Property[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [isFormOpen, setIsFormOpen] = useState(false);
+  const [editingProperty, setEditingProperty] = useState<Property | null>(null);
+  
+  // Pagination state
+  const [currentPage, setCurrentPage] = useState(1);
+  const [hasMore, setHasMore] = useState(true);
+  const [isLoadingMore, setIsLoadingMore] = useState(false);
+  const ITEMS_PER_PAGE = 9;
+
+  // Filter state
+  const [searchTerm, setSearchTerm] = useState('');
+  const [cityFilter, setCityFilter] = useState('');
+  const [statusFilter, setStatusFilter] = useState('');
+  const [priceFilter, setPriceFilter] = useState('');
+
   const { toast } = useToast();
+  const { createProperty, updateProperty, deleteProperty, togglePropertyStatus, isUploading } = usePropertyManagement();
   
   // Check if user is admin
   useEffect(() => {
@@ -40,43 +75,36 @@ const PropertyManagement = () => {
   useEffect(() => {
     const fetchProperties = async () => {
       try {
-        // Try to fetch from Supabase
         const { data, error } = await supabase
-          .from('properties')
-          .select('*');
+          .from('listings')
+          .select('*')
+          .order('created_at', { ascending: false });
           
         if (error) {
           console.error('Error fetching properties:', error);
           throw error;
         }
         
-        if (data && data.length > 0) {
-          // Map the data to match our Property type
-          const mappedData = data.map((prop: any): Property => ({
-            id: prop.id,
-            title: prop.title,
-            address: prop.address,
-            city: prop.city,
-            province: prop.province,
-            price: prop.price,
-            bedrooms: prop.bedrooms,
-            bathrooms: prop.bathrooms,
-            squareFeet: prop.square_feet,
-            propertyType: prop.property_type,
-            status: prop.status,
-            featured: prop.featured || false,
-            description: prop.description || '',
-            images: prop.images || []
-          }));
-          
-          setProperties(mappedData);
-        } else {
-          // Fallback to local data
-          setProperties(localProperties);
-        }
+        const mappedData = data.map((prop: any): Property => ({
+          id: prop.id,
+          title: prop.title,
+          address: prop.address,
+          city: prop.city,
+          province: prop.province,
+          price: prop.price,
+          bedrooms: prop.bedrooms,
+          bathrooms: prop.bathrooms,
+          square_feet: prop.square_feet,
+          property_type: prop.property_type,
+          status: prop.status,
+          featured: prop.featured || false,
+          description: prop.description || '',
+          images: prop.images || []
+        }));
+        
+        setProperties(mappedData);
       } catch (error) {
         console.error('Error in property fetching:', error);
-        setProperties(localProperties);
       } finally {
         setIsLoading(false);
       }
@@ -85,7 +113,40 @@ const PropertyManagement = () => {
     fetchProperties();
   }, []);
 
-  // If not admin, redirect to homepage
+  // Filter properties based on search and filters
+  useEffect(() => {
+    let filtered = [...properties];
+
+    if (searchTerm) {
+      filtered = filtered.filter(property =>
+        property.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        property.address.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        property.city.toLowerCase().includes(searchTerm.toLowerCase())
+      );
+    }
+
+    if (cityFilter) {
+      filtered = filtered.filter(property => property.city === cityFilter);
+    }
+
+    if (statusFilter) {
+      filtered = filtered.filter(property => property.status === statusFilter);
+    }
+
+    if (priceFilter) {
+      const [min, max] = priceFilter.split('-').map(Number);
+      filtered = filtered.filter(property => {
+        if (max === 999999999) return property.price >= min;
+        return property.price >= min && property.price <= max;
+      });
+    }
+
+    setFilteredProperties(filtered);
+    setCurrentPage(1);
+    setHasMore(filtered.length > ITEMS_PER_PAGE);
+  }, [properties, searchTerm, cityFilter, statusFilter, priceFilter]);
+
+  // If not admin, redirect to admin login
   if (!isAdmin) {
     toast({
       title: "Access Denied",
@@ -94,36 +155,162 @@ const PropertyManagement = () => {
     });
     return <Navigate to="/admin" />;
   }
-  
-  // Delete a property
-  const handleDeleteProperty = async (id: string) => {
+
+  const handleCreateProperty = async (formData: any, coverImage?: File) => {
     try {
-      await supabase
-        .from('properties')
-        .delete()
-        .eq('id', id);
-        
-      // Update local state
-      setProperties(prev => prev.filter(prop => prop.id !== id));
-      
-      toast({
-        title: "Property Deleted",
-        description: "The property has been successfully removed."
-      });
+      await createProperty(formData, coverImage);
+      setIsFormOpen(false);
+      // Refetch properties
+      const { data } = await supabase.from('listings').select('*').order('created_at', { ascending: false });
+      if (data) {
+        const mappedData = data.map((prop: any): Property => ({
+          id: prop.id,
+          title: prop.title,
+          address: prop.address,
+          city: prop.city,
+          province: prop.province,
+          price: prop.price,
+          bedrooms: prop.bedrooms,
+          bathrooms: prop.bathrooms,
+          square_feet: prop.square_feet,
+          property_type: prop.property_type,
+          status: prop.status,
+          featured: prop.featured || false,
+          description: prop.description || '',
+          images: prop.images || []
+        }));
+        setProperties(mappedData);
+      }
     } catch (error) {
-      console.error('Error deleting property:', error);
-      toast({
-        title: "Error",
-        description: "Failed to delete property. Please try again.",
-        variant: "destructive"
-      });
+      console.error('Error creating property:', error);
     }
   };
-  
-  // Format price with commas
-  const formatPrice = (price: number) => {
-    return price.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+
+  const handleEditProperty = async (formData: any, coverImage?: File) => {
+    if (!editingProperty) return;
+    
+    try {
+      await updateProperty(editingProperty.id, formData, coverImage);
+      setEditingProperty(null);
+      setIsFormOpen(false);
+      // Refetch properties
+      const { data } = await supabase.from('listings').select('*').order('created_at', { ascending: false });
+      if (data) {
+        const mappedData = data.map((prop: any): Property => ({
+          id: prop.id,
+          title: prop.title,
+          address: prop.address,
+          city: prop.city,
+          province: prop.province,
+          price: prop.price,
+          bedrooms: prop.bedrooms,
+          bathrooms: prop.bathrooms,
+          square_feet: prop.square_feet,
+          property_type: prop.property_type,
+          status: prop.status,
+          featured: prop.featured || false,
+          description: prop.description || '',
+          images: prop.images || []
+        }));
+        setProperties(mappedData);
+      }
+    } catch (error) {
+      console.error('Error updating property:', error);
+    }
   };
+
+  const handleDeleteProperty = async (id: string) => {
+    try {
+      await deleteProperty(id);
+      // Refetch properties
+      const { data } = await supabase.from('listings').select('*').order('created_at', { ascending: false });
+      if (data) {
+        const mappedData = data.map((prop: any): Property => ({
+          id: prop.id,
+          title: prop.title,
+          address: prop.address,
+          city: prop.city,
+          province: prop.province,
+          price: prop.price,
+          bedrooms: prop.bedrooms,
+          bathrooms: prop.bathrooms,
+          square_feet: prop.square_feet,
+          property_type: prop.property_type,
+          status: prop.status,
+          featured: prop.featured || false,
+          description: prop.description || '',
+          images: prop.images || []
+        }));
+        setProperties(mappedData);
+      }
+    } catch (error) {
+      console.error('Error deleting property:', error);
+    }
+  };
+
+  const handleToggleStatus = async (id: string, currentStatus: string) => {
+    try {
+      await togglePropertyStatus(id, currentStatus);
+      // Refetch properties
+      const { data } = await supabase.from('listings').select('*').order('created_at', { ascending: false });
+      if (data) {
+        const mappedData = data.map((prop: any): Property => ({
+          id: prop.id,
+          title: prop.title,
+          address: prop.address,
+          city: prop.city,
+          province: prop.province,
+          price: prop.price,
+          bedrooms: prop.bedrooms,
+          bathrooms: prop.bathrooms,
+          square_feet: prop.square_feet,
+          property_type: prop.property_type,
+          status: prop.status,
+          featured: prop.featured || false,
+          description: prop.description || '',
+          images: prop.images || []
+        }));
+        setProperties(mappedData);
+      }
+    } catch (error) {
+      console.error('Error toggling property status:', error);
+    }
+  };
+
+  const handleLoadMore = () => {
+    setIsLoadingMore(true);
+    setTimeout(() => {
+      const nextPage = currentPage + 1;
+      const totalShown = nextPage * ITEMS_PER_PAGE;
+      setCurrentPage(nextPage);
+      setHasMore(totalShown < filteredProperties.length);
+      setIsLoadingMore(false);
+    }, 500);
+  };
+
+  const clearFilters = () => {
+    setSearchTerm('');
+    setCityFilter('');
+    setStatusFilter('');
+    setPriceFilter('');
+  };
+
+  const openEditForm = (property: Property) => {
+    setEditingProperty(property);
+    setIsFormOpen(true);
+  };
+
+  const openCreateForm = () => {
+    setEditingProperty(null);
+    setIsFormOpen(true);
+  };
+
+  const closeForm = () => {
+    setIsFormOpen(false);
+    setEditingProperty(null);
+  };
+
+  const displayedProperties = filteredProperties.slice(0, currentPage * ITEMS_PER_PAGE);
 
   return (
     <div className="min-h-screen flex flex-col">
@@ -131,87 +318,64 @@ const PropertyManagement = () => {
       <main className="flex-grow pt-[72px]">
         <PageHeader 
           title="Property Management" 
-          subtitle="Add, edit, and remove property listings"
+          subtitle="Add, edit, and manage your property listings"
           showCta={false}
         />
         
-        <div className="container mx-auto px-4 py-12">
+        <div className="container mx-auto px-4 py-8 space-y-8">
           <Card>
-            <CardHeader className="flex flex-row items-center justify-between pb-2">
+            <CardHeader className="flex flex-row items-center justify-between">
               <CardTitle className="text-2xl flex items-center gap-2">
-                <Building className="h-5 w-5 text-realtor-gold" /> 
-                Properties
+                <Building className="h-6 w-6 text-realtor-gold" /> 
+                Properties ({filteredProperties.length})
               </CardTitle>
-              <Button className="bg-realtor-navy hover:bg-realtor-navy/90">
+              <Button onClick={openCreateForm} className="bg-realtor-navy hover:bg-realtor-navy/90">
                 <Plus className="mr-2 h-4 w-4" />
                 Add New Property
               </Button>
             </CardHeader>
-            <CardContent>
+            <CardContent className="space-y-6">
+              <PropertyFilters
+                searchTerm={searchTerm}
+                setSearchTerm={setSearchTerm}
+                cityFilter={cityFilter}
+                setCityFilter={setCityFilter}
+                statusFilter={statusFilter}
+                setStatusFilter={setStatusFilter}
+                priceFilter={priceFilter}
+                setPriceFilter={setPriceFilter}
+                onClearFilters={clearFilters}
+              />
+
               {isLoading ? (
-                <div className="flex justify-center py-10">
+                <div className="flex justify-center py-12">
                   <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-realtor-navy"></div>
                 </div>
               ) : (
-                <div className="rounded-md border overflow-hidden">
-                  <Table>
-                    <TableHeader>
-                      <TableRow>
-                        <TableHead>Title</TableHead>
-                        <TableHead>Address</TableHead>
-                        <TableHead>Price</TableHead>
-                        <TableHead>Type</TableHead>
-                        <TableHead>Status</TableHead>
-                        <TableHead className="text-right">Actions</TableHead>
-                      </TableRow>
-                    </TableHeader>
-                    <TableBody>
-                      {properties.map((property) => (
-                        <TableRow key={property.id}>
-                          <TableCell className="font-medium">{property.title}</TableCell>
-                          <TableCell>{`${property.address}, ${property.city}`}</TableCell>
-                          <TableCell>${formatPrice(property.price)}</TableCell>
-                          <TableCell>
-                            <span className="capitalize">{property.propertyType}</span>
-                          </TableCell>
-                          <TableCell>
-                            <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
-                              property.status === 'for-sale' 
-                                ? 'bg-green-100 text-green-800' 
-                                : property.status === 'sold'
-                                ? 'bg-blue-100 text-blue-800'
-                                : 'bg-yellow-100 text-yellow-800'
-                            }`}>
-                              {property.status === 'for-sale' ? 'For Sale' : 
-                               property.status === 'for-rent' ? 'For Rent' :
-                               property.status === 'sold' ? 'Sold' : 'Pending'}
-                            </span>
-                          </TableCell>
-                          <TableCell className="text-right">
-                            <Button
-                              variant="ghost"
-                              size="icon"
-                              className="mr-1"
-                            >
-                              <PenSquare className="h-4 w-4 text-amber-600" />
-                            </Button>
-                            <Button
-                              variant="ghost"
-                              size="icon"
-                              onClick={() => handleDeleteProperty(property.id)}
-                            >
-                              <Trash className="h-4 w-4 text-red-600" />
-                            </Button>
-                          </TableCell>
-                        </TableRow>
-                      ))}
-                    </TableBody>
-                  </Table>
-                </div>
+                <PropertyGrid
+                  properties={displayedProperties}
+                  onEdit={openEditForm}
+                  onDelete={handleDeleteProperty}
+                  onToggleStatus={handleToggleStatus}
+                  hasMore={hasMore}
+                  onLoadMore={handleLoadMore}
+                  isLoadingMore={isLoadingMore}
+                />
               )}
             </CardContent>
           </Card>
         </div>
+
+        <Dialog open={isFormOpen} onOpenChange={closeForm}>
+          <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
+            <PropertyForm
+              onSubmit={editingProperty ? handleEditProperty : handleCreateProperty}
+              initialData={editingProperty || undefined}
+              isSubmitting={isUploading}
+              onCancel={closeForm}
+            />
+          </DialogContent>
+        </Dialog>
       </main>
       <Footer />
     </div>
