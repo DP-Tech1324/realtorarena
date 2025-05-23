@@ -1,7 +1,6 @@
-
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { ArrowRight } from 'lucide-react';
+import { ArrowRight, Home as HomeIcon, DollarSign, MapPin } from 'lucide-react';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
 import { Button } from '@/components/ui/button';
@@ -33,10 +32,10 @@ const Home = () => {
         <div className="container relative z-10 px-4 mx-auto">
           <div className="max-w-3xl animate-fade-in">
             <h1 className="text-4xl md:text-6xl font-bold text-white mb-4">
-              Trusted. Local. <span className="text-realtor-gold">Proven Results.</span>
+              Your <span className="text-realtor-gold">Trusted Real Estate</span> Professional in the GTA
             </h1>
             <p className="text-xl text-white/90 mb-8">
-              Helping you find your dream home in the Greater Toronto Area with personalized service and local expertise.
+              With Royal LePage expertise and personalized service, I'm committed to finding your perfect home or maximizing your property's value.
             </p>
             <div className="flex flex-wrap gap-4">
               <Link to="/contact">
@@ -58,6 +57,62 @@ const Home = () => {
       <section className="relative z-10 -mt-16">
         <div className="container mx-auto px-4">
           <PropertySearch />
+        </div>
+      </section>
+      
+      {/* Services Tiles Section - NEW */}
+      <section className="py-16 bg-white">
+        <div className="container mx-auto px-4">
+          <div className="text-center mb-12">
+            <h2 className="text-3xl md:text-4xl font-bold text-realtor-navy mb-3">My Services</h2>
+            <p className="text-lg text-gray-600 max-w-2xl mx-auto">
+              Comprehensive real estate services tailored to your needs
+            </p>
+          </div>
+          
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            {/* Buying Service */}
+            <div className="bg-gray-50 rounded-lg p-8 text-center hover:shadow-lg transition-shadow">
+              <div className="w-16 h-16 bg-realtor-gold/20 rounded-full flex items-center justify-center mx-auto mb-6">
+                <HomeIcon className="h-8 w-8 text-realtor-gold" />
+              </div>
+              <h3 className="text-2xl font-bold text-realtor-navy mb-3">Buying</h3>
+              <p className="text-gray-600 mb-6">
+                Find your dream home with personalized search assistance, market insights, and negotiation expertise.
+              </p>
+              <Link to="/buyers" className="text-realtor-gold hover:text-realtor-navy flex items-center justify-center gap-2 font-medium">
+                Learn More <ArrowRight size={16} />
+              </Link>
+            </div>
+            
+            {/* Selling Service */}
+            <div className="bg-gray-50 rounded-lg p-8 text-center hover:shadow-lg transition-shadow">
+              <div className="w-16 h-16 bg-realtor-gold/20 rounded-full flex items-center justify-center mx-auto mb-6">
+                <DollarSign className="h-8 w-8 text-realtor-gold" />
+              </div>
+              <h3 className="text-2xl font-bold text-realtor-navy mb-3">Selling</h3>
+              <p className="text-gray-600 mb-6">
+                Maximize your property value with strategic marketing, professional staging advice, and skilled negotiation.
+              </p>
+              <Link to="/sellers" className="text-realtor-gold hover:text-realtor-navy flex items-center justify-center gap-2 font-medium">
+                Learn More <ArrowRight size={16} />
+              </Link>
+            </div>
+            
+            {/* Local Expertise Service */}
+            <div className="bg-gray-50 rounded-lg p-8 text-center hover:shadow-lg transition-shadow">
+              <div className="w-16 h-16 bg-realtor-gold/20 rounded-full flex items-center justify-center mx-auto mb-6">
+                <MapPin className="h-8 w-8 text-realtor-gold" />
+              </div>
+              <h3 className="text-2xl font-bold text-realtor-navy mb-3">Local Expertise</h3>
+              <p className="text-gray-600 mb-6">
+                Benefit from deep knowledge of GTA neighborhoods, schools, market trends, and community insights.
+              </p>
+              <Link to="/about" className="text-realtor-gold hover:text-realtor-navy flex items-center justify-center gap-2 font-medium">
+                Learn More <ArrowRight size={16} />
+              </Link>
+            </div>
+          </div>
         </div>
       </section>
 

@@ -30,6 +30,9 @@ import InquiriesManagement from '@/pages/InquiriesManagement';
 import AnalyticsPage from '@/pages/AnalyticsPage';
 import AuthPage from '@/pages/auth/AuthPage';
 import ProtectedRoute from '@/components/ProtectedRoute';
+import RlpSearch from '@/pages/RlpSearch';
+import Resources from '@/pages/Resources';
+import Favorites from '@/pages/Favorites';
 
 // Create a client
 const queryClient = new QueryClient();
@@ -87,6 +90,9 @@ function App() {
           <Route path="/calculators" element={<Calculators />} />
           <Route path="/home-valuation" element={<HomeValuation />} />
           <Route path="/auth" element={<AuthPage />} />
+          <Route path="/rlp-search" element={<RlpSearch />} />
+          <Route path="/resources" element={<Resources />} />
+          <Route path="/favorites" element={<Favorites />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
         <Toaster />

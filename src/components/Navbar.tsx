@@ -6,12 +6,20 @@ import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 import { useIsMobile } from '@/hooks/use-mobile';
 import AdminNav from '@/components/AdminNav';
+import { 
+  DropdownMenu, 
+  DropdownMenuContent, 
+  DropdownMenuItem, 
+  DropdownMenuTrigger 
+} from "@/components/ui/dropdown-menu";
+import { useAuth } from '@/contexts/AuthContext';
 
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
   const isMobile = useIsMobile();
   const location = useLocation();
+  const { user } = useAuth();
   
   // Handle scroll effect
   useEffect(() => {
@@ -46,7 +54,7 @@ const Navbar = () => {
           to="/" 
           className="text-realtor-navy font-bold text-xl lg:text-2xl hover:text-realtor-gold transition-colors z-10"
         >
-          <span className="text-realtor-gold">Prestige</span> Realty
+          <span className="text-realtor-gold">Jigar</span> Patel
         </Link>
 
         {/* Navigation */}
@@ -68,19 +76,60 @@ const Navbar = () => {
                 Home
               </Link>
             </li>
+
             <li>
-              <Link 
-                to="/properties" 
-                className={cn(
-                  "hover:text-realtor-gold transition-colors",
-                  (location.pathname === '/properties' || location.pathname === '/listings') 
+              <DropdownMenu>
+                <DropdownMenuTrigger className={cn(
+                  "flex items-center hover:text-realtor-gold transition-colors",
+                  location.pathname.includes('/listings') || location.pathname.includes('/properties') || location.pathname === '/rlp-search' || location.pathname === '/favorites' 
                     ? "text-realtor-gold font-semibold" 
                     : ""
-                )}
-              >
-                Properties
-              </Link>
+                )}>
+                  Properties <ChevronDown className="h-4 w-4 ml-1" />
+                </DropdownMenuTrigger>
+                <DropdownMenuContent>
+                  <DropdownMenuItem asChild>
+                    <Link to="/listings" className="w-full">Featured Listings</Link>
+                  </DropdownMenuItem>
+                  <DropdownMenuItem asChild>
+                    <Link to="/rlp-search" className="w-full">RLP Search</Link>
+                  </DropdownMenuItem>
+                  {user && (
+                    <DropdownMenuItem asChild>
+                      <Link to="/favorites" className="w-full">My Favorites</Link>
+                    </DropdownMenuItem>
+                  )}
+                </DropdownMenuContent>
+              </DropdownMenu>
             </li>
+
+            <li>
+              <DropdownMenu>
+                <DropdownMenuTrigger className={cn(
+                  "flex items-center hover:text-realtor-gold transition-colors",
+                  location.pathname === '/buyers' || location.pathname === '/sellers' || location.pathname === '/resources'
+                    ? "text-realtor-gold font-semibold" 
+                    : ""
+                )}>
+                  Resources <ChevronDown className="h-4 w-4 ml-1" />
+                </DropdownMenuTrigger>
+                <DropdownMenuContent>
+                  <DropdownMenuItem asChild>
+                    <Link to="/buyers" className="w-full">For Buyers</Link>
+                  </DropdownMenuItem>
+                  <DropdownMenuItem asChild>
+                    <Link to="/sellers" className="w-full">For Sellers</Link>
+                  </DropdownMenuItem>
+                  <DropdownMenuItem asChild>
+                    <Link to="/resources" className="w-full">Resources & Guides</Link>
+                  </DropdownMenuItem>
+                  <DropdownMenuItem asChild>
+                    <Link to="/calculators" className="w-full">Mortgage Calculator</Link>
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
+            </li>
+
             <li>
               <Link 
                 to="/services" 
@@ -92,6 +141,7 @@ const Navbar = () => {
                 Services
               </Link>
             </li>
+            
             <li>
               <Link 
                 to="/agents" 
@@ -103,6 +153,7 @@ const Navbar = () => {
                 Agents
               </Link>
             </li>
+            
             <li>
               <Link 
                 to="/blog" 
@@ -114,6 +165,7 @@ const Navbar = () => {
                 Blog
               </Link>
             </li>
+            
             <li>
               <Link 
                 to="/about" 
@@ -125,6 +177,7 @@ const Navbar = () => {
                 About
               </Link>
             </li>
+            
             <li>
               <Link 
                 to="/contact" 
