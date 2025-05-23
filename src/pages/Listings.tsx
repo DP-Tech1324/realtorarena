@@ -1,3 +1,4 @@
+
 import React, { useEffect, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import Navbar from '@/components/Navbar';
@@ -9,12 +10,7 @@ import PropertyGrid from '@/components/properties/PropertyGrid';
 import PropertyCTA from '@/components/properties/PropertyCTA';
 import { usePropertyFilters } from '@/hooks/usePropertyFilters';
 import { useToast } from "@/components/ui/use-toast";
-import { createClient } from '@supabase/supabase-js';
-
-const supabase = createClient(
-  import.meta.env.VITE_SUPABASE_URL!,
-  import.meta.env.VITE_SUPABASE_ANON_KEY!
-);
+import { supabase } from '@/integrations/supabase/client';
 
 const Listings = () => {
   const [searchParams] = useSearchParams();
