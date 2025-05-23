@@ -147,6 +147,30 @@ const Navbar = () => {
                 About
               </Link>
             </li>
+
+            <li>
+              <Link 
+                to="/blog" 
+                className={cn(
+                  "hover:text-realtor-gold transition-colors",
+                  location.pathname === '/blog' || location.pathname.includes('/blog/') ? "text-realtor-gold font-semibold" : ""
+                )}
+              >
+                Blog
+              </Link>
+            </li>
+
+            <li>
+              <Link 
+                to="/resources" 
+                className={cn(
+                  "hover:text-realtor-gold transition-colors",
+                  location.pathname === '/resources' ? "text-realtor-gold font-semibold" : ""
+                )}
+              >
+                Resources
+              </Link>
+            </li>
             
             <li>
               <Link 
