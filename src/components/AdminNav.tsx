@@ -3,6 +3,7 @@ import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { useToast } from "@/components/ui/use-toast";
+import { ShieldCheck } from 'lucide-react';
 
 const AdminNav = () => {
   const { toast } = useToast();
@@ -26,12 +27,12 @@ const AdminNav = () => {
     };
   }, []);
 
-  const handleManagePropertiesClick = (e: React.MouseEvent) => {
+  const handleAdminPanelClick = (e: React.MouseEvent) => {
     if (!isAdmin) {
       e.preventDefault();
       toast({
         title: "Access Denied",
-        description: "You need administrator privileges to access property management.",
+        description: "You need administrator privileges to access the admin panel.",
         variant: "destructive",
       });
     }
@@ -43,14 +44,18 @@ const AdminNav = () => {
         variant="outline" 
         asChild={isAdmin} // Only make it a Link if the user is an admin
         className="text-realtor-gold border-realtor-gold hover:bg-realtor-gold/10"
-        onClick={handleManagePropertiesClick}
+        onClick={handleAdminPanelClick}
       >
         {isAdmin ? (
-          <Link to="/manage-properties">
-            Property Management
+          <Link to="/admin">
+            <ShieldCheck className="mr-2 h-4 w-4" />
+            Admin Panel
           </Link>
         ) : (
-          <span>Property Management</span>
+          <span>
+            <ShieldCheck className="mr-2 h-4 w-4" />
+            Admin Panel
+          </span>
         )}
       </Button>
     </div>

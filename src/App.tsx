@@ -22,6 +22,8 @@ import HomeValuation from '@/pages/HomeValuation';
 import ContactPage from '@/pages/ContactPage';
 import NotFound from '@/pages/NotFound';
 import ScrollToTop from '@/components/ScrollToTop';
+import AdminPanel from '@/pages/AdminPanel';
+import ImageManagement from '@/pages/ImageManagement';
 
 // Create a client
 const queryClient = new QueryClient();
@@ -37,6 +39,8 @@ function App() {
         <Route path="/listings" element={<Listings />} />
         <Route path="/properties/:id" element={<PropertyDetails />} />
         <Route path="/manage-properties" element={<PropertyManagement />} />
+        <Route path="/admin" element={<AdminPanel />} />
+        <Route path="/admin/images" element={<ImageManagement />} />
         <Route path="/contact" element={<Contact />} />
         <Route path="/contact-us" element={<ContactPage />} />
         <Route path="/blog" element={<Blog />} />
