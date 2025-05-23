@@ -11,6 +11,7 @@ import {
   SelectValue 
 } from '@/components/ui/select';
 import { Search } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 
 interface PropertySearchProps {
   className?: string;
@@ -21,25 +22,19 @@ const PropertySearch: React.FC<PropertySearchProps> = ({ className = '', variant
   const [location, setLocation] = useState("");
   const [propertyType, setPropertyType] = useState("");
   const [priceRange, setPriceRange] = useState("");
+  const navigate = useNavigate();
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
     
-    // Extract price values from range
-    let minPrice = "";
-    let maxPrice = "";
+    // Build query params
+    const params = new URLSearchParams();
+    if (location) params.append('location', location);
+    if (propertyType) params.append('type', propertyType);
+    if (priceRange) params.append('price', priceRange);
     
-    if (priceRange) {
-      const [min, max] = priceRange.split('-');
-      minPrice = min;
-      maxPrice = max || "";
-    }
-    
-    // Build URL for Royal LePage search
-    const searchUrl = `https://www.royallepage.ca/en/search/homes/?search_str=${encodeURIComponent(location)}${minPrice ? `&min_price=${minPrice}` : ''}${maxPrice ? `&max_price=${maxPrice}` : ''}${propertyType !== 'any' ? `&property_type=${propertyType}` : ''}`;
-    
-    // Open in new tab
-    window.open(searchUrl, '_blank');
+    // Navigate to properties page with search params
+    navigate(`/properties?${params.toString()}`);
   };
 
   const isHero = variant === 'hero';
