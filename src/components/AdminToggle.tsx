@@ -1,36 +1,31 @@
 
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import { Button } from '@/components/ui/button';
 import { useToast } from "@/components/ui/use-toast";
+import { useNavigate } from 'react-router-dom';
 
 const AdminToggle = () => {
   const { toast } = useToast();
-  const [isAdmin, setIsAdmin] = useState(false);
-  
-  // Check admin status on component mount
-  useEffect(() => {
-    setIsAdmin(localStorage.getItem('isAdmin') === 'true');
-  }, []);
+  const navigate = useNavigate();
 
-  const toggleAdminStatus = () => {
-    const newStatus = !isAdmin;
-    localStorage.setItem('isAdmin', String(newStatus));
-    setIsAdmin(newStatus);
+  const handleLogout = () => {
+    localStorage.removeItem('isAdmin');
     
     toast({
-      title: newStatus ? "Admin Mode Activated" : "Admin Mode Deactivated",
-      description: newStatus 
-        ? "You now have access to property management." 
-        : "You no longer have access to property management.",
+      title: "Logged Out",
+      description: "You have been logged out of admin mode.",
     });
+    
+    // Force page reload to update UI state
+    navigate('/');
   };
 
   return (
     <Button 
-      onClick={toggleAdminStatus}
-      className={isAdmin ? "bg-red-600 hover:bg-red-700" : "bg-green-600 hover:bg-green-700"}
+      onClick={handleLogout}
+      className="bg-red-600 hover:bg-red-700"
     >
-      {isAdmin ? "Disable Admin Mode" : "Enable Admin Mode"}
+      Logout
     </Button>
   );
 };

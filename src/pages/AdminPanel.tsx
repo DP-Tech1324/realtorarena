@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { Link, Navigate } from 'react-router-dom';
 import Navbar from '@/components/Navbar';
@@ -21,6 +22,7 @@ import {
 } from 'lucide-react';
 import AdminToggle from '@/components/AdminToggle';
 import { useToast } from '@/components/ui/use-toast';
+import AdminLogin from '@/components/AdminLogin';
 
 const AdminPanel = () => {
   const [isAdmin, setIsAdmin] = useState(false);
@@ -42,14 +44,31 @@ const AdminPanel = () => {
     };
   }, []);
 
-  // If not admin, redirect to homepage
+  const handleLoginSuccess = () => {
+    setIsAdmin(true);
+  };
+
+  // If not admin, show login screen instead of redirecting
   if (!isAdmin) {
-    toast({
-      title: "Access Denied",
-      description: "You need administrator privileges to access this page.",
-      variant: "destructive",
-    });
-    return <Navigate to="/" />;
+    return (
+      <div className="min-h-screen flex flex-col">
+        <Navbar />
+        <main className="flex-grow pt-[72px]">
+          <PageHeader 
+            title="Administrator Panel" 
+            subtitle="Login required to access administration features"
+            showCta={false}
+          />
+          
+          <section className="py-12">
+            <div className="container mx-auto px-4">
+              <AdminLogin onLoginSuccess={handleLoginSuccess} />
+            </div>
+          </section>
+        </main>
+        <Footer />
+      </div>
+    );
   }
   
   return (
