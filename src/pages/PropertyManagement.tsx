@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Navigate } from 'react-router-dom';
 import Navbar from '@/components/Navbar';
@@ -10,11 +9,12 @@ import { Dialog, DialogContent } from '@/components/ui/dialog';
 import { useToast } from "@/hooks/use-toast";
 import { Building, Plus } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
-import { usePropertyManagement } from '@/hooks/usePropertyManagement';
+import { usePropertyManagement, PropertyFormData } from '@/hooks/usePropertyManagement';
 import { PropertyForm } from '@/components/property-management/PropertyForm';
 import { PropertyFilters } from '@/components/property-management/PropertyFilters';
 import { PropertyGrid } from '@/components/property-management/PropertyGrid';
 
+// Updated Property interface to match PropertyFormData status type
 interface Property {
   id: string;
   title: string;
@@ -26,7 +26,7 @@ interface Property {
   bathrooms: number;
   square_feet: number;
   property_type: string;
-  status: string;
+  status: 'published' | 'draft';
   featured: boolean;
   images: string[];
   description?: string;
@@ -96,7 +96,7 @@ const PropertyManagement = () => {
           bathrooms: prop.bathrooms,
           square_feet: prop.square_feet,
           property_type: prop.property_type,
-          status: prop.status,
+          status: (prop.status === 'published' || prop.status === 'draft') ? prop.status : 'draft',
           featured: prop.featured || false,
           description: prop.description || '',
           images: prop.images || []
@@ -174,7 +174,7 @@ const PropertyManagement = () => {
           bathrooms: prop.bathrooms,
           square_feet: prop.square_feet,
           property_type: prop.property_type,
-          status: prop.status,
+          status: (prop.status === 'published' || prop.status === 'draft') ? prop.status : 'draft',
           featured: prop.featured || false,
           description: prop.description || '',
           images: prop.images || []
@@ -207,7 +207,7 @@ const PropertyManagement = () => {
           bathrooms: prop.bathrooms,
           square_feet: prop.square_feet,
           property_type: prop.property_type,
-          status: prop.status,
+          status: (prop.status === 'published' || prop.status === 'draft') ? prop.status : 'draft',
           featured: prop.featured || false,
           description: prop.description || '',
           images: prop.images || []
@@ -236,7 +236,7 @@ const PropertyManagement = () => {
           bathrooms: prop.bathrooms,
           square_feet: prop.square_feet,
           property_type: prop.property_type,
-          status: prop.status,
+          status: (prop.status === 'published' || prop.status === 'draft') ? prop.status : 'draft',
           featured: prop.featured || false,
           description: prop.description || '',
           images: prop.images || []
@@ -265,7 +265,7 @@ const PropertyManagement = () => {
           bathrooms: prop.bathrooms,
           square_feet: prop.square_feet,
           property_type: prop.property_type,
-          status: prop.status,
+          status: (prop.status === 'published' || prop.status === 'draft') ? prop.status : 'draft',
           featured: prop.featured || false,
           description: prop.description || '',
           images: prop.images || []

@@ -155,6 +155,7 @@ export function usePropertyManagement() {
   };
 
   const togglePropertyStatus = async (id: string, currentStatus: string) => {
+    // Make sure we convert any status string to our specific 'published' | 'draft' type
     const newStatus = currentStatus === 'published' ? 'draft' : 'published';
     
     try {

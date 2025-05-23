@@ -28,7 +28,7 @@ interface Property {
   bathrooms: number;
   square_feet: number;
   property_type: string;
-  status: string;
+  status: 'published' | 'draft';  // Updated to match the specific status types
   featured: boolean;
   images: string[];
   description?: string;
@@ -38,7 +38,7 @@ interface PropertyCardProps {
   property: Property;
   onEdit: (property: Property) => void;
   onDelete: (id: string) => void;
-  onToggleStatus: (id: string, currentStatus: string) => void;
+  onToggleStatus: (id: string, currentStatus: 'published' | 'draft') => void;
 }
 
 export function PropertyCard({ property, onEdit, onDelete, onToggleStatus }: PropertyCardProps) {
