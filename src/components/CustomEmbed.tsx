@@ -9,12 +9,14 @@ const CustomEmbed = () => {
           <h2 className="text-3xl md:text-4xl font-bold text-realtor-navy mb-6 text-center">Royal LePage Listings</h2>
           
           <div className="bg-white rounded-lg shadow-sm p-4 min-h-[600px] w-full">
-            <iframe 
-              src="https://www.royallepage.ca/en/search/homes/" 
-              title="Royal LePage Listings"
-              className="w-full h-[600px] border-0"
+            <iframe
+              src="https://jigarpatel.royallepage.ca/index.php?advanced=1"
+              width="100%"
+              height="1200"
+              style={{border: 'none'}}
               loading="lazy"
-              allow="fullscreen"
+              sandbox="allow-scripts allow-forms"
+              title="Royal LePage Listings"
             />
           </div>
           
