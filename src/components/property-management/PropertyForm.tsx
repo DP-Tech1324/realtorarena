@@ -63,7 +63,7 @@ export function PropertyForm({ onSubmit, initialData, isSubmitting, onCancel }: 
       bedrooms: initialData?.bedrooms || 1,
       bathrooms: initialData?.bathrooms || 1,
       square_feet: initialData?.square_feet || 0,
-      property_type: initialData?.property_type || 'house',
+      property_type: (initialData?.property_type as 'house' | 'condo' | 'townhouse' | 'land') || 'house',
       description: initialData?.description || '',
       status: (initialData?.status as 'published' | 'draft') || 'draft',
       featured: initialData?.featured || false,

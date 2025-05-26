@@ -1,3 +1,4 @@
+
 // src/pages/ManageProperties.tsx
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
@@ -182,6 +183,25 @@ const ManageProperties = () => {
     }
   };
 
+  // Map the properties to ensure correct typing
+  const mappedProperties: Property[] = (propertyData?.properties || []).map((prop: any) => ({
+    id: prop.id,
+    title: prop.title,
+    address: prop.address,
+    city: prop.city,
+    province: prop.province,
+    price: prop.price,
+    bedrooms: prop.bedrooms,
+    bathrooms: prop.bathrooms,
+    square_feet: prop.square_feet,
+    property_type: prop.property_type,
+    status: (prop.status === 'published' || prop.status === 'draft') ? prop.status : 'draft',
+    featured: prop.featured || false,
+    images: prop.images || [],
+    description: prop.description || '',
+    user_email: prop.user_email
+  }));
+
   return (
     <div className="min-h-screen flex flex-col">
       <Navbar />
@@ -192,7 +212,7 @@ const ManageProperties = () => {
             {!showForm && (
               <Button 
                 className="flex items-center gap-2 bg-realtor-gold text-realtor-navy"
-                onClick={handleAddNew}
+                onClick={() => { setEditingProperty(null); setShowForm(true); }}
               >
                 <Plus size={16} /> Add Property
               </Button>
@@ -203,7 +223,7 @@ const ManageProperties = () => {
             <PropertyForm 
               onSubmit={handleSubmitProperty}
               initialData={editingProperty || undefined}
-              onCancel={handleCancelForm}
+              onCancel={() => { setShowForm(false); setEditingProperty(null); }}
               isSubmitting={false}
             />
           ) : (
@@ -216,8 +236,21 @@ const ManageProperties = () => {
                 statusFilter={statusFilter}
                 setStatusFilter={setStatusFilter}
                 priceFilter={priceFilter ? `${priceFilter.min}-${priceFilter.max}` : ''}
-                setPriceFilter={handlePriceFilterChange}
-                onClearFilters={handleClearFilters}
+                setPriceFilter={(priceRange: string) => {
+                  if (priceRange === '') {
+                    setPriceFilter(undefined);
+                  } else {
+                    const [min, max] = priceRange.split('-').map(Number);
+                    setPriceFilter({ min, max });
+                  }
+                }}
+                onClearFilters={() => {
+                  setSearchTerm('');
+                  setCityFilter('');
+                  setStatusFilter('');
+                  setPriceFilter(undefined);
+                  setCurrentPage(1);
+                }}
               />
 
               {isLoading ? (
@@ -227,10 +260,40 @@ const ManageProperties = () => {
               ) : (
                 <>
                   <PropertyGrid 
-                    properties={propertyData?.properties || []}
-                    onEdit={handleEdit}
-                    onDelete={handleDelete}
-                    onToggleStatus={handleToggleStatus}
+                    properties={mappedProperties}
+                    onEdit={(property: Property) => { setEditingProperty(property); setShowForm(true); }}
+                    onDelete={async (id: string) => {
+                      try {
+                        await deletePropertyMutation.mutateAsync(id);
+                        toast({
+                          title: "Property deleted",
+                          description: "The property has been successfully deleted."
+                        });
+                      } catch (error) {
+                        console.error('Error deleting property:', error);
+                        toast({
+                          variant: "destructive",
+                          title: "Error deleting property",
+                          description: "There was a problem deleting the property."
+                        });
+                      }
+                    }}
+                    onToggleStatus={async (id: string, currentStatus: 'published' | 'draft') => {
+                      try {
+                        await toggleStatusMutation.mutateAsync({ id, currentStatus });
+                        toast({
+                          title: "Status updated",
+                          description: `Property is now ${currentStatus === 'published' ? 'drafted' : 'published'}.`
+                        });
+                      } catch (error) {
+                        console.error('Error updating property status:', error);
+                        toast({
+                          variant: "destructive",
+                          title: "Error updating status",
+                          description: "There was a problem updating the property status."
+                        });
+                      }
+                    }}
                     isLoading={isFetching}
                   />
                   
