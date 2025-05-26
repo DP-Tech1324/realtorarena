@@ -66,12 +66,12 @@ const AiChatBubble = () => {
   };
 
   return (
-    <div className="fixed bottom-6 right-6 z-50">
+    <div className="fixed bottom-5 right-5 z-[1000] block visible">
       <button
         onClick={toggleChat}
-        className="bg-realtor-gold text-realtor-navy px-4 py-2 rounded-full shadow-lg hover:shadow-xl transition"
+        className="w-16 h-16 bg-realtor-gold text-realtor-navy rounded-full shadow-lg hover:shadow-xl transition-all flex items-center justify-center cursor-pointer"
       >
-        {isOpen ? 'Close Chat' : 'Chat with AI'}
+        <span className="text-sm font-medium">{isOpen ? '✕' : '💬'}</span>
       </button>
 
       {isOpen && (
