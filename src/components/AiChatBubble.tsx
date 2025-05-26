@@ -16,9 +16,9 @@ const AiChatBubble = () => {
 
   const handleSend = async () => {
     if (!input.trim()) {
-  setMessages(prev => [...prev, { role: 'assistant', content: 'Please enter a message first!' }]);
-  return;
-}
+      setMessages(prev => [...prev, { role: 'assistant', content: 'Please enter a message first!' }]);
+      return;
+    }
 
 
     const userMessage = input.trim();
@@ -27,18 +27,30 @@ const AiChatBubble = () => {
     setLoading(true);
 
     try {
+      const apiKey = import.meta.env.VITE_OPENAI_API_KEY;
+      if (!apiKey) {
+        setMessages(prev => [...prev, { role: 'assistant', content: 'API key not configured. Please contact the administrator.' }]);
+        return;
+      }
+      
       const res = await fetch('https://api.openai.com/v1/chat/completions', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          Authorization: `Bearer ${import.meta.env.VITE_OPENAI_KEY}`,
+          Authorization: `Bearer ${apiKey}`,
         },
         body: JSON.stringify({
-          model: 'gpt-4',
+          model: 'gpt-3.5-turbo',
           messages: [
-            { role: 'system', content: 'You are a helpful real estate assistant.' },
+            { 
+              role: 'system', 
+              content: 'You are a helpful real estate assistant for RealtorJigar. Help users with property listings, mortgage calculations, and general real estate questions. Keep responses concise and professional.' 
+            },
+            ...messages.map(msg => ({ role: msg.role, content: msg.content })),
             { role: 'user', content: userMessage },
           ],
+          temperature: 0.7,
+          max_tokens: 150,
         }),
       });
 

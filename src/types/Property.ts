@@ -14,6 +14,11 @@ export interface Property {
   featured: boolean;
   description: string;
   images: string[];
+  mlsNumber?: string;
+  seoTitle?: string;
+  seoDescription?: string;
+  metaKeywords?: string;
+  virtualTourUrl?: string;
 }
 
 export interface Agent {

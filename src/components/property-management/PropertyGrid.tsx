@@ -26,9 +26,10 @@ interface PropertyGridProps {
   onEdit: (property: Property) => void;
   onDelete: (id: string) => void;
   onToggleStatus: (id: string, currentStatus: 'published' | 'draft') => void;
-  hasMore: boolean;
-  onLoadMore: () => void;
-  isLoadingMore: boolean;
+  isLoading?: boolean;
+  hasMore?: boolean;
+  onLoadMore?: () => void;
+  isLoadingMore?: boolean;
 }
 
 export function PropertyGrid({ 
@@ -36,9 +37,10 @@ export function PropertyGrid({
   onEdit, 
   onDelete, 
   onToggleStatus, 
-  hasMore, 
-  onLoadMore, 
-  isLoadingMore 
+  isLoading = false,
+  hasMore = false,
+  onLoadMore,
+  isLoadingMore = false
 }: PropertyGridProps) {
   if (properties.length === 0) {
     return (
@@ -63,13 +65,19 @@ export function PropertyGrid({
         ))}
       </div>
 
-      {hasMore && (
-        <div className="flex justify-center pt-6">
+      {isLoading && (
+        <div className="flex justify-center py-6">
+          <Loader2 className="h-8 w-8 animate-spin text-realtor-navy" />
+        </div>
+      )}
+
+      {hasMore && !isLoading && (
+        <div className="flex justify-center pt-4 pb-8">
           <Button 
             onClick={onLoadMore} 
             disabled={isLoadingMore}
             variant="outline"
-            className="px-8"
+            className="border-realtor-navy text-realtor-navy hover:bg-realtor-navy/10"
           >
             {isLoadingMore ? (
               <>
@@ -77,7 +85,7 @@ export function PropertyGrid({
                 Loading...
               </>
             ) : (
-              'Load More Properties'
+              'Load More'
             )}
           </Button>
         </div>

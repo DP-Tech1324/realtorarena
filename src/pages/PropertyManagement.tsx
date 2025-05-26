@@ -76,7 +76,7 @@ const PropertyManagement = () => {
     const fetchProperties = async () => {
       try {
         const { data, error } = await supabase
-          .from('listings')
+          .from('realtorjigar_x8d1y_listings')
           .select('*')
           .order('created_at', { ascending: false });
           
@@ -161,7 +161,7 @@ const PropertyManagement = () => {
       await createProperty(formData, coverImage);
       setIsFormOpen(false);
       // Refetch properties
-      const { data } = await supabase.from('listings').select('*').order('created_at', { ascending: false });
+      const { data } = await supabase.from('realtorjigar_x8d1y_listings').select('*').order('created_at', { ascending: false });
       if (data) {
         const mappedData = data.map((prop: any): Property => ({
           id: prop.id,
@@ -194,7 +194,7 @@ const PropertyManagement = () => {
       setEditingProperty(null);
       setIsFormOpen(false);
       // Refetch properties
-      const { data } = await supabase.from('listings').select('*').order('created_at', { ascending: false });
+      const { data } = await supabase.from('realtorjigar_x8d1y_listings').select('*').order('created_at', { ascending: false });
       if (data) {
         const mappedData = data.map((prop: any): Property => ({
           id: prop.id,
@@ -223,7 +223,7 @@ const PropertyManagement = () => {
     try {
       await deleteProperty(id);
       // Refetch properties
-      const { data } = await supabase.from('listings').select('*').order('created_at', { ascending: false });
+      const { data } = await supabase.from('realtorjigar_x8d1y_listings').select('*').order('created_at', { ascending: false });
       if (data) {
         const mappedData = data.map((prop: any): Property => ({
           id: prop.id,
@@ -252,7 +252,7 @@ const PropertyManagement = () => {
     try {
       await togglePropertyStatus(id, currentStatus);
       // Refetch properties
-      const { data } = await supabase.from('listings').select('*').order('created_at', { ascending: false });
+      const { data } = await supabase.from('realtorjigar_x8d1y_listings').select('*').order('created_at', { ascending: false });
       if (data) {
         const mappedData = data.map((prop: any): Property => ({
           id: prop.id,

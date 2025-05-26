@@ -9,7 +9,7 @@ import PropertyCard from '@/components/PropertyCard';
 import TestimonialCard from '@/components/TestimonialCard';
 import { properties } from '@/data/properties';
 import { testimonials } from '@/data/testimonials';
-
+import AiChatBubble from '@/components/AiChatBubble';
 
 
 const Home = () => {
@@ -238,6 +238,7 @@ const Home = () => {
       </section>
 
       <Footer />
+      <AiChatBubble />
     </div>
   );
 };
