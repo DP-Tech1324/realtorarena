@@ -7,6 +7,7 @@ import { AuthProvider } from '@/contexts/AuthContext';
 import ScrollToTop from '@/components/ScrollToTop';
 import ProtectedRoute from '@/components/ProtectedRoute';
 import AdminLayout from '@/layouts/AdminLayout';
+import AiChatBubble from '@/components/AiChatBubble';
 
 // Public Pages
 import Home from '@/pages/Home';
@@ -76,6 +77,10 @@ function App() {
           <Route path="/auth" element={<AuthPage />} />
           <Route path="/rlp-search" element={<RlpSearch />} />
           <Route path="/resources" element={<Resources />} />
+          <Route path="/resources/for-buyers" element={<Buyers />} />
+          <Route path="/resources/for-sellers" element={<Sellers />} />
+          <Route path="/resources/home-valuation" element={<HomeValuation />} />
+          <Route path="/resources/mortgage-calculator" element={<Calculators />} />
           <Route path="/favorites" element={<Favorites />} />
 
           {/* Services Subpages */}
@@ -109,6 +114,10 @@ function App() {
           {/* Catch All */}
           <Route path="*" element={<NotFound />} />
         </Routes>
+        
+        {/* AI Chat Bubble - appears on all pages */}
+        <AiChatBubble />
+        
         <Toaster />
       </AuthProvider>
     </QueryClientProvider>
