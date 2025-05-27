@@ -1,4 +1,3 @@
-
 import { createClient } from '@supabase/supabase-js';
 import { Database } from '@/types/supabase';
 
@@ -19,6 +18,7 @@ const fallbackKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZS
 const url = supabaseUrl || fallbackUrl;
 const key = supabaseAnonKey || fallbackKey;
 
+// Create and export Supabase client
 export const supabase = createClient<Database>(url, key);
 
-console.log('Supabase client created with URL:', url);
+console.log('✅ Supabase client created with URL:', url);
