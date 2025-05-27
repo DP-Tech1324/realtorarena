@@ -1,8 +1,9 @@
 
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { Property } from '@/types/Property';
 import { properties as localProperties } from '@/data/properties';
 import { supabase } from '@/integrations/supabase/client';
+import { useToast } from "@/hooks/use-toast";
 
 // Helper to validate property type
 const validatePropertyType = (type: string): 'house' | 'condo' | 'townhouse' | 'land' => {
@@ -24,13 +25,53 @@ const validatePropertyStatus = (status: string): 'for-sale' | 'for-rent' | 'sold
   return 'for-sale';
 };
 
+// Type for new property creation
+export interface PropertyCreateInput {
+  title: string;
+  address: string;
+  city: string;
+  province: string;
+  price: number;
+  bedrooms: number;
+  bathrooms: number;
+  squareFeet: number;
+  propertyType: 'house' | 'condo' | 'townhouse' | 'land';
+  status: 'for-sale' | 'for-rent' | 'sold' | 'pending';
+  featured?: boolean;
+  description?: string;
+  images: string[];
+}
+
 export function useProperties() {
-  // Use Supabase properties table if it exists, otherwise fall back to local data
+  const queryClient = useQueryClient();
+  const { toast } = useToast();
+
+  // Map Supabase listing to our Property type
+  const mapListingToProperty = (listing: any): Property => {
+    return {
+      id: listing.id,
+      title: listing.title,
+      address: listing.address,
+      city: listing.city,
+      province: listing.province,
+      price: Number(listing.price),
+      bedrooms: listing.bedrooms || 0,
+      bathrooms: listing.bathrooms || 0,
+      squareFeet: listing.square_feet || 0,
+      propertyType: validatePropertyType(listing.property_type),
+      status: validatePropertyStatus(listing.status),
+      featured: listing.featured || false,
+      description: listing.description || '',
+      images: Array.isArray(listing.images) ? listing.images : []
+    };
+  };
+
+  // Use Supabase to fetch properties
   const fetchProperties = async (): Promise<Property[]> => {
     try {
       console.log('Fetching properties from Supabase');
       const { data, error } = await supabase
-        .from('properties')
+        .from('listings')
         .select('*');
       
       if (error) {
@@ -41,59 +82,10 @@ export function useProperties() {
       // If we have data in Supabase, return it
       if (data && data.length > 0) {
         // Map Supabase properties to our Property type
-        return data.map(prop => ({
-          id: prop.id,
-          title: prop.title,
-          address: prop.address,
-          city: prop.city,
-          province: prop.province,
-          price: prop.price,
-          bedrooms: prop.bedrooms,
-          bathrooms: prop.bathrooms,
-          squareFeet: prop.square_feet,
-          propertyType: validatePropertyType(prop.property_type),
-          status: validatePropertyStatus(prop.status),
-          featured: prop.featured || false,
-          description: prop.description || '',
-          images: prop.images as string[] || []
-        }));
+        return data.map(mapListingToProperty);
       }
       
-      // If no data in Supabase, seed with local data
-      if (data && data.length === 0) {
-        console.log('No properties in Supabase, seeding with local data');
-        
-        // Insert local properties into Supabase
-        for (const prop of localProperties) {
-          const { error } = await supabase
-            .from('properties')
-            .insert({
-              id: prop.id,
-              title: prop.title,
-              address: prop.address,
-              city: prop.city,
-              province: prop.province,
-              price: prop.price,
-              bedrooms: prop.bedrooms,
-              bathrooms: prop.bathrooms,
-              square_feet: prop.squareFeet,
-              property_type: prop.propertyType,
-              status: prop.status,
-              featured: prop.featured,
-              description: prop.description,
-              images: prop.images
-            });
-            
-          if (error) {
-            console.error('Error seeding property:', error);
-          }
-        }
-        
-        // Return local data
-        return localProperties;
-      }
-      
-      // Fallback to local data
+      // Fall back to local data if no properties in Supabase
       return localProperties;
     } catch (error) {
       console.error('Error in fetchProperties:', error);
@@ -106,7 +98,7 @@ export function useProperties() {
     try {
       console.log('Fetching featured properties from Supabase');
       const { data, error } = await supabase
-        .from('properties')
+        .from('listings')
         .select('*')
         .eq('featured', true);
       
@@ -118,22 +110,7 @@ export function useProperties() {
       // If we have featured properties in Supabase, return them
       if (data && data.length > 0) {
         // Map Supabase properties to our Property type
-        return data.map(prop => ({
-          id: prop.id,
-          title: prop.title,
-          address: prop.address,
-          city: prop.city,
-          province: prop.province,
-          price: prop.price,
-          bedrooms: prop.bedrooms,
-          bathrooms: prop.bathrooms,
-          squareFeet: prop.square_feet,
-          propertyType: validatePropertyType(prop.property_type),
-          status: validatePropertyStatus(prop.status),
-          featured: prop.featured || false,
-          description: prop.description || '',
-          images: prop.images as string[] || []
-        }));
+        return data.map(mapListingToProperty);
       }
       
       // Fallback to filtered local data
@@ -149,33 +126,29 @@ export function useProperties() {
     try {
       console.log(`Fetching property with id ${id} from Supabase`);
       const { data, error } = await supabase
-        .from('properties')
+        .from('listings')
         .select('*')
         .eq('id', id)
-        .single();
+        .maybeSingle();
       
       if (error) {
         console.error('Supabase error:', error);
         throw error;
       }
       
+      if (!data) {
+        // Find property by id in local data if not found in Supabase
+        const property = localProperties.find(p => p.id === id);
+        
+        if (!property) {
+          throw new Error(`Property with id ${id} not found`);
+        }
+        
+        return property;
+      }
+      
       // Return the Supabase property
-      return {
-        id: data.id,
-        title: data.title,
-        address: data.address,
-        city: data.city,
-        province: data.province,
-        price: data.price,
-        bedrooms: data.bedrooms,
-        bathrooms: data.bathrooms,
-        squareFeet: data.square_feet,
-        propertyType: validatePropertyType(data.property_type),
-        status: validatePropertyStatus(data.status),
-        featured: data.featured || false,
-        description: data.description || '',
-        images: data.images as string[] || []
-      };
+      return mapListingToProperty(data);
     } catch (error) {
       console.error(`Error fetching property with id ${id}:`, error);
       // Find property by id in local data
@@ -186,6 +159,145 @@ export function useProperties() {
       }
       
       return property;
+    }
+  };
+
+  // Create a new property
+  const createProperty = async (propertyData: PropertyCreateInput): Promise<Property> => {
+    console.log('Creating new property:', propertyData);
+    
+    try {
+      // Generate a new UUID for the property
+      const id = crypto.randomUUID();
+      
+      const { data, error } = await supabase
+        .from('listings')
+        .insert({
+          id: id,
+          title: propertyData.title,
+          address: propertyData.address,
+          city: propertyData.city,
+          province: propertyData.province,
+          price: propertyData.price,
+          bedrooms: propertyData.bedrooms,
+          bathrooms: propertyData.bathrooms,
+          square_feet: propertyData.squareFeet,
+          property_type: propertyData.propertyType,
+          status: propertyData.status,
+          featured: propertyData.featured || false,
+          description: propertyData.description || '',
+          images: propertyData.images
+        })
+        .select()
+        .single();
+      
+      if (error) {
+        console.error('Error creating property:', error);
+        toast({
+          title: "Error",
+          description: `Failed to create property: ${error.message}`,
+          variant: "destructive"
+        });
+        throw error;
+      }
+      
+      toast({
+        title: "Success",
+        description: "Property created successfully",
+      });
+      
+      // Map the Supabase return object to our Property type
+      return mapListingToProperty(data);
+      
+    } catch (error: any) {
+      console.error('Failed to create property:', error);
+      throw error;
+    }
+  };
+  
+  // Delete a property
+  const deleteProperty = async (id: string): Promise<void> => {
+    console.log('Deleting property with ID:', id);
+    
+    try {
+      const { error } = await supabase
+        .from('listings')
+        .delete()
+        .eq('id', id);
+      
+      if (error) {
+        console.error('Error deleting property:', error);
+        toast({
+          title: "Error",
+          description: `Failed to delete property: ${error.message}`,
+          variant: "destructive"
+        });
+        throw error;
+      }
+      
+      toast({
+        title: "Success",
+        description: "Property deleted successfully",
+      });
+      
+      console.log('Property deleted successfully');
+    } catch (error: any) {
+      console.error('Failed to delete property:', error);
+      throw error;
+    }
+  };
+
+  // Update a property
+  const updateProperty = async (id: string, propertyData: Partial<PropertyCreateInput>): Promise<Property> => {
+    console.log('Updating property with ID:', id, 'with data:', propertyData);
+    
+    try {
+      // Prepare update data
+      const updateData: any = {};
+      
+      // Only include fields that are provided
+      if (propertyData.title !== undefined) updateData.title = propertyData.title;
+      if (propertyData.address !== undefined) updateData.address = propertyData.address;
+      if (propertyData.city !== undefined) updateData.city = propertyData.city;
+      if (propertyData.province !== undefined) updateData.province = propertyData.province;
+      if (propertyData.price !== undefined) updateData.price = propertyData.price;
+      if (propertyData.bedrooms !== undefined) updateData.bedrooms = propertyData.bedrooms;
+      if (propertyData.bathrooms !== undefined) updateData.bathrooms = propertyData.bathrooms;
+      if (propertyData.squareFeet !== undefined) updateData.square_feet = propertyData.squareFeet;
+      if (propertyData.propertyType !== undefined) updateData.property_type = propertyData.propertyType;
+      if (propertyData.status !== undefined) updateData.status = propertyData.status;
+      if (propertyData.featured !== undefined) updateData.featured = propertyData.featured;
+      if (propertyData.description !== undefined) updateData.description = propertyData.description;
+      if (propertyData.images !== undefined) updateData.images = propertyData.images;
+      
+      const { data, error } = await supabase
+        .from('listings')
+        .update(updateData)
+        .eq('id', id)
+        .select()
+        .single();
+      
+      if (error) {
+        console.error('Error updating property:', error);
+        toast({
+          title: "Error",
+          description: `Failed to update property: ${error.message}`,
+          variant: "destructive"
+        });
+        throw error;
+      }
+      
+      toast({
+        title: "Success",
+        description: "Property updated successfully",
+      });
+      
+      // Map the Supabase return object to our Property type
+      return mapListingToProperty(data);
+      
+    } catch (error: any) {
+      console.error('Failed to update property:', error);
+      throw error;
     }
   };
 
@@ -207,6 +319,38 @@ export function useProperties() {
         queryKey: ['property', id],
         queryFn: () => fetchPropertyById(id),
         enabled: !!id
+      }),
+      
+    useCreateProperty: () => 
+      useMutation({
+        mutationFn: createProperty,
+        onSuccess: () => {
+          // Invalidate queries to refetch the updated data
+          queryClient.invalidateQueries({ queryKey: ['properties'] });
+          queryClient.invalidateQueries({ queryKey: ['featuredProperties'] });
+        }
+      }),
+      
+    useDeleteProperty: () => 
+      useMutation({
+        mutationFn: deleteProperty,
+        onSuccess: () => {
+          // Invalidate queries to refetch the updated data
+          queryClient.invalidateQueries({ queryKey: ['properties'] });
+          queryClient.invalidateQueries({ queryKey: ['featuredProperties'] });
+        }
+      }),
+      
+    useUpdateProperty: () => 
+      useMutation({
+        mutationFn: ({ id, data }: { id: string, data: Partial<PropertyCreateInput> }) => 
+          updateProperty(id, data),
+        onSuccess: (data) => {
+          // Invalidate specific queries
+          queryClient.invalidateQueries({ queryKey: ['properties'] });
+          queryClient.invalidateQueries({ queryKey: ['featuredProperties'] });
+          queryClient.invalidateQueries({ queryKey: ['property', data.id] });
+        }
       })
   };
 }

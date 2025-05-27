@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -53,7 +54,7 @@ const ContactForm: React.FC = () => {
     const contactData: ContactFormData = {
       name: data.name,
       email: data.email,
-      phone: data.phone, // We still collect this for potential future use
+      phone: data.phone,
       message: data.message
     };
     

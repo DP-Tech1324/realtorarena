@@ -7,23 +7,14 @@ import RLPLogo from "@/assets/images/logos/Jigar_Patel_Logo.png";
 
 
 import React from 'react';
-import { Link } from 'react-router-dom';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
-import { Button } from '@/components/ui/button';
 import PageHeader from '@/components/PageHeader';
-import { agent } from '@/data/agent';
-import { Phone, Mail, Award, ThumbsUp, Home } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { Link } from 'react-router-dom';
+import { Phone, Mail, Award, Users, ThumbsUp, School, Home } from 'lucide-react';
 
 const About = () => {
-  // Array of hero banner images for the image slider
-  const heroImages = [
-    "https://images.unsplash.com/photo-1600585154526-990dced4db0d?ixlib=rb-4.0.3",
-    "https://images.unsplash.com/photo-1600573472591-61770e120a4a?ixlib=rb-4.0.3",
-    "https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?ixlib=rb-4.0.3",
-    "https://images.unsplash.com/photo-1600566753086-00f18fb6b3ea?ixlib=rb-4.0.3"
-  ];
-
   return (
     <div className="min-h-screen flex flex-col">
       <Navbar />
@@ -31,74 +22,141 @@ const About = () => {
       <main className="flex-grow pt-[72px]">
         <PageHeader 
           title="About Jigar Patel" 
-          subtitle="Your trusted real estate advisor in the Greater Toronto Area"
-          imageSlider={heroImages}
+          subtitle="Your Trusted Real Estate Professional"
+          bgImage="https://images.unsplash.com/photo-1560518883-ce09059eeffa?ixlib=rb-4.0.3"
         />
-
-        {/* Bio Section */}
-        <section className="py-16 bg-white">
+        
+        <section className="py-12">
           <div className="container mx-auto px-4">
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
-              <div className="order-2 lg:order-1">
-                <h2 className="text-3xl font-bold text-realtor-navy mb-6">
-                  Jigar Patel
-                </h2>
-                <div className="flex items-center mb-6">
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-12">
+              {/* Profile Image and Contact */}
+              <div className="lg:col-span-1">
+                <div className="mb-8">
                   <img 
-                    src="/royal-lepage-logo.png" 
-                    alt="Royal LePage" 
-                    className="h-10 mr-4"
-                    onError={(e) => {
-                      e.currentTarget.src = "https://www.royallepage.ca/assets/lp/2022/logos/rlp-en.svg";
-                      e.currentTarget.onerror = null;
-                    }}
+                    src="https://images.unsplash.com/photo-1560250097-0b93528c311a?ixlib=rb-4.0.3" 
+                    alt="Jigar Patel" 
+                    className="rounded-lg shadow-lg w-full h-auto object-cover aspect-[3/4]"
                   />
-                  <p className="text-lg text-realtor-navy font-medium">
-                    Royal LePage Real Estate Professional
-                  </p>
                 </div>
-                <div className="prose max-w-none text-gray-600 mb-8">
-                  <p className="mb-4">
-                    With over 10 years of experience in the Greater Toronto Area real estate market, I have established myself as a trusted advisor for buyers and sellers alike.
-                  </p>
-                  <p className="mb-4">
-                    Having lived in Woodbridge for most of my life, I bring unparalleled local knowledge and expertise to every transaction. My commitment to client satisfaction, integrity, and professional service has earned me numerous industry accolades and, more importantly, the loyalty and referrals of my many satisfied clients.
-                  </p>
-                  <p className="mb-4">
-                    I understand that buying or selling a home is more than just a transaction—it's a significant life decision. That's why I dedicate myself to providing exceptional, personalized service for all my clients. Whether you're a first-time homebuyer, looking to sell your property, or seeking investment opportunities, I will work tirelessly to help you achieve your real estate goals.
-                  </p>
-                  <p>
-                    As a proud affiliate of Royal LePage, one of Canada's most respected real estate brokerages, I have access to comprehensive resources, cutting-edge technology, and a vast network of professionals to ensure your success in today's competitive market.
-                  </p>
-                </div>
-                <div className="flex flex-col sm:flex-row gap-4 mb-8">
-                  <div className="flex items-center">
-                    <Phone size={20} className="text-realtor-gold mr-2" />
-                    <span>(647) 555-1234</span>
+                
+                <div className="bg-gray-50 p-6 rounded-lg shadow-sm mb-6">
+                  <h3 className="text-xl font-bold text-realtor-navy mb-4">Contact Information</h3>
+                  
+                  <div className="space-y-4">
+                    <div className="flex items-center">
+                      <Phone className="h-5 w-5 text-realtor-gold mr-3" />
+                      <div>
+                        <p className="text-sm text-gray-500">Phone</p>
+                        <p className="font-medium">(647) 555-1234</p>
+                      </div>
+                    </div>
+                    
+                    <div className="flex items-center">
+                      <Mail className="h-5 w-5 text-realtor-gold mr-3" />
+                      <div>
+                        <p className="text-sm text-gray-500">Email</p>
+                        <p className="font-medium">jigar@royallepage.ca</p>
+                      </div>
+                    </div>
                   </div>
-                  <div className="flex items-center">
-                    <Mail size={20} className="text-realtor-gold mr-2" />
-                    <span>jigar@royallepage.ca</span>
+                  
+                  <div className="mt-6">
+                    <Link to="/contact">
+                      <Button className="w-full bg-realtor-gold text-realtor-navy hover:bg-realtor-gold/90">
+                        Contact Me
+                      </Button>
+                    </Link>
                   </div>
                 </div>
-                <Link to="/contact">
-                  <Button className="bg-realtor-gold hover:bg-realtor-gold/90 text-realtor-navy font-medium">
-                    Let's Connect
-                  </Button>
-                </Link>
+                
+                <div className="bg-gray-50 p-6 rounded-lg shadow-sm">
+                  <h3 className="text-xl font-bold text-realtor-navy mb-4">Office</h3>
+                  <p className="mb-1 font-medium">Royal LePage</p>
+                  <p className="text-gray-700">
+                    7646 Weston Rd<br />
+                    Woodbridge, ON L4L 9J9
+                  </p>
+                </div>
               </div>
               
-              <div className="order-1 lg:order-2">
-                <div className="relative">
-                  <img 
-                    src={agent.photo}
-                    alt="Jigar Patel" 
-                    className="w-full rounded-lg shadow-lg object-cover"
-                    style={{ height: '600px' }}
-                  />
-                  <div className="absolute bottom-0 right-0 bg-realtor-navy text-white p-4 rounded-tl-lg">
-                    <p className="font-bold">10+ Years Experience</p>
+              {/* Bio and Details */}
+              <div className="lg:col-span-2">
+                <h2 className="text-3xl font-bold text-realtor-navy mb-6">About Me</h2>
+                
+                <div className="prose max-w-none text-gray-700">
+                  <p className="mb-4">
+                    As a dedicated real estate professional with Royal LePage, I bring an intimate knowledge of the Greater Toronto Area market, combining local expertise with personalized service to help you achieve your real estate goals.
+                  </p>
+                  
+                  <p className="mb-4">
+                    With years of experience in the industry, I understand that buying or selling a home is more than just a transaction—it's a significant life decision. My commitment is to provide exceptional, personalized service for all of my clients, guiding them through every step of the process with care and attention to detail.
+                  </p>
+                  
+                  <p className="mb-8">
+                    Whether you're a first-time homebuyer, looking to sell your property, or interested in investment opportunities, I have the expertise and resources to help you succeed in today's competitive market.
+                  </p>
+                  
+                  <h3 className="text-2xl font-bold text-realtor-navy mb-4">My Mission</h3>
+                  <p className="mb-8">
+                    My mission is simple: to help you achieve your real estate goals with integrity, professionalism, and dedication. I believe in building long-lasting relationships based on trust, ensuring that every client receives the attention and expertise they deserve.
+                  </p>
+                  
+                  <h3 className="text-2xl font-bold text-realtor-navy mb-4">Specialties</h3>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
+                    <div className="flex items-start">
+                      <Award className="h-5 w-5 text-realtor-gold mt-1 mr-3 flex-shrink-0" />
+                      <div>
+                        <h4 className="font-bold">Residential Sales</h4>
+                        <p className="text-sm text-gray-600">Expert in single-family homes, condos, and townhouses</p>
+                      </div>
+                    </div>
+                    
+                    <div className="flex items-start">
+                      <Users className="h-5 w-5 text-realtor-gold mt-1 mr-3 flex-shrink-0" />
+                      <div>
+                        <h4 className="font-bold">First-Time Buyers</h4>
+                        <p className="text-sm text-gray-600">Specialized guidance for navigating first purchases</p>
+                      </div>
+                    </div>
+                    
+                    <div className="flex items-start">
+                      <ThumbsUp className="h-5 w-5 text-realtor-gold mt-1 mr-3 flex-shrink-0" />
+                      <div>
+                        <h4 className="font-bold">Luxury Properties</h4>
+                        <p className="text-sm text-gray-600">Marketing and selling high-end real estate</p>
+                      </div>
+                    </div>
+                    
+                    <div className="flex items-start">
+                      <School className="h-5 w-5 text-realtor-gold mt-1 mr-3 flex-shrink-0" />
+                      <div>
+                        <h4 className="font-bold">Investment Properties</h4>
+                        <p className="text-sm text-gray-600">Identifying valuable investment opportunities</p>
+                      </div>
+                    </div>
                   </div>
+                  
+                  <h3 className="text-2xl font-bold text-realtor-navy mb-4">Credentials</h3>
+                  <ul className="list-disc pl-5 mb-8">
+                    <li>Licensed Real Estate Professional - RECO</li>
+                    <li>Member of Toronto Regional Real Estate Board (TRREB)</li>
+                    <li>Member of Canadian Real Estate Association (CREA)</li>
+                    <li>Royal LePage Diamond Award Recipient</li>
+                  </ul>
+                </div>
+                
+                <div className="flex mt-8">
+                  <Link to="/contact">
+                    <Button size="lg" className="bg-realtor-gold text-realtor-navy hover:bg-realtor-gold/90 mr-4">
+                      Contact Me
+                    </Button>
+                  </Link>
+                  
+                  <Link to="/listings">
+                    <Button size="lg" variant="outline" className="border-realtor-navy text-realtor-navy hover:bg-realtor-navy/10">
+                      View Listings
+                    </Button>
+                  </Link>
                 </div>
               </div>
             </div>
@@ -217,7 +275,7 @@ const About = () => {
           </div>
         </section>
       </main>
-
+      
       <Footer />
     </div>
   );
