@@ -6,7 +6,6 @@ import { AuthProvider } from '@/contexts/AuthContext';
 
 import ScrollToTop from '@/components/ScrollToTop';
 import ProtectedRoute from '@/components/ProtectedRoute';
-import AdminLayout from '@/layouts/AdminLayout';
 import AiChatBubble from '@/components/AiChatBubble';
 
 // Public Pages
@@ -32,13 +31,15 @@ import Resources from '@/pages/Resources';
 import Favorites from '@/pages/Favorites';
 import NotFound from '@/pages/NotFound';
 
-// Admin Pages
-import AdminPanel from '@/pages/AdminPanel';
-import InquiriesManagement from '@/pages/InquiriesManagement';
-import UserManagement from '@/pages/UserManagement';
-import AnalyticsPage from '@/pages/AnalyticsPage';
-import ImageManagement from '@/pages/ImageManagement';
-import PropertyManagement from '@/pages/PropertyManagement';
+// Admin Pages - Updated structure
+import AdminDashboard from '@/pages/admin/AdminDashboard';
+import AdminInquiries from '@/pages/admin/AdminInquiries';
+import AdminUsers from '@/pages/admin/AdminUsers';
+import AdminAnalytics from '@/pages/admin/AdminAnalytics';
+import AdminImages from '@/pages/admin/AdminImages';
+
+// Property Management
+import ManageProperties from '@/pages/ManageProperties';
 
 // Services Subpages
 import PropertySales from './pages/PropertySales';
@@ -94,22 +95,36 @@ function App() {
           {/* Protected Agent Route */}
           <Route path="/manage-properties" element={
             <ProtectedRoute requireAgent={true}>
-              <PropertyManagement />
+              <ManageProperties />
             </ProtectedRoute>
           } />
 
-          {/* Protected Admin Routes */}
+          {/* Protected Admin Routes - Updated structure */}
           <Route path="/admin" element={
             <ProtectedRoute requireAdmin={true}>
-              <AdminLayout />
+              <AdminDashboard />
             </ProtectedRoute>
-          }>
-            <Route index element={<AdminPanel />} />
-            <Route path="inquiries" element={<InquiriesManagement />} />
-            <Route path="users" element={<UserManagement />} />
-            <Route path="analytics" element={<AnalyticsPage />} />
-            <Route path="images" element={<ImageManagement />} />
-          </Route>
+          } />
+          <Route path="/admin/inquiries" element={
+            <ProtectedRoute requireAdmin={true}>
+              <AdminInquiries />
+            </ProtectedRoute>
+          } />
+          <Route path="/admin/users" element={
+            <ProtectedRoute requireAdmin={true}>
+              <AdminUsers />
+            </ProtectedRoute>
+          } />
+          <Route path="/admin/analytics" element={
+            <ProtectedRoute requireAdmin={true}>
+              <AdminAnalytics />
+            </ProtectedRoute>
+          } />
+          <Route path="/admin/images" element={
+            <ProtectedRoute requireAdmin={true}>
+              <AdminImages />
+            </ProtectedRoute>
+          } />
 
           {/* Catch All */}
           <Route path="*" element={<NotFound />} />

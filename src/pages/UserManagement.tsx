@@ -1,9 +1,5 @@
 
 import React, { useState, useEffect } from 'react';
-import { Navigate } from 'react-router-dom';
-import Navbar from '@/components/Navbar';
-import Footer from '@/components/Footer';
-import PageHeader from '@/components/PageHeader';
 import { Button } from '@/components/ui/button';
 import { useToast } from "@/components/ui/use-toast";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
@@ -19,38 +15,10 @@ const mockUsers = [
 ];
 
 const UserManagement = () => {
-  const [isAdmin, setIsAdmin] = useState(false);
   const [users, setUsers] = useState(mockUsers);
   const { toast } = useToast();
   
-  // Check if user is admin
-  useEffect(() => {
-    const checkAdminStatus = () => {
-      setIsAdmin(localStorage.getItem('isAdmin') === 'true');
-    };
-    
-    checkAdminStatus();
-    
-    // Listen for storage changes
-    window.addEventListener('storage', checkAdminStatus);
-    
-    return () => {
-      window.removeEventListener('storage', checkAdminStatus);
-    };
-  }, []);
-
-  // If not admin, redirect to homepage
-  if (!isAdmin) {
-    toast({
-      title: "Access Denied",
-      description: "You need administrator privileges to access this page.",
-      variant: "destructive",
-    });
-    return <Navigate to="/admin" />;
-  }
-  
   const handleDeleteUser = (userId: number) => {
-    // Filter out the user with the specified ID
     const updatedUsers = users.filter(user => user.id !== userId);
     setUsers(updatedUsers);
     
@@ -61,7 +29,6 @@ const UserManagement = () => {
   };
   
   const handleToggleAdmin = (userId: number) => {
-    // Map through users and toggle admin status for the specified user
     const updatedUsers = users.map(user => {
       if (user.id === userId) {
         const newRole = user.role === 'Admin' ? 'Viewer' : 'Admin';
@@ -82,90 +49,83 @@ const UserManagement = () => {
   };
 
   return (
-    <div className="min-h-screen flex flex-col">
-      <Navbar />
-      <main className="flex-grow pt-[72px]">
-        <PageHeader 
-          title="User Management" 
-          subtitle="Manage users and permissions"
-          showCta={false}
-        />
-        
-        <div className="container mx-auto px-4 py-12">
-          <Card className="mb-8">
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <User className="h-5 w-5 text-realtor-gold" /> 
-                Users and Permissions
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="flex justify-end mb-4">
-                <Button className="bg-realtor-navy hover:bg-realtor-navy/90">
-                  <UserPlus className="mr-2 h-4 w-4" />
-                  Add New User
-                </Button>
-              </div>
-              
-              <div className="rounded-md border overflow-hidden">
-                <Table>
-                  <TableHeader>
-                    <TableRow>
-                      <TableHead>Username</TableHead>
-                      <TableHead>Email</TableHead>
-                      <TableHead>Role</TableHead>
-                      <TableHead>Date Added</TableHead>
-                      <TableHead className="text-right">Actions</TableHead>
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    {users.map((user) => (
-                      <TableRow key={user.id}>
-                        <TableCell className="font-medium">{user.username}</TableCell>
-                        <TableCell>{user.email}</TableCell>
-                        <TableCell>
-                          <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
-                            user.role === 'Admin' 
-                              ? 'bg-green-100 text-green-800' 
-                              : user.role === 'Editor'
-                              ? 'bg-blue-100 text-blue-800'
-                              : 'bg-gray-100 text-gray-800'
-                          }`}>
-                            {user.role}
-                          </span>
-                        </TableCell>
-                        <TableCell>{user.dateAdded}</TableCell>
-                        <TableCell className="text-right">
-                          <Button
-                            variant="ghost"
-                            size="icon"
-                            onClick={() => handleToggleAdmin(user.id)}
-                            className="mr-1"
-                          >
-                            {user.role === 'Admin' ? (
-                              <ShieldOff className="h-4 w-4 text-amber-600" />
-                            ) : (
-                              <Shield className="h-4 w-4 text-green-600" />
-                            )}
-                          </Button>
-                          <Button
-                            variant="ghost"
-                            size="icon"
-                            onClick={() => handleDeleteUser(user.id)}
-                          >
-                            <Trash className="h-4 w-4 text-red-600" />
-                          </Button>
-                        </TableCell>
-                      </TableRow>
-                    ))}
-                  </TableBody>
-                </Table>
-              </div>
-            </CardContent>
-          </Card>
-        </div>
-      </main>
-      <Footer />
+    <div className="space-y-6">
+      <div>
+        <h1 className="text-3xl font-bold text-realtor-navy">User Management</h1>
+        <p className="text-gray-600 mt-2">Manage users and permissions</p>
+      </div>
+      
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <User className="h-5 w-5 text-realtor-gold" /> 
+            Users and Permissions
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="flex justify-end mb-4">
+            <Button className="bg-realtor-navy hover:bg-realtor-navy/90">
+              <UserPlus className="mr-2 h-4 w-4" />
+              Add New User
+            </Button>
+          </div>
+          
+          <div className="rounded-md border overflow-hidden">
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>Username</TableHead>
+                  <TableHead>Email</TableHead>
+                  <TableHead>Role</TableHead>
+                  <TableHead>Date Added</TableHead>
+                  <TableHead className="text-right">Actions</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {users.map((user) => (
+                  <TableRow key={user.id}>
+                    <TableCell className="font-medium">{user.username}</TableCell>
+                    <TableCell>{user.email}</TableCell>
+                    <TableCell>
+                      <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
+                        user.role === 'Admin' 
+                          ? 'bg-green-100 text-green-800' 
+                          : user.role === 'Editor'
+                          ? 'bg-blue-100 text-blue-800'
+                          : 'bg-gray-100 text-gray-800'
+                      }`}>
+                        {user.role}
+                      </span>
+                    </TableCell>
+                    <TableCell>{user.dateAdded}</TableCell>
+                    <TableCell className="text-right">
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        onClick={() => handleToggleAdmin(user.id)}
+                        className="mr-1"
+                      >
+                        {user.role === 'Admin' ? (
+                          <ShieldOff className="h-4 w-4 text-amber-600" />
+                        ) : (
+                          <Shield className="h-4 w-4 text-green-600" />
+                        )}
+                      </Button>
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        onClick={() => handleDeleteUser(user.id)}
+                      >
+                        <Trash className="h-4 w-4 text-red-600" />
+                      </Button>
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </div>
+        </CardContent>
+      </Card>
     </div>
   );
 };
