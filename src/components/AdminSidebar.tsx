@@ -17,7 +17,7 @@ const AdminSidebar = () => {
 
   const links = [
     { to: '/admin', label: 'Dashboard', icon: Home, exact: true },
-    { to: '/manage-properties', label: 'Properties', icon: Building },
+    { to: '/admin/properties', label: 'Properties', icon: Building },
     { to: '/admin/images', label: 'Images', icon: Upload },
     { to: '/admin/inquiries', label: 'Inquiries', icon: MessageSquare },
     { to: '/admin/users', label: 'Users', icon: Users },

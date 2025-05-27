@@ -38,6 +38,7 @@ import AdminUsers from '@/pages/admin/AdminUsers';
 import AdminAnalytics from '@/pages/admin/AdminAnalytics';
 import AdminImages from '@/pages/admin/AdminImages';
 import AdminMarketing from '@/pages/admin/AdminMarketing';
+import AdminProperties from '@/pages/admin/AdminProperties';
 
 // Property Management
 import ManageProperties from '@/pages/ManageProperties';
@@ -104,6 +105,11 @@ function App() {
           <Route path="/admin" element={
             <ProtectedRoute requireAdmin={true}>
               <AdminDashboard />
+            </ProtectedRoute>
+          } />
+          <Route path="/admin/properties" element={
+            <ProtectedRoute requireAdmin={true}>
+              <AdminProperties />
             </ProtectedRoute>
           } />
           <Route path="/admin/inquiries" element={
