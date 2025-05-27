@@ -6,7 +6,6 @@ import { AuthProvider } from '@/contexts/AuthContext';
 
 import ScrollToTop from '@/components/ScrollToTop';
 import ProtectedRoute from '@/components/ProtectedRoute';
-import AdminLayout from '@/layouts/AdminLayout';
 import AiChatBubble from '@/components/AiChatBubble';
 
 // Public Pages
@@ -33,12 +32,16 @@ import Favorites from '@/pages/Favorites';
 import NotFound from '@/pages/NotFound';
 
 // Admin Pages
-import AdminPanel from '@/pages/AdminPanel';
-import InquiriesManagement from '@/pages/InquiriesManagement';
-import UserManagement from '@/pages/UserManagement';
-import AnalyticsPage from '@/pages/AnalyticsPage';
-import ImageManagement from '@/pages/ImageManagement';
 import PropertyManagement from '@/pages/PropertyManagement';
+// ✅ NEW Admin Pages
+import AdminDashboard from '@/pages/admin';
+import AdminProperties from '@/pages/admin/properties';
+import AdminInquiries from '@/pages/admin/inquiries';
+import AdminMedia from '@/pages/admin/media';
+import AdminSettings from '@/pages/admin/settings';
+import AdminFields from '@/pages/admin/fields';
+import AdminCleanup from '@/pages/admin/cleanup';
+import PreviewPage from '@/pages/admin/PreviewPage';
 
 // Services Subpages
 import PropertySales from './pages/PropertySales';
@@ -98,18 +101,54 @@ function App() {
             </ProtectedRoute>
           } />
 
-          {/* Protected Admin Routes */}
-          <Route path="/admin" element={
-            <ProtectedRoute requireAdmin={true}>
-              <AdminLayout />
-            </ProtectedRoute>
-          }>
-            <Route index element={<AdminPanel />} />
-            <Route path="inquiries" element={<InquiriesManagement />} />
-            <Route path="users" element={<UserManagement />} />
-            <Route path="analytics" element={<AnalyticsPage />} />
-            <Route path="images" element={<ImageManagement />} />
-          </Route>
+                    {/* ✅ New Admin Routes */}
+            <Route path="/admin" element={
+              <ProtectedRoute requireAdmin={true}>
+                <AdminDashboard />
+              </ProtectedRoute>
+            } />
+
+            <Route path="/admin/properties" element={
+              <ProtectedRoute requireAdmin={true}>
+                <AdminProperties />
+              </ProtectedRoute>
+            } />
+
+            <Route path="/admin/inquiries" element={
+              <ProtectedRoute requireAdmin={true}>
+                <AdminInquiries />
+              </ProtectedRoute>
+            } />
+
+            <Route path="/admin/media" element={
+              <ProtectedRoute requireAdmin={true}>
+                <AdminMedia />
+              </ProtectedRoute>
+            } />
+
+            <Route path="/admin/settings" element={
+              <ProtectedRoute requireAdmin={true}>
+                <AdminSettings />
+              </ProtectedRoute>
+            } />
+
+            <Route path="/admin/fields" element={
+              <ProtectedRoute requireAdmin={true}>
+                <AdminFields />
+              </ProtectedRoute>
+            } />
+
+            <Route path="/admin/cleanup" element={
+              <ProtectedRoute requireAdmin={true}>
+                <AdminCleanup />
+              </ProtectedRoute>
+            } />
+
+            <Route path="/admin/preview/:id" element={
+              <ProtectedRoute requireAdmin={true}>
+                <PreviewPage />
+              </ProtectedRoute>
+            } />
 
           {/* Catch All */}
           <Route path="*" element={<NotFound />} />
