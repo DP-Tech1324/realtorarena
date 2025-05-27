@@ -37,6 +37,7 @@ import AdminInquiries from '@/pages/admin/AdminInquiries';
 import AdminUsers from '@/pages/admin/AdminUsers';
 import AdminAnalytics from '@/pages/admin/AdminAnalytics';
 import AdminImages from '@/pages/admin/AdminImages';
+import AdminMarketing from '@/pages/admin/AdminMarketing';
 
 // Property Management
 import ManageProperties from '@/pages/ManageProperties';
@@ -123,6 +124,11 @@ function App() {
           <Route path="/admin/images" element={
             <ProtectedRoute requireAdmin={true}>
               <AdminImages />
+            </ProtectedRoute>
+          } />
+          <Route path="/admin/marketing" element={
+            <ProtectedRoute requireAdmin={true}>
+              <AdminMarketing />
             </ProtectedRoute>
           } />
 

@@ -1,4 +1,4 @@
-// src/components/AdminSidebar.tsx
+
 import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { cn } from '@/lib/utils';
@@ -16,7 +16,7 @@ const AdminSidebar = () => {
   const location = useLocation();
 
   const links = [
-    { to: '/admin', label: 'Dashboard', icon: Home },
+    { to: '/admin', label: 'Dashboard', icon: Home, exact: true },
     { to: '/manage-properties', label: 'Properties', icon: Building },
     { to: '/admin/images', label: 'Images', icon: Upload },
     { to: '/admin/inquiries', label: 'Inquiries', icon: MessageSquare },
@@ -25,18 +25,25 @@ const AdminSidebar = () => {
     { to: '/admin/marketing', label: 'Marketing', icon: Megaphone },
   ];
 
+  const isActive = (linkTo: string, exact?: boolean) => {
+    if (exact) {
+      return location.pathname === linkTo;
+    }
+    return location.pathname.startsWith(linkTo);
+  };
+
   return (
     <aside className="w-64 bg-white shadow-lg border-r hidden lg:block">
       <div className="h-full p-4 space-y-6">
         <div className="text-xl font-bold text-realtor-navy mb-4">Admin Menu</div>
         <ul className="space-y-2">
-          {links.map(({ to, label, icon: Icon }) => (
+          {links.map(({ to, label, icon: Icon, exact }) => (
             <li key={to}>
               <Link
                 to={to}
                 className={cn(
                   'flex items-center px-4 py-2 rounded-md text-sm font-medium hover:bg-realtor-gold/10 transition-colors',
-                  location.pathname.startsWith(to)
+                  isActive(to, exact)
                     ? 'bg-realtor-gold/20 text-realtor-navy font-semibold'
                     : 'text-gray-700'
                 )}
