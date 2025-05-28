@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { useQuery, useQueryClient, useMutation } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
@@ -63,14 +62,16 @@ export function usePropertyManagement() {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user || !user.email) throw new Error('User not authenticated');
       
-      let images = [...(formData.images || []), ...(additionalImages || [])];
+      // Safely handle images arrays
+      const existingImages = Array.isArray(formData.images) ? formData.images : [];
+      const additionalImagesArray = Array.isArray(additionalImages) ? additionalImages : [];
+      let images = [...existingImages, ...additionalImagesArray];
       
       if (coverImage) {
         const imageUrl = await uploadPropertyImage(coverImage);
         images = [imageUrl, ...images];
       }
 
-      // Use the listings table instead of the custom table
       const { data, error } = await supabase
         .from('listings')
         .insert({
@@ -132,7 +133,10 @@ export function usePropertyManagement() {
           .eq('id', id)
           .single();
           
-        let images = [...(currentProperty?.images || []), ...(additionalImages || [])];
+        // Safely handle the images from the database
+        const currentImages = Array.isArray(currentProperty?.images) ? currentProperty.images as string[] : [];
+        const additionalImagesArray = Array.isArray(additionalImages) ? additionalImages : [];
+        let images = [...currentImages, ...additionalImagesArray];
         
         if (newCoverImage) {
           const imageUrl = await uploadPropertyImage(newCoverImage);
