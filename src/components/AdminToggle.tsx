@@ -1,32 +1,38 @@
 
 import React from 'react';
-import { Button } from '@/components/ui/button';
-import { useToast } from "@/components/ui/use-toast";
-import { useNavigate } from 'react-router-dom';
+import { Switch } from '@/components/ui/switch';
+import { Label } from '@/components/ui/label';
+import { useToast } from '@/hooks/use-toast';
 
 const AdminToggle = () => {
   const { toast } = useToast();
-  const navigate = useNavigate();
+  const [isEnabled, setIsEnabled] = React.useState(() => {
+    return localStorage.getItem('isAdmin') === 'true';
+  });
 
-  const handleLogout = () => {
-    localStorage.removeItem('isAdmin');
+  const handleToggle = (checked: boolean) => {
+    setIsEnabled(checked);
+    localStorage.setItem('isAdmin', checked.toString());
     
     toast({
-      title: "Logged Out",
-      description: "You have been logged out of admin mode.",
+      title: checked ? "Admin Mode Enabled" : "Admin Mode Disabled",
+      description: checked 
+        ? "You now have administrator privileges." 
+        : "Administrator privileges have been removed."
     });
-    
-    // Force page reload to update UI state
-    navigate('/');
   };
 
   return (
-    <Button 
-      onClick={handleLogout}
-      className="bg-red-600 hover:bg-red-700"
-    >
-      Logout
-    </Button>
+    <div className="flex items-center space-x-2">
+      <Switch
+        id="admin-mode"
+        checked={isEnabled}
+        onCheckedChange={handleToggle}
+      />
+      <Label htmlFor="admin-mode" className="text-sm font-medium">
+        Admin Mode
+      </Label>
+    </div>
   );
 };
 

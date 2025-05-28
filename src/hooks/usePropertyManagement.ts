@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { useQuery, useQueryClient, useMutation } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
@@ -290,7 +289,7 @@ export function usePropertyManagement() {
           pageCount: Math.ceil((count || 0) / filters.pageSize)
         };
       },
-      keepPreviousData: true,
+      placeholderData: (previousData) => previousData,
     });
   };
 

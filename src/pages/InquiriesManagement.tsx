@@ -1,255 +1,156 @@
 
-import React, { useState, useEffect } from 'react';
-import { Navigate } from 'react-router-dom';
-import Navbar from '@/components/Navbar';
-import Footer from '@/components/Footer';
-import PageHeader from '@/components/PageHeader';
-import { useToast } from "@/components/ui/use-toast";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
-import { MessageSquare, Trash, Eye } from 'lucide-react';
-import { supabase } from '@/integrations/supabase/client';
-import { useAuth } from '@/contexts/AuthContext';
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
-import { format } from 'date-fns';
-
-interface Inquiry {
-  id: string;
-  name: string;
-  email: string;
-  phone?: string;
-  message: string;
-  listing_id?: string;
-  created_at: string;
-  status?: string;
-}
+import { MessageSquare, Mail, Phone, Clock } from 'lucide-react';
 
 const InquiriesManagement = () => {
-  const { isAdmin, isLoading, user } = useAuth();
-  const [inquiries, setInquiries] = useState<Inquiry[]>([]);
-  const [selectedInquiry, setSelectedInquiry] = useState<Inquiry | null>(null);
-  const [isDialogOpen, setIsDialogOpen] = useState(false);
-  const [isLoadingInquiries, setIsLoadingInquiries] = useState(true);
-  const { toast } = useToast();
-
-  // Fetch inquiries from Supabase
-  useEffect(() => {
-    const fetchInquiries = async () => {
-      if (!user) return;
-      
-      try {
-        setIsLoadingInquiries(true);
-        const { data, error } = await supabase
-          .from('inquiries')
-          .select('*')
-          .order('created_at', { ascending: false });
-          
-        if (error) throw error;
-        
-        setInquiries(data || []);
-      } catch (error: any) {
-        toast({
-          title: "Error",
-          description: `Failed to load inquiries: ${error.message}`,
-          variant: "destructive",
-        });
-      } finally {
-        setIsLoadingInquiries(false);
-      }
-    };
-    
-    if (user) {
-      fetchInquiries();
+  // Mock data for demonstration
+  const inquiries = [
+    {
+      id: 1,
+      name: 'John Smith',
+      email: 'john@example.com',
+      phone: '(555) 123-4567',
+      subject: 'Property Inquiry - 123 Main St',
+      message: 'I am interested in viewing this property. When would be a good time?',
+      date: '2024-01-15',
+      status: 'New'
+    },
+    {
+      id: 2,
+      name: 'Sarah Johnson',
+      email: 'sarah@example.com',
+      phone: '(555) 987-6543',
+      subject: 'Home Valuation Request',
+      message: 'Could you provide a market evaluation for my home at 456 Oak Ave?',
+      date: '2024-01-14',
+      status: 'In Progress'
+    },
+    {
+      id: 3,
+      name: 'Mike Wilson',
+      email: 'mike@example.com',
+      phone: '(555) 555-0123',
+      subject: 'Consultation Booking',
+      message: 'I would like to schedule a consultation to discuss selling my property.',
+      date: '2024-01-13',
+      status: 'Resolved'
     }
-  }, [user]);
+  ];
 
-  // If still checking authentication or not admin, show loading or redirect
-  if (isLoading) {
-    return (
-      <div className="flex justify-center items-center min-h-screen">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-realtor-gold"></div>
-      </div>
-    );
-  }
-
-  if (!isAdmin) {
-    toast({
-      title: "Access Denied",
-      description: "You need administrator privileges to access this page.",
-      variant: "destructive",
-    });
-    return <Navigate to="/" />;
-  }
-  
-  const handleViewInquiry = (inquiry: Inquiry) => {
-    setSelectedInquiry(inquiry);
-    setIsDialogOpen(true);
-  };
-  
-  const handleDeleteInquiry = async (id: string) => {
-    try {
-      const { error } = await supabase
-        .from('inquiries')
-        .delete()
-        .eq('id', id);
-      
-      if (error) throw error;
-      
-      setInquiries(inquiries.filter(inquiry => inquiry.id !== id));
-      
-      toast({
-        title: "Inquiry Deleted",
-        description: "The inquiry has been successfully removed."
-      });
-    } catch (error: any) {
-      toast({
-        title: "Error",
-        description: `Failed to delete inquiry: ${error.message}`,
-        variant: "destructive",
-      });
+  const getStatusColor = (status: string) => {
+    switch (status) {
+      case 'New':
+        return 'bg-blue-100 text-blue-800';
+      case 'In Progress':
+        return 'bg-yellow-100 text-yellow-800';
+      case 'Resolved':
+        return 'bg-green-100 text-green-800';
+      default:
+        return 'bg-gray-100 text-gray-800';
     }
   };
 
   return (
-    <div className="min-h-screen flex flex-col">
-      <Navbar />
-      <main className="flex-grow pt-[72px]">
-        <PageHeader 
-          title="Inquiries Management" 
-          subtitle="View and manage inquiries from potential clients"
-          showCta={false}
-        />
+    <div className="space-y-6">
+      <div>
+        <h1 className="text-3xl font-bold text-realtor-navy">Inquiries Management</h1>
+        <p className="text-gray-600 mt-2">Manage customer inquiries and contact requests</p>
+      </div>
+
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
+        <Card>
+          <CardContent className="p-4">
+            <div className="flex items-center">
+              <MessageSquare className="h-8 w-8 text-blue-500" />
+              <div className="ml-4">
+                <p className="text-sm font-medium text-gray-600">Total Inquiries</p>
+                <p className="text-2xl font-bold">{inquiries.length}</p>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
         
-        <div className="container mx-auto px-4 py-12">
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <MessageSquare className="h-5 w-5 text-realtor-gold" /> 
-                Contact Inquiries
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              {isLoadingInquiries ? (
-                <div className="flex justify-center py-10">
-                  <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-realtor-navy"></div>
-                </div>
-              ) : inquiries.length === 0 ? (
-                <div className="text-center py-8 text-gray-500">
-                  No inquiries available at the moment.
-                </div>
-              ) : (
-                <div className="rounded-md border overflow-hidden">
-                  <Table>
-                    <TableHeader>
-                      <TableRow>
-                        <TableHead>Name</TableHead>
-                        <TableHead>Email</TableHead>
-                        <TableHead>Phone</TableHead>
-                        <TableHead>Date</TableHead>
-                        <TableHead>Status</TableHead>
-                        <TableHead className="text-right">Actions</TableHead>
-                      </TableRow>
-                    </TableHeader>
-                    <TableBody>
-                      {inquiries.map((inquiry) => (
-                        <TableRow key={inquiry.id}>
-                          <TableCell className="font-medium">{inquiry.name}</TableCell>
-                          <TableCell>{inquiry.email}</TableCell>
-                          <TableCell>{inquiry.phone || 'N/A'}</TableCell>
-                          <TableCell>{format(new Date(inquiry.created_at), 'PPP')}</TableCell>
-                          <TableCell>
-                            <Badge 
-                              className={
-                                inquiry.status === 'responded' ? 'bg-green-100 text-green-800' : 
-                                inquiry.status === 'in-progress' ? 'bg-yellow-100 text-yellow-800' : 
-                                'bg-blue-100 text-blue-800'
-                              }
-                            >
-                              {inquiry.status || 'New'}
-                            </Badge>
-                          </TableCell>
-                          <TableCell className="text-right">
-                            <Button
-                              variant="ghost"
-                              size="icon"
-                              onClick={() => handleViewInquiry(inquiry)}
-                              className="mr-1"
-                            >
-                              <Eye className="h-4 w-4 text-blue-600" />
-                            </Button>
-                            <Button
-                              variant="ghost"
-                              size="icon"
-                              onClick={() => handleDeleteInquiry(inquiry.id)}
-                            >
-                              <Trash className="h-4 w-4 text-red-600" />
-                            </Button>
-                          </TableCell>
-                        </TableRow>
-                      ))}
-                    </TableBody>
-                  </Table>
-                </div>
-              )}
-            </CardContent>
-          </Card>
-          
-          {/* Inquiry Detail Dialog */}
-          <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-            <DialogContent className="max-w-md">
-              <DialogHeader>
-                <DialogTitle>Inquiry Details</DialogTitle>
-                <DialogDescription>
-                  Submitted on {selectedInquiry ? format(new Date(selectedInquiry.created_at), 'PPP') : ''}
-                </DialogDescription>
-              </DialogHeader>
-              
-              {selectedInquiry && (
-                <div className="space-y-4 mt-2">
-                  <div>
-                    <h3 className="font-semibold text-sm text-gray-500">From</h3>
-                    <p className="font-medium">{selectedInquiry.name}</p>
-                  </div>
-                  
-                  <div>
-                    <h3 className="font-semibold text-sm text-gray-500">Contact Information</h3>
-                    <p>Email: {selectedInquiry.email}</p>
-                    <p>Phone: {selectedInquiry.phone || 'Not provided'}</p>
-                  </div>
-                  
-                  <div>
-                    <h3 className="font-semibold text-sm text-gray-500">Message</h3>
-                    <p className="whitespace-pre-wrap">{selectedInquiry.message}</p>
-                  </div>
-                  
-                  {selectedInquiry.listing_id && (
-                    <div>
-                      <h3 className="font-semibold text-sm text-gray-500">Related Property</h3>
-                      <a 
-                        href={`/properties/${selectedInquiry.listing_id}`} 
-                        className="text-realtor-gold hover:underline"
-                        target="_blank" 
-                        rel="noopener noreferrer"
-                      >
-                        View Property
-                      </a>
+        <Card>
+          <CardContent className="p-4">
+            <div className="flex items-center">
+              <Clock className="h-8 w-8 text-yellow-500" />
+              <div className="ml-4">
+                <p className="text-sm font-medium text-gray-600">Pending</p>
+                <p className="text-2xl font-bold">{inquiries.filter(i => i.status === 'New' || i.status === 'In Progress').length}</p>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardContent className="p-4">
+            <div className="flex items-center">
+              <Mail className="h-8 w-8 text-green-500" />
+              <div className="ml-4">
+                <p className="text-sm font-medium text-gray-600">Resolved</p>
+                <p className="text-2xl font-bold">{inquiries.filter(i => i.status === 'Resolved').length}</p>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardContent className="p-4">
+            <div className="flex items-center">
+              <Phone className="h-8 w-8 text-realtor-gold" />
+              <div className="ml-4">
+                <p className="text-sm font-medium text-gray-600">This Week</p>
+                <p className="text-2xl font-bold">2</p>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+
+      <Card>
+        <CardHeader>
+          <CardTitle>Recent Inquiries</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="space-y-4">
+            {inquiries.map((inquiry) => (
+              <div key={inquiry.id} className="border rounded-lg p-4 hover:bg-gray-50">
+                <div className="flex items-start justify-between">
+                  <div className="flex-1">
+                    <div className="flex items-center gap-3 mb-2">
+                      <h3 className="font-semibold text-lg">{inquiry.name}</h3>
+                      <span className={`px-2 py-1 rounded-full text-xs font-medium ${getStatusColor(inquiry.status)}`}>
+                        {inquiry.status}
+                      </span>
                     </div>
-                  )}
+                    <p className="text-sm text-gray-600 mb-1">
+                      <Mail className="w-4 h-4 inline mr-1" />
+                      {inquiry.email}
+                    </p>
+                    <p className="text-sm text-gray-600 mb-2">
+                      <Phone className="w-4 h-4 inline mr-1" />
+                      {inquiry.phone}
+                    </p>
+                    <p className="font-medium text-realtor-navy mb-2">{inquiry.subject}</p>
+                    <p className="text-gray-700 text-sm mb-3">{inquiry.message}</p>
+                    <p className="text-xs text-gray-500">Received: {inquiry.date}</p>
+                  </div>
+                  <div className="flex gap-2 ml-4">
+                    <Button size="sm" variant="outline">
+                      Reply
+                    </Button>
+                    <Button size="sm" variant="outline">
+                      Mark Resolved
+                    </Button>
+                  </div>
                 </div>
-              )}
-            </DialogContent>
-          </Dialog>
-        </div>
-      </main>
-      <Footer />
+              </div>
+            ))}
+          </div>
+        </CardContent>
+      </Card>
     </div>
   );
 };

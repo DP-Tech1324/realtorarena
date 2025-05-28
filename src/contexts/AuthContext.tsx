@@ -1,3 +1,4 @@
+
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { Session, User } from '@supabase/supabase-js';
 import { supabase } from '@/integrations/supabase/client';
@@ -13,6 +14,7 @@ interface AuthContextProps {
   signOut: () => Promise<void>;
   isAdmin: boolean;
   isAgent: boolean;
+  userRole: string | null;
   refreshProfile: () => Promise<void>;
 }
 
@@ -25,6 +27,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [isLoading, setIsLoading] = useState(true);
   const [isAdmin, setIsAdmin] = useState(false);
   const [isAgent, setIsAgent] = useState(false);
+  const [userRole, setUserRole] = useState<string | null>(null);
   const { toast } = useToast();
 
   const refreshProfile = async () => {
@@ -32,13 +35,14 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       setProfile(null);
       setIsAdmin(false);
       setIsAgent(false);
+      setUserRole(null);
       return;
     }
 
     try {
       console.log('Checking admin status for user:', user.id);
       
-      // Check if the user is an admin
+      // Check if the user is an admin and get their role
       const { data: adminData, error: adminError } = await supabase
         .from('admin_users')
         .select('*')
@@ -49,10 +53,14 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       console.log('Admin data:', adminData, 'Error:', adminError);
 
       const adminStatus = !!adminData && !adminError;
+      const role = adminData?.role || null;
+      
       setIsAdmin(adminStatus);
+      setUserRole(role);
       localStorage.setItem('isAdmin', adminStatus.toString());
+      localStorage.setItem('userRole', role || '');
 
-      console.log('Admin status set to:', adminStatus);
+      console.log('Admin status set to:', adminStatus, 'Role:', role);
 
       // Check if the user is an agent (you can implement this logic based on your needs)
       // For now, setting it to false, but you can add agent table checks here
@@ -61,7 +69,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
       const newProfile = {
         ...adminData,
-        role: adminStatus ? 'admin' : 'user',
+        role: role || 'user',
       };
 
       setProfile(newProfile);
@@ -69,8 +77,10 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       console.error('Error in refreshProfile:', error);
       setIsAdmin(false);
       setIsAgent(false);
+      setUserRole(null);
       localStorage.setItem('isAdmin', 'false');
       localStorage.setItem('isAgent', 'false');
+      localStorage.setItem('userRole', '');
     }
   };
 
@@ -89,8 +99,10 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
           setProfile(null);
           setIsAdmin(false);
           setIsAgent(false);
+          setUserRole(null);
           localStorage.removeItem('isAdmin');
           localStorage.removeItem('isAgent');
+          localStorage.removeItem('userRole');
         }
       }
     );
@@ -155,8 +167,10 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     await supabase.auth.signOut();
     localStorage.removeItem('isAdmin');
     localStorage.removeItem('isAgent');
+    localStorage.removeItem('userRole');
     setIsAdmin(false);
     setIsAgent(false);
+    setUserRole(null);
     setProfile(null);
     toast({ title: "Signed out", description: "You have been signed out successfully." });
   };
@@ -172,6 +186,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       signOut,
       isAdmin,
       isAgent,
+      userRole,
       refreshProfile
     }}>
       {children}

@@ -6,7 +6,7 @@ import { AuthProvider } from '@/contexts/AuthContext';
 
 import ScrollToTop from '@/components/ScrollToTop';
 import ProtectedRoute from '@/components/ProtectedRoute';
-import AdminLayout from '@/layouts/AdminLayout';
+import AiChatBubble from '@/components/AiChatBubble';
 
 // Public Pages
 import Home from '@/pages/Home';
@@ -31,13 +31,17 @@ import Resources from '@/pages/Resources';
 import Favorites from '@/pages/Favorites';
 import NotFound from '@/pages/NotFound';
 
-// Admin Pages
-import AdminPanel from '@/pages/AdminPanel';
-import InquiriesManagement from '@/pages/InquiriesManagement';
-import UserManagement from '@/pages/UserManagement';
-import AnalyticsPage from '@/pages/AnalyticsPage';
-import ImageManagement from '@/pages/ImageManagement';
-import PropertyManagement from '@/pages/PropertyManagement';
+// Admin Pages - Updated structure
+import AdminDashboard from '@/pages/admin/AdminDashboard';
+import AdminInquiries from '@/pages/admin/AdminInquiries';
+import AdminUsers from '@/pages/admin/AdminUsers';
+import AdminAnalytics from '@/pages/admin/AdminAnalytics';
+import AdminImages from '@/pages/admin/AdminImages';
+import AdminMarketing from '@/pages/admin/AdminMarketing';
+import AdminProperties from '@/pages/admin/AdminProperties';
+
+// Property Management
+import ManageProperties from '@/pages/ManageProperties';
 
 // Services Subpages
 import PropertySales from './pages/PropertySales';
@@ -76,6 +80,10 @@ function App() {
           <Route path="/auth" element={<AuthPage />} />
           <Route path="/rlp-search" element={<RlpSearch />} />
           <Route path="/resources" element={<Resources />} />
+          <Route path="/resources/for-buyers" element={<Buyers />} />
+          <Route path="/resources/for-sellers" element={<Sellers />} />
+          <Route path="/resources/home-valuation" element={<HomeValuation />} />
+          <Route path="/resources/mortgage-calculator" element={<Calculators />} />
           <Route path="/favorites" element={<Favorites />} />
 
           {/* Services Subpages */}
@@ -89,26 +97,54 @@ function App() {
           {/* Protected Agent Route */}
           <Route path="/manage-properties" element={
             <ProtectedRoute requireAgent={true}>
-              <PropertyManagement />
+              <ManageProperties />
             </ProtectedRoute>
           } />
 
-          {/* Protected Admin Routes */}
+          {/* Protected Admin Routes - Updated with role-based access */}
           <Route path="/admin" element={
-            <ProtectedRoute requireAdmin={true}>
-              <AdminLayout />
+            <ProtectedRoute allowedRoles={['admin', 'superadmin', 'editor']}>
+              <AdminDashboard />
             </ProtectedRoute>
-          }>
-            <Route index element={<AdminPanel />} />
-            <Route path="inquiries" element={<InquiriesManagement />} />
-            <Route path="users" element={<UserManagement />} />
-            <Route path="analytics" element={<AnalyticsPage />} />
-            <Route path="images" element={<ImageManagement />} />
-          </Route>
+          } />
+          <Route path="/admin/properties" element={
+            <ProtectedRoute allowedRoles={['admin', 'superadmin', 'editor']}>
+              <AdminProperties />
+            </ProtectedRoute>
+          } />
+          <Route path="/admin/inquiries" element={
+            <ProtectedRoute allowedRoles={['admin', 'superadmin', 'editor']}>
+              <AdminInquiries />
+            </ProtectedRoute>
+          } />
+          <Route path="/admin/users" element={
+            <ProtectedRoute allowedRoles={['superadmin']}>
+              <AdminUsers />
+            </ProtectedRoute>
+          } />
+          <Route path="/admin/analytics" element={
+            <ProtectedRoute allowedRoles={['admin', 'superadmin']}>
+              <AdminAnalytics />
+            </ProtectedRoute>
+          } />
+          <Route path="/admin/images" element={
+            <ProtectedRoute allowedRoles={['admin', 'superadmin', 'editor']}>
+              <AdminImages />
+            </ProtectedRoute>
+          } />
+          <Route path="/admin/marketing" element={
+            <ProtectedRoute allowedRoles={['admin', 'superadmin']}>
+              <AdminMarketing />
+            </ProtectedRoute>
+          } />
 
           {/* Catch All */}
           <Route path="*" element={<NotFound />} />
         </Routes>
+        
+        {/* AI Chat Bubble - appears on all pages */}
+        <AiChatBubble />
+        
         <Toaster />
       </AuthProvider>
     </QueryClientProvider>

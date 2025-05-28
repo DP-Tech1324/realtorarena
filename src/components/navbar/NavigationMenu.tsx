@@ -43,7 +43,7 @@ const NavigationMenu: React.FC<NavigationMenuProps> = ({ className }) => {
           )}>
             Properties <ChevronDown className="h-4 w-4 ml-1" />
           </DropdownMenuTrigger>
-          <DropdownMenuContent>
+          <DropdownMenuContent className="bg-white shadow-lg border">
             <DropdownMenuItem asChild>
               <Link to="/listings" className="w-full">Featured Listings</Link>
             </DropdownMenuItem>
@@ -67,7 +67,7 @@ const NavigationMenu: React.FC<NavigationMenuProps> = ({ className }) => {
           )}>
             Services <ChevronDown className="h-4 w-4 ml-1" />
           </DropdownMenuTrigger>
-          <DropdownMenuContent>
+          <DropdownMenuContent className="bg-white shadow-lg border">
             <DropdownMenuItem asChild>
               <Link to="/services">Overview</Link>
             </DropdownMenuItem>
@@ -132,21 +132,21 @@ const NavigationMenu: React.FC<NavigationMenuProps> = ({ className }) => {
           )}>
             Resources <ChevronDown className="h-4 w-4 ml-1" />
           </DropdownMenuTrigger>
-          <DropdownMenuContent>
+          <DropdownMenuContent className="bg-white shadow-lg border">
             <DropdownMenuItem asChild>
               <Link to="/resources">All Resources</Link>
             </DropdownMenuItem>
             <DropdownMenuItem asChild>
-              <Link to="/buyers">For Buyers</Link>
+              <Link to="/resources/for-buyers">For Buyers</Link>
             </DropdownMenuItem>
             <DropdownMenuItem asChild>
-              <Link to="/sellers">For Sellers</Link>
+              <Link to="/resources/for-sellers">For Sellers</Link>
             </DropdownMenuItem>
             <DropdownMenuItem asChild>
-              <Link to="/calculators">Mortgage Calculator</Link>
+              <Link to="/resources/mortgage-calculator">Mortgage Calculator</Link>
             </DropdownMenuItem>
             <DropdownMenuItem asChild>
-              <Link to="/home-valuation">Home Valuation</Link>
+              <Link to="/resources/home-valuation">Home Valuation</Link>
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
