@@ -101,39 +101,39 @@ function App() {
             </ProtectedRoute>
           } />
 
-          {/* Protected Admin Routes - Updated structure */}
+          {/* Protected Admin Routes - Updated with role-based access */}
           <Route path="/admin" element={
-            <ProtectedRoute requireAdmin={true}>
+            <ProtectedRoute allowedRoles={['admin', 'superadmin', 'editor']}>
               <AdminDashboard />
             </ProtectedRoute>
           } />
           <Route path="/admin/properties" element={
-            <ProtectedRoute requireAdmin={true}>
+            <ProtectedRoute allowedRoles={['admin', 'superadmin', 'editor']}>
               <AdminProperties />
             </ProtectedRoute>
           } />
           <Route path="/admin/inquiries" element={
-            <ProtectedRoute requireAdmin={true}>
+            <ProtectedRoute allowedRoles={['admin', 'superadmin', 'editor']}>
               <AdminInquiries />
             </ProtectedRoute>
           } />
           <Route path="/admin/users" element={
-            <ProtectedRoute requireAdmin={true}>
+            <ProtectedRoute allowedRoles={['superadmin']}>
               <AdminUsers />
             </ProtectedRoute>
           } />
           <Route path="/admin/analytics" element={
-            <ProtectedRoute requireAdmin={true}>
+            <ProtectedRoute allowedRoles={['admin', 'superadmin']}>
               <AdminAnalytics />
             </ProtectedRoute>
           } />
           <Route path="/admin/images" element={
-            <ProtectedRoute requireAdmin={true}>
+            <ProtectedRoute allowedRoles={['admin', 'superadmin', 'editor']}>
               <AdminImages />
             </ProtectedRoute>
           } />
           <Route path="/admin/marketing" element={
-            <ProtectedRoute requireAdmin={true}>
+            <ProtectedRoute allowedRoles={['admin', 'superadmin']}>
               <AdminMarketing />
             </ProtectedRoute>
           } />

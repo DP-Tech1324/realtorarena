@@ -1,3 +1,4 @@
+
 // src/components/ProtectedRoute.tsx
 import React from 'react';
 import { Navigate, useLocation } from 'react-router-dom';
@@ -7,14 +8,16 @@ interface ProtectedRouteProps {
   children: React.ReactNode;
   requireAdmin?: boolean;
   requireAgent?: boolean;
+  allowedRoles?: string[];
 }
 
 const ProtectedRoute: React.FC<ProtectedRouteProps> = ({
   children,
   requireAdmin = false,
   requireAgent = false,
+  allowedRoles = [],
 }) => {
-  const { user, isLoading, isAdmin, isAgent } = useAuth();
+  const { user, isLoading, isAdmin, isAgent, userRole } = useAuth();
   const location = useLocation();
 
   if (isLoading) {
@@ -29,6 +32,14 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> = ({
     return <Navigate to="/auth" state={{ from: location }} replace />;
   }
 
+  // Check role-based access
+  if (allowedRoles.length > 0) {
+    if (!userRole || !allowedRoles.includes(userRole)) {
+      return <Navigate to="/" replace />;
+    }
+  }
+
+  // Legacy admin check (backward compatibility)
   if (requireAdmin && !isAdmin) {
     return <Navigate to="/" replace />;
   }
