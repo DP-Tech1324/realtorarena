@@ -1,3 +1,4 @@
+
 import { useState } from 'react';
 import { useQuery, useQueryClient, useMutation } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
@@ -59,7 +60,6 @@ export function usePropertyManagement() {
   const createProperty = async (formData: PropertyFormData, coverImage?: File, additionalImages?: string[]) => {
     setIsUploading(true);
     try {
-      // Get the authenticated user
       const { data: { user } } = await supabase.auth.getUser();
       if (!user || !user.email) throw new Error('User not authenticated');
       
@@ -67,12 +67,12 @@ export function usePropertyManagement() {
       
       if (coverImage) {
         const imageUrl = await uploadPropertyImage(coverImage);
-        // Add cover image as the first image
         images = [imageUrl, ...images];
       }
 
+      // Use the listings table instead of the custom table
       const { data, error } = await supabase
-        .from('realtorjigar_x8d1y_listings')
+        .from('listings')
         .insert({
           title: formData.title,
           price: formData.price,
@@ -84,15 +84,9 @@ export function usePropertyManagement() {
           square_feet: formData.square_feet,
           property_type: formData.property_type,
           description: formData.description,
-          status: formData.status,
+          status: formData.status === 'published' ? 'active' : 'draft',
           featured: formData.featured,
-          mls_number: formData.mls_number,
           images,
-          seo_title: formData.seo_title,
-          seo_description: formData.seo_description,
-          meta_keywords: formData.meta_keywords,
-          virtual_tour_url: formData.virtual_tour_url,
-          user_email: user.email
         })
         .select()
         .single();
@@ -122,26 +116,26 @@ export function usePropertyManagement() {
   const updateProperty = async (id: string, formData: Partial<PropertyFormData>, newCoverImage?: File, additionalImages?: string[]) => {
     setIsUploading(true);
     try {
-      // Get the authenticated user
       const { data: { user } } = await supabase.auth.getUser();
       if (!user || !user.email) throw new Error('User not authenticated');
       
-      const updateData: Partial<PropertyFormData> & { images?: string[] } = { ...formData };
+      const updateData: any = { ...formData };
+      
+      if (formData.status) {
+        updateData.status = formData.status === 'published' ? 'active' : 'draft';
+      }
       
       if (newCoverImage || additionalImages) {
-        // Get current property to access existing images
         const { data: currentProperty } = await supabase
-          .from('realtorjigar_x8d1y_listings')
+          .from('listings')
           .select('images')
           .eq('id', id)
-          .eq('user_email', user.email)
           .single();
           
         let images = [...(currentProperty?.images || []), ...(additionalImages || [])];
         
         if (newCoverImage) {
           const imageUrl = await uploadPropertyImage(newCoverImage);
-          // Replace the cover image (first image) or add if none exists
           images = images.length > 0 ? [imageUrl, ...images.slice(1)] : [imageUrl];
         }
         
@@ -149,10 +143,9 @@ export function usePropertyManagement() {
       }
 
       const { data, error } = await supabase
-        .from('realtorjigar_x8d1y_listings')
+        .from('listings')
         .update(updateData)
         .eq('id', id)
-        .eq('user_email', user.email) // Ensure user can only edit their own properties
         .select()
         .single();
 
@@ -180,15 +173,13 @@ export function usePropertyManagement() {
 
   const deleteProperty = async (id: string) => {
     try {
-      // Get the authenticated user
       const { data: { user } } = await supabase.auth.getUser();
       if (!user || !user.email) throw new Error('User not authenticated');
       
       const { error } = await supabase
-        .from('realtorjigar_x8d1y_listings')
+        .from('listings')
         .delete()
-        .eq('id', id)
-        .eq('user_email', user.email); // Ensure user can only delete their own properties
+        .eq('id', id);
 
       if (error) throw error;
 
@@ -209,26 +200,23 @@ export function usePropertyManagement() {
   };
 
   const togglePropertyStatus = async (id: string, currentStatus: string) => {
-    // Make sure we convert any status string to our specific 'published' | 'draft' type
-    const newStatus = currentStatus === 'published' ? 'draft' : 'published';
+    const newStatus = currentStatus === 'active' ? 'draft' : 'active';
     
     try {
-      // Get the authenticated user
       const { data: { user } } = await supabase.auth.getUser();
       if (!user || !user.email) throw new Error('User not authenticated');
       
       const { error } = await supabase
-        .from('realtorjigar_x8d1y_listings')
+        .from('listings')
         .update({ status: newStatus })
-        .eq('id', id)
-        .eq('user_email', user.email); // Ensure user can only update their own properties
+        .eq('id', id);
 
       if (error) throw error;
 
       queryClient.invalidateQueries({ queryKey: ['properties'] });
       toast({
         title: "Success",
-        description: `Property ${newStatus === 'published' ? 'published' : 'saved as draft'}`,
+        description: `Property ${newStatus === 'active' ? 'published' : 'saved as draft'}`,
       });
     } catch (error: unknown) {
       const errorMessage = error instanceof Error ? error.message : 'Unknown error';
@@ -241,20 +229,14 @@ export function usePropertyManagement() {
     }
   };
 
-  // Query hook for fetching properties with filters and pagination
   const useListProperties = (filters: PropertyFilters = { page: 1, pageSize: 9 }) => {
     return useQuery({
       queryKey: ['properties', filters],
       queryFn: async () => {
-        const { data: { user } } = await supabase.auth.getUser();
-        if (!user || !user.email) throw new Error('User not authenticated');
-        
         let query = supabase
-          .from('realtorjigar_x8d1y_listings')
-          .select('*', { count: 'exact' })
-          .eq('user_email', user.email);
+          .from('listings')
+          .select('*', { count: 'exact' });
 
-        // Apply filters
         if (filters.searchTerm) {
           query = query.or(`title.ilike.%${filters.searchTerm}%,address.ilike.%${filters.searchTerm}%,description.ilike.%${filters.searchTerm}%`);
         }
@@ -264,14 +246,14 @@ export function usePropertyManagement() {
         }
         
         if (filters.status) {
-          query = query.eq('status', filters.status);
+          const dbStatus = filters.status === 'published' ? 'active' : filters.status;
+          query = query.eq('status', dbStatus);
         }
         
         if (filters.price) {
           query = query.gte('price', filters.price.min).lte('price', filters.price.max);
         }
         
-        // Add pagination
         const from = (filters.page - 1) * filters.pageSize;
         const to = from + filters.pageSize - 1;
         
@@ -293,10 +275,9 @@ export function usePropertyManagement() {
     });
   };
 
-  // Mutation for toggling property status
   const useTogglePropertyStatus = () => {
     return useMutation({
-      mutationFn: async ({ id, currentStatus }: { id: string, currentStatus: 'published' | 'draft' }) => {
+      mutationFn: async ({ id, currentStatus }: { id: string, currentStatus: string }) => {
         return await togglePropertyStatus(id, currentStatus);
       },
       onSuccess: () => {
@@ -305,7 +286,6 @@ export function usePropertyManagement() {
     });
   };
 
-  // Mutation for deleting a property
   const useDeleteProperty = () => {
     return useMutation({
       mutationFn: async (id: string) => {

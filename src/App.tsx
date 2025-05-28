@@ -31,7 +31,7 @@ import Resources from '@/pages/Resources';
 import Favorites from '@/pages/Favorites';
 import NotFound from '@/pages/NotFound';
 
-// Admin Pages - Updated structure
+// Admin Pages
 import AdminDashboard from '@/pages/admin/AdminDashboard';
 import AdminInquiries from '@/pages/admin/AdminInquiries';
 import AdminUsers from '@/pages/admin/AdminUsers';
@@ -40,7 +40,7 @@ import AdminImages from '@/pages/admin/AdminImages';
 import AdminMarketing from '@/pages/admin/AdminMarketing';
 import AdminProperties from '@/pages/admin/AdminProperties';
 
-// Property Management
+// Property Management (Agent-only)
 import ManageProperties from '@/pages/ManageProperties';
 
 // Services Subpages
@@ -52,7 +52,14 @@ import Luxury from './pages/Luxury';
 import Commercial from './pages/Commercial';
 
 // Query Client
-const queryClient = new QueryClient();
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      retry: 1,
+      staleTime: 5 * 60 * 1000, // 5 minutes
+    },
+  },
+});
 
 function App() {
   return (
@@ -101,7 +108,7 @@ function App() {
             </ProtectedRoute>
           } />
 
-          {/* Protected Admin Routes - Updated with role-based access */}
+          {/* Protected Admin Routes */}
           <Route path="/admin" element={
             <ProtectedRoute allowedRoles={['admin', 'superadmin', 'editor']}>
               <AdminDashboard />
@@ -142,9 +149,7 @@ function App() {
           <Route path="*" element={<NotFound />} />
         </Routes>
         
-        {/* AI Chat Bubble - appears on all pages */}
         <AiChatBubble />
-        
         <Toaster />
       </AuthProvider>
     </QueryClientProvider>
