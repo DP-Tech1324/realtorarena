@@ -1,20 +1,20 @@
-
 import { Routes, Route } from 'react-router-dom';
-import { Toaster } from "@/components/ui/toaster";
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import { AuthProvider } from '@/contexts/AuthContext';
 
+import { AuthProvider } from '@/contexts/AuthContext';
 import ScrollToTop from '@/components/ScrollToTop';
 import ProtectedRoute from '@/components/ProtectedRoute';
 import AiChatBubble from '@/components/AiChatBubble';
+import { Toaster } from "@/components/ui/toaster";
 
-// Public Pages
+// ─── Public Pages ─────────────────────────────────────
 import Home from '@/pages/Home';
 import About from '@/pages/About';
 import Listings from '@/pages/Listings';
 import Properties from '@/pages/Properties';
 import PropertyDetails from '@/pages/PropertyDetails';
 import Contact from '@/pages/Contact';
+import ContactPage from '@/pages/ContactPage';
 import Blog from '@/pages/Blog';
 import BlogPostPage from '@/pages/BlogPostPage';
 import Buyers from '@/pages/Buyers';
@@ -24,32 +24,33 @@ import ServicesPage from '@/pages/ServicesPage';
 import ServiceDetail from '@/pages/ServiceDetail';
 import Calculators from '@/pages/Calculators';
 import HomeValuation from '@/pages/HomeValuation';
-import ContactPage from '@/pages/ContactPage';
-import AuthPage from '@/pages/auth/AuthPage';
 import RlpSearch from '@/pages/RlpSearch';
-import Resources from '@/pages/Resources';
 import Favorites from '@/pages/Favorites';
+import Resources from '@/pages/Resources';
+import AuthPage from '@/pages/auth/AuthPage';
 import NotFound from '@/pages/NotFound';
+import AccessDenied from '@/pages/AccessDenied';
 
-// Admin Pages
+// ─── Services Subpages ────────────────────────────────
+import PropertySales from '@/pages/PropertySales';
+import PropertyAcquisition from '@/pages/PropertyAcquisition';
+import Relocation from '@/pages/Relocation';
+import Investment from '@/pages/Investment';
+import Luxury from '@/pages/Luxury';
+import Commercial from '@/pages/Commercial';
+
+// ─── Admin Pages (Protected) ──────────────────────────
 import AdminDashboard from '@/pages/admin/AdminDashboard';
+import AdminProperties from '@/pages/admin/AdminProperties';
 import AdminInquiries from '@/pages/admin/AdminInquiries';
 import AdminUsers from '@/pages/admin/AdminUsers';
 import AdminAnalytics from '@/pages/admin/AdminAnalytics';
 import AdminImages from '@/pages/admin/AdminImages';
 import AdminMarketing from '@/pages/admin/AdminMarketing';
-import AdminProperties from '@/pages/admin/AdminProperties';
 
-// Property Management (Agent-only)
+// ─── Agent-only Page ──────────────────────────────────
 import ManageProperties from '@/pages/ManageProperties';
 
-// Services Subpages
-import PropertySales from './pages/PropertySales';
-import PropertyAcquisition from './pages/PropertyAcquisition';
-import Relocation from './pages/Relocation';
-import Investment from './pages/Investment';
-import Luxury from './pages/Luxury';
-import Commercial from './pages/Commercial';
 
 // Query Client
 const queryClient = new QueryClient({
@@ -67,11 +68,12 @@ function App() {
       <AuthProvider>
         <ScrollToTop />
         <Routes>
-          {/* Public Routes */}
+
+          {/* ── Public Routes ── */}
           <Route path="/" element={<Home />} />
           <Route path="/about" element={<About />} />
-          <Route path="/properties" element={<Properties />} />
           <Route path="/listings" element={<Listings />} />
+          <Route path="/properties" element={<Properties />} />
           <Route path="/properties/:id" element={<PropertyDetails />} />
           <Route path="/contact" element={<Contact />} />
           <Route path="/contact-us" element={<ContactPage />} />
@@ -84,16 +86,12 @@ function App() {
           <Route path="/services/:id" element={<ServiceDetail />} />
           <Route path="/calculators" element={<Calculators />} />
           <Route path="/home-valuation" element={<HomeValuation />} />
-          <Route path="/auth" element={<AuthPage />} />
+          <Route path="/favorites" element={<Favorites />} />
           <Route path="/rlp-search" element={<RlpSearch />} />
           <Route path="/resources" element={<Resources />} />
-          <Route path="/resources/for-buyers" element={<Buyers />} />
-          <Route path="/resources/for-sellers" element={<Sellers />} />
-          <Route path="/resources/home-valuation" element={<HomeValuation />} />
-          <Route path="/resources/mortgage-calculator" element={<Calculators />} />
-          <Route path="/favorites" element={<Favorites />} />
+          <Route path="/auth" element={<AuthPage />} />
 
-          {/* Services Subpages */}
+          {/* ── Services Subpages ── */}
           <Route path="/property-sales" element={<PropertySales />} />
           <Route path="/property-acquisition" element={<PropertyAcquisition />} />
           <Route path="/relocation" element={<Relocation />} />
@@ -101,14 +99,14 @@ function App() {
           <Route path="/luxury" element={<Luxury />} />
           <Route path="/commercial" element={<Commercial />} />
 
-          {/* Protected Agent Route */}
+          {/* ── Agent Protected ── */}
           <Route path="/manage-properties" element={
             <ProtectedRoute requireAgent={true}>
               <ManageProperties />
             </ProtectedRoute>
           } />
 
-          {/* Protected Admin Routes */}
+          {/* ── Admin Protected ── */}
           <Route path="/admin" element={
             <ProtectedRoute allowedRoles={['admin', 'superadmin', 'editor']}>
               <AdminDashboard />
@@ -145,10 +143,11 @@ function App() {
             </ProtectedRoute>
           } />
 
-          {/* Catch All */}
+          {/* ── Fallback ── */}
+          <Route path="/access-denied" element={<AccessDenied />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
-        
+
         <AiChatBubble />
         <Toaster />
       </AuthProvider>
