@@ -2,7 +2,7 @@
 import { Routes, Route } from 'react-router-dom';
 import { Toaster } from "@/components/ui/toaster";
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import { AuthProvider } from '@/contexts/AuthContext';
+import { AuthProvider, useAuth } from '@/contexts/AuthContext';
 
 import ScrollToTop from '@/components/ScrollToTop';
 import ProtectedRoute from '@/components/ProtectedRoute';
@@ -50,6 +50,7 @@ import Relocation from './pages/Relocation';
 import Investment from './pages/Investment';
 import Luxury from './pages/Luxury';
 import Commercial from './pages/Commercial';
+import AccessDenied from './pages/AccessDenied';
 
 // Query Client
 const queryClient = new QueryClient({
@@ -62,6 +63,7 @@ const queryClient = new QueryClient({
 });
 
 function App() {
+  
   return (
     <QueryClientProvider client={queryClient}>
       <AuthProvider>
@@ -147,6 +149,7 @@ function App() {
 
           {/* Catch All */}
           <Route path="*" element={<NotFound />} />
+          <Route path="/access-denied" element={<AccessDenied />} />
         </Routes>
         
         <AiChatBubble />
