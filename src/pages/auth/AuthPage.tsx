@@ -1,5 +1,4 @@
 // src/pages/AuthPage.tsx
-
 import React, { useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import {
@@ -18,19 +17,16 @@ import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
 
 const AuthPage: React.FC = () => {
-  const { signIn, signUp, user, isLoading, refreshProfile } = useAuth();
+  const { signIn, signUp, refreshProfile } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
   const { toast } = useToast();
 
   const [tab, setTab] = useState<string>('login');
-
-  // Login form state
   const [loginEmail, setLoginEmail] = useState('');
   const [loginPassword, setLoginPassword] = useState('');
   const [isLoginLoading, setIsLoginLoading] = useState(false);
 
-  // Registration form state
   const [registerEmail, setRegisterEmail] = useState('');
   const [registerPassword, setRegisterPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
@@ -41,11 +37,7 @@ const AuthPage: React.FC = () => {
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!loginEmail || !loginPassword) {
-      toast({
-        title: "Missing information",
-        description: "Please provide both email and password.",
-        variant: "destructive"
-      });
+      toast({ title: "Missing information", description: "Please provide both email and password.", variant: "destructive" });
       return;
     }
 
@@ -54,11 +46,11 @@ const AuthPage: React.FC = () => {
     try {
       const { success } = await signIn(loginEmail, loginPassword);
       if (success) {
-        // 🛠️ Force-refresh profile to ensure roles load
         await refreshProfile();
 
-        const role = localStorage.getItem('userRole');
         const fromPath = (location.state as any)?.from?.pathname;
+        const role = localStorage.getItem('userRole');
+        console.log('🔁 Redirect after login →', { fromPath, role });
 
         if (fromPath) {
           navigate(fromPath);
@@ -78,20 +70,12 @@ const AuthPage: React.FC = () => {
   const handleRegister = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!registerEmail || !registerPassword || !confirmPassword || !firstName || !lastName) {
-      toast({
-        title: "Missing information",
-        description: "Please fill in all fields.",
-        variant: "destructive"
-      });
+      toast({ title: "Missing information", description: "Please fill in all fields.", variant: "destructive" });
       return;
     }
 
     if (registerPassword !== confirmPassword) {
-      toast({
-        title: "Passwords don't match",
-        description: "Please ensure both passwords match.",
-        variant: "destructive"
-      });
+      toast({ title: "Passwords don't match", description: "Please ensure both passwords match.", variant: "destructive" });
       return;
     }
 
@@ -129,7 +113,7 @@ const AuthPage: React.FC = () => {
                       <div className="space-y-4">
                         <div className="space-y-2">
                           <Label htmlFor="email">Email</Label>
-                          <Input id="email" type="email" placeholder="your.email@example.com" value={loginEmail} onChange={(e) => setLoginEmail(e.target.value)} required />
+                          <Input id="email" type="email" value={loginEmail} onChange={(e) => setLoginEmail(e.target.value)} required />
                         </div>
                         <div className="space-y-2">
                           <Label htmlFor="password">Password</Label>

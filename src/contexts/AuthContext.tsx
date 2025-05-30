@@ -1,3 +1,4 @@
+// src/contexts/AuthContext.tsx
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { Session, User } from '@supabase/supabase-js';
 import { supabase } from '@/integrations/supabase/client';
@@ -41,7 +42,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     try {
       console.log('🔄 Refreshing profile for user:', user.id);
 
-      // Check if the user is an admin and get their role
+      // ✅ Fetch admin user role if active
       const { data: adminData, error: adminError } = await supabase
         .from('admin_users')
         .select('*')
@@ -49,10 +50,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         .eq('is_active', true)
         .maybeSingle();
 
-      console.log('✅ Admin data fetched:', adminData);
-      console.log('🔍 Supabase Query Result:', { adminData, adminError });
       if (adminError) console.error('❌ Admin fetch error:', adminError);
-
       const adminStatus = !!adminData && !adminError;
       const role = adminData?.role || null;
 
@@ -61,19 +59,10 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       localStorage.setItem('isAdmin', adminStatus.toString());
       localStorage.setItem('userRole', role || '');
 
-      console.log('🔐 Role set:', role);
-      console.log('🔑 isAdmin:', adminStatus);
-
-      // You can expand this to check against agent-specific table
       setIsAgent(false);
       localStorage.setItem('isAgent', 'false');
 
-      const newProfile = {
-        ...adminData,
-        role: role || 'user',
-      };
-
-      setProfile(newProfile);
+      setProfile({ ...adminData, role: role || 'user' });
     } catch (error) {
       console.error('❌ Error in refreshProfile:', error);
       setIsAdmin(false);
@@ -87,13 +76,13 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   useEffect(() => {
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      (_event, currentSession) => {
+      async (_event, currentSession) => {
         console.log('🔔 Auth state changed:', _event, currentSession?.user?.id);
         setSession(currentSession);
         setUser(currentSession?.user ?? null);
 
         if (currentSession?.user) {
-          refreshProfile();
+          await refreshProfile();
         } else {
           setProfile(null);
           setIsAdmin(false);
@@ -103,16 +92,17 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
           localStorage.removeItem('isAgent');
           localStorage.removeItem('userRole');
         }
+        setIsLoading(false);
       }
     );
 
-    supabase.auth.getSession().then(({ data: { session: currentSession } }) => {
+    supabase.auth.getSession().then(async ({ data: { session: currentSession } }) => {
       console.log('🟢 Initial session:', currentSession?.user?.id);
       setSession(currentSession);
       setUser(currentSession?.user ?? null);
 
       if (currentSession?.user) {
-        refreshProfile();
+        await refreshProfile();
       }
       setIsLoading(false);
     });
@@ -144,9 +134,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       const { error } = await supabase.auth.signUp({
         email,
         password,
-        options: {
-          data: { first_name: firstName, last_name: lastName }
-        }
+        options: { data: { first_name: firstName, last_name: lastName } }
       });
 
       if (error) {

@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { cn } from '@/lib/utils';
@@ -15,10 +14,13 @@ import {
   LogOut
 } from 'lucide-react';
 
+import { Avatar, AvatarFallback } from '@/components/ui/avatar';
+import { Separator } from '@/components/ui/separator';
+
 const AdminSidebar = () => {
   const location = useLocation();
   const navigate = useNavigate();
-  const { userRole, signOut } = useAuth();
+  const { user, userRole, signOut } = useAuth();
 
   const handleLogout = async () => {
     await signOut();
@@ -49,12 +51,24 @@ const AdminSidebar = () => {
   return (
     <aside className="w-64 bg-white shadow-lg border-r hidden lg:block">
       <div className="h-full p-4 space-y-6 flex flex-col">
-        <div className="text-xl font-bold text-realtor-navy mb-4">Admin Menu</div>
-        
+        {/* Avatar and Role */}
+        <div className="flex flex-col items-center space-y-2">
+          <Avatar>
+            <AvatarFallback>
+              {user?.email?.charAt(0).toUpperCase() ?? 'A'}
+            </AvatarFallback>
+          </Avatar>
+          <div className="text-sm text-gray-600 font-semibold capitalize">
+            {userRole}
+          </div>
+        </div>
+
+        <Separator />
+
         <ul className="space-y-2 flex-1">
           {links.map(({ to, label, icon: Icon, exact, roles }) => {
             if (!canAccessLink(roles)) return null;
-            
+
             return (
               <li key={to}>
                 <Link
@@ -75,9 +89,6 @@ const AdminSidebar = () => {
         </ul>
 
         <div className="border-t pt-4">
-          <div className="text-xs text-gray-500 mb-2 px-4">
-            Role: <span className="font-medium capitalize">{userRole}</span>
-          </div>
           <Button
             onClick={handleLogout}
             variant="outline"
