@@ -1,4 +1,3 @@
-
 import React, { useEffect, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import Navbar from '@/components/Navbar';
@@ -16,19 +15,33 @@ const Listings = () => {
   const [searchParams] = useSearchParams();
   const { toast } = useToast();
   const [properties, setProperties] = useState([]);
+  const [loading, setLoading] = useState(true);
 
-  // Fetch listings from Supabase
+  // Fetch only published listings from Supabase
   useEffect(() => {
     const fetchListings = async () => {
-      const { data, error } = await supabase.from('listings').select('*');
+      setLoading(true);
+      const { data, error } = await supabase
+        .from('listings')
+        .select('*')
+        .eq('status', 'published')
+        .order('created_at', { ascending: false });
       if (error) {
         console.error("Error fetching listings:", error.message);
+        toast({
+          title: "Error loading properties",
+          description: error.message,
+          variant: "destructive"
+        });
+        setProperties([]);
       } else {
-        setProperties(data);
+        setProperties(data || []);
       }
+      setLoading(false);
     };
 
     fetchListings();
+    // eslint-disable-next-line
   }, []);
 
   // Search filter initialization
@@ -63,6 +76,7 @@ const Listings = () => {
         description: "Showing properties matching your criteria.",
       });
     }
+    // eslint-disable-next-line
   }, [searchParams]);
 
   return (
@@ -102,10 +116,17 @@ const Listings = () => {
               </div>
 
               <div className="lg:col-span-3">
-                <PropertyGrid 
-                  filteredProperties={filteredProperties}
-                  resetFilters={resetFilters}
-                />
+                {/* Show loading spinner while fetching */}
+                {loading ? (
+                  <div className="w-full flex justify-center items-center py-12">
+                    <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-realtor-gold" />
+                  </div>
+                ) : (
+                  <PropertyGrid 
+                    filteredProperties={filteredProperties}
+                    resetFilters={resetFilters}
+                  />
+                )}
               </div>
             </div>
           </div>

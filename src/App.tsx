@@ -101,10 +101,10 @@ function App() {
 
           {/* ── Agent Protected ── */}
           <Route path="/manage-properties" element={
-            <ProtectedRoute requireAgent={true}>
-              <ManageProperties />
+          <ProtectedRoute allowedRoles={['admin', 'superadmin', 'editor']}>
+          <ManageProperties />
             </ProtectedRoute>
-          } />
+            } />
 
           {/* ── Admin Protected ── */}
           <Route path="/admin" element={
