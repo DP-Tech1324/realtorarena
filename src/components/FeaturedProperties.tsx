@@ -120,7 +120,7 @@ const FeaturedProperties = () => {
         )}
 
         <div className="text-center mt-12">
-          <Link to="/properties">
+          <Link to="/listings">
             <Button className="bg-realtor-navy hover:bg-realtor-gold hover:text-realtor-navy transition-colors duration-300 text-white flex items-center gap-2 mx-auto">
               View All Properties
               <ArrowRight size={16} />

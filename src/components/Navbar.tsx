@@ -9,23 +9,23 @@ import { useAuth } from '@/contexts/AuthContext';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 
+const adminRoles = ['admin', 'superadmin', 'editor'];
+
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
   const isMobile = useIsMobile();
   const location = useLocation();
   const navigate = useNavigate();
-  const { user, isAdmin, signOut } = useAuth();
+  const { user, userRole, signOut } = useAuth();
 
   // Scroll effect
   useEffect(() => {
     const handleScroll = () => {
       setIsScrolled(window.scrollY > 10);
     };
-
     window.addEventListener('scroll', handleScroll);
     handleScroll();
-
     return () => {
       window.removeEventListener('scroll', handleScroll);
     };
@@ -40,6 +40,9 @@ const Navbar = () => {
     await signOut();
     navigate('/auth');
   };
+
+  const isAdmin = user && adminRoles.includes(userRole);
+  const isAdminRoute = location.pathname.startsWith('/admin');
 
   return (
     <header
@@ -60,8 +63,8 @@ const Navbar = () => {
         {/* Mobile Menu */}
         <MobileMenu isOpen={isOpen} />
 
-        {/* Avatar Dropdown */}
-        {user && (
+        {/* Admin Dropdown: Only show if user is admin & on admin route */}
+        {isAdmin && isAdminRoute && (
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Avatar className="cursor-pointer">
@@ -70,10 +73,27 @@ const Navbar = () => {
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end" className="w-48">
               <DropdownMenuItem onClick={() => navigate('/admin')}>Admin Dashboard</DropdownMenuItem>
-              <DropdownMenuItem onClick={() => navigate('/')}>View Site</DropdownMenuItem>
-              <DropdownMenuItem onClick={handleLogout} className="text-red-600">Logout</DropdownMenuItem>
+              {/* "View Site" opens homepage in a new tab */}
+              <DropdownMenuItem asChild>
+                <a href="/" target="_blank" rel="noopener noreferrer">
+                  View Site
+                </a>
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={handleLogout} className="text-red-600">
+                Logout
+              </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
+        )}
+
+        {/* Admin Panel Button: Only show if user is admin & NOT on admin route */}
+        {isAdmin && !isAdminRoute && (
+          <button
+            onClick={() => navigate('/admin')}
+            className="ml-4 px-4 py-2 rounded bg-realtor-gold text-white hover:bg-yellow-600 transition-all"
+          >
+            Admin Panel
+          </button>
         )}
 
         {/* Mobile menu toggle */}

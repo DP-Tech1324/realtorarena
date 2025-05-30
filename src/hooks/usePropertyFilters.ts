@@ -18,18 +18,18 @@ export const usePropertyFilters = ({
   const [filteredProperties, setFilteredProperties] = useState<Property[]>(properties);
   const [priceRangeFilter, setPriceRangeFilter] = useState<string>(initialPriceFilter);
   const [propertyTypeFilter, setPropertyTypeFilter] = useState<string>(initialTypeFilter);
-  const [statusFilter, setStatusFilter] = useState<string>('for-sale');
+  const [statusFilter, setStatusFilter] = useState<string>('published');
   const [sortOrder, setSortOrder] = useState<string>('price-asc');
   const [locationFilter, setLocationFilter] = useState<string>(initialLocationFilter);
 
   // Reset all filters
   const resetFilters = () => {
-    setPriceRangeFilter('');
-    setPropertyTypeFilter('');
-    setStatusFilter('for-sale');
-    setSortOrder('price-asc');
-    setLocationFilter('');
-  };
+  setPriceRangeFilter('');
+  setPropertyTypeFilter('');
+  setStatusFilter('published');
+  setSortOrder('price-asc');
+  setLocationFilter('');
+};
 
   // Apply filters when filter states change
   useEffect(() => {

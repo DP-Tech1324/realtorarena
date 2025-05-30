@@ -34,7 +34,7 @@ const PropertySearch: React.FC<PropertySearchProps> = ({ className = '', variant
     if (priceRange) params.append('price', priceRange);
     
     // Navigate to properties page with search params
-    navigate(`/properties?${params.toString()}`);
+    navigate(`/listings?${params.toString()}`);
   };
 
   const isHero = variant === 'hero';
