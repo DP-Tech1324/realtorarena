@@ -5,14 +5,8 @@ import { ArrowRight } from 'lucide-react';
 const Services: React.FC = () => {
   return (
     <section className="py-16 bg-white">
-      <div className="container mx-auto px-4">
-        <div className="text-center mb-12">
-          <h2 className="text-3xl font-bold text-realtor-navy mb-3">Our Comprehensive Services</h2>
-          <p className="text-lg text-gray-600 max-w-2xl mx-auto">
-            Tailored real estate solutions to meet your specific needs and exceed your expectations
-          </p>
-        </div>
-        
+
+        <div>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
           <div className="bg-gray-50 p-6 rounded-lg shadow-sm hover:shadow-md transition-shadow service-card">
             <h3 className="text-xl font-bold text-realtor-navy mb-3">Property Sales</h3>

@@ -1,4 +1,4 @@
-
+// Make all fields optional if you're not sure they'll always be present (safest for now)
 export interface Property {
   id: string;
   title: string;
@@ -8,17 +8,20 @@ export interface Property {
   price: number;
   bedrooms: number;
   bathrooms: number;
-  squareFeet: number;
-  propertyType: 'house' | 'condo' | 'townhouse' | 'land';
-  status: 'for-sale' | 'for-rent' | 'sold' | 'pending';
-  featured: boolean;
-  description: string;
-  images: string[];
-  mlsNumber?: string;
-  seoTitle?: string;
-  seoDescription?: string;
-  metaKeywords?: string;
-  virtualTourUrl?: string;
+  property_type: string;
+  square_feet?: number;
+  status: 'published' | 'draft';
+  description?: string;
+  featured?: boolean;
+  created_at?: string;
+  updated_at?: string;
+  cover_image?: string;
+  images: string[];      // THIS is important!
+  meta_keywords?: string;
+  seo_title?: string;
+  seo_description?: string;
+  virtual_tour_url?: string;
+  [key: string]: any;    // Allow extra keys just in case
 }
 
 export interface Agent {
