@@ -1,8 +1,8 @@
-
 import React from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Button } from '@/components/ui/button';
+import { motion } from 'framer-motion';
 import {
   Form,
 } from '@/components/ui/form';
@@ -14,10 +14,19 @@ import ConsultationTypeField from '@/components/consultation/ConsultationTypeFie
 import DateTimeFields from '@/components/consultation/DateTimeFields';
 import MessageField from '@/components/consultation/MessageField';
 
-const ConsultationForm: React.FC<ConsultationFormProps> = ({ 
+const fadeInUp = {
+  hidden: { opacity: 0, y: 30 },
+  visible: (i: number) => ({
+    opacity: 1,
+    y: 0,
+    transition: { delay: 0.08 * i, duration: 0.5, type: 'spring' },
+  }),
+};
+
+const ConsultationForm: React.FC<ConsultationFormProps> = ({
   defaultType,
   propertyId,
-  onSubmitSuccess 
+  onSubmitSuccess
 }) => {
   const { toast } = useToast();
   const form = useForm<FormValues>({
@@ -34,13 +43,7 @@ const ConsultationForm: React.FC<ConsultationFormProps> = ({
   const { useSubmitConsultation } = useConsultations();
   const { mutate: submitConsultation, isPending } = useSubmitConsultation();
 
-  console.log("ConsultationForm rendered with propertyId:", propertyId);
-
   const onSubmit = (data: FormValues) => {
-    console.log('Consultation form submitted with data:', data);
-    console.log('Property ID being submitted:', propertyId);
-    
-    // Ensure all required fields are present with proper types before submission
     submitConsultation({
       name: data.name,
       email: data.email,
@@ -52,7 +55,6 @@ const ConsultationForm: React.FC<ConsultationFormProps> = ({
       propertyId: propertyId
     }, {
       onSuccess: () => {
-        console.log("Form submission successful");
         form.reset();
         if (onSubmitSuccess) {
           onSubmitSuccess();
@@ -64,7 +66,6 @@ const ConsultationForm: React.FC<ConsultationFormProps> = ({
         }
       },
       onError: (error) => {
-        console.error("Form submission error:", error);
         toast({
           title: "Error submitting request",
           description: "There was a problem submitting your request. Please try again.",
@@ -74,27 +75,38 @@ const ConsultationForm: React.FC<ConsultationFormProps> = ({
     });
   };
 
+  // Animate each section in order
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <PersonalInfoFields />
-          <ConsultationTypeField />
-          <DateTimeFields />
-        </div>
-
-        <MessageField />
-
-        <Button 
-          type="submit" 
-          className="w-full md:w-auto bg-realtor-gold hover:bg-realtor-gold/90 text-realtor-navy font-semibold"
-          disabled={isPending}
-        >
-          {isPending ? 'Scheduling...' : 'Schedule Consultation'}
-        </Button>
-      </form>
+      <motion.form
+        onSubmit={form.handleSubmit(onSubmit)}
+        className="space-y-6"
+        initial="hidden"
+        animate="visible"
+      >
+        <motion.div variants={fadeInUp} custom={0}>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <PersonalInfoFields />
+            <ConsultationTypeField />
+            <DateTimeFields />
+          </div>
+        </motion.div>
+        <motion.div variants={fadeInUp} custom={1}>
+          <MessageField />
+        </motion.div>
+        <motion.div variants={fadeInUp} custom={2} whileTap={{ scale: 0.97 }}>
+              <Button
+               type="submit"
+                className="w-full md:w-auto bg-realtor-gold hover:bg-realtor-navy hover:text-realtor-gold text-realtor-navy font-semibold px-8 py-3 transition-all"
+                disabled={isPending}
+              >
+                   {isPending ? 'Scheduling...' : 'Schedule Consultation'}
+                  </Button>
+            </motion.div>
+      </motion.form>
     </Form>
   );
 };
+
 
 export default ConsultationForm;

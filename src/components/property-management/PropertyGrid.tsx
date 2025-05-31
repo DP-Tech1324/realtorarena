@@ -3,23 +3,7 @@ import React from 'react';
 import { PropertyCard } from './PropertyCard';
 import { Button } from '@/components/ui/button';
 import { Loader2 } from 'lucide-react';
-
-interface Property {
-  id: string;
-  title: string;
-  address: string;
-  city: string;
-  province: string;
-  price: number;
-  bedrooms: number;
-  bathrooms: number;
-  square_feet: number;
-  property_type: string;
-  status: 'published' | 'draft'; // Updated to match the specific status types
-  featured: boolean;
-  images: string[];
-  description?: string;
-}
+import { Property } from '@/integrations/supabase/types';
 
 interface PropertyGridProps {
   properties: Property[];
