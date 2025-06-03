@@ -1,37 +1,36 @@
-import { clsx, type ClassValue } from "clsx"
+
+import { type ClassValue, clsx } from "clsx"
 import { twMerge } from "tailwind-merge"
+import { Property } from '@/types/Property'
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs))
 }
 
-import { Property } from '@/types/Property';
-
-export function transformPropertyFromDb(db: any): Property {
+// Transformer function to convert Supabase listing to Property type
+export function transformPropertyFromDb(listing: any): Property {
   return {
-    id: db.id,
-    title: db.title,
-    address: db.address,
-    city: db.city,
-    province: db.province,
-    price: Number(db.price) || 0,
-    bedrooms: Number(db.bedrooms) || 0,
-    bathrooms: Number(db.bathrooms) || 0,
-    property_type: db.property_type || db.propertyType || '',
-    square_feet: db.square_feet ?? db.squareFeet ?? 0,
-    status: (db.status === 'published' || db.status === 'draft')
-      ? db.status
-      : (['for-sale', 'for-rent'].includes(db.status) ? 'published' : 'draft'),
-    description: db.description || '',
-    featured: Boolean(db.featured),
-    created_at: db.created_at,
-    updated_at: db.updated_at,
-    cover_image: db.cover_image || db.coverImage || '',
-    images: Array.isArray(db.images)
-      ? db.images
-      : typeof db.images === 'string'
-        ? [db.images]
-        : [],
-    ...db, // preserve any extra fields
+    id: listing.id,
+    title: listing.title,
+    address: listing.address,
+    city: listing.city,
+    province: listing.province,
+    price: Number(listing.price),
+    bedrooms: listing.bedrooms || 0,
+    bathrooms: listing.bathrooms || 0,
+    square_feet: listing.square_feet || listing.squarefeet || 0, // Handle both column names
+    property_type: listing.property_type,
+    status: listing.status === 'published' ? 'published' : 'draft',
+    market_status: listing.market_status || 'for-sale',
+    featured: listing.featured || false,
+    description: listing.description || '',
+    images: Array.isArray(listing.images) ? listing.images : [],
+    cover_image: listing.cover_image,
+    created_at: listing.created_at,
+    updated_at: listing.updated_at,
+    meta_keywords: listing.meta_keywords,
+    seo_title: listing.seo_title,
+    seo_description: listing.seo_description,
+    virtual_tour_url: listing.virtual_tour_url
   };
 }

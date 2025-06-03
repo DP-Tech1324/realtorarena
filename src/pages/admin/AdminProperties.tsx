@@ -1,3 +1,4 @@
+
 import React, { useEffect, useState } from 'react';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
@@ -10,7 +11,7 @@ import { PropertyGrid } from '@/components/property-management/PropertyGrid';
 import { Property } from '@/types/Property';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/components/ui/use-toast';
-import { transformPropertyFromDb } from '@/lib/utils'; // <--- NEW: Import transformer
+import { transformPropertyFromDb } from '@/lib/utils';
 
 const AdminProperties = () => {
   const [properties, setProperties] = useState<Property[]>([]);
