@@ -192,15 +192,20 @@ export type Database = {
           id: string
           images: Json | null
           lot_size: string | null
+          meta_keywords: string | null
+          mls_number: string | null
           postal_code: string | null
           price: number
           property_type: string
           province: string
+          seo_description: string | null
+          seo_title: string | null
           square_feet: number | null
           squarefeet: number | null
           status: string | null
           title: string
           updated_at: string
+          virtual_tour_url: string | null
           year_built: number | null
         }
         Insert: {
@@ -217,15 +222,20 @@ export type Database = {
           id?: string
           images?: Json | null
           lot_size?: string | null
+          meta_keywords?: string | null
+          mls_number?: string | null
           postal_code?: string | null
           price: number
           property_type: string
           province: string
+          seo_description?: string | null
+          seo_title?: string | null
           square_feet?: number | null
           squarefeet?: number | null
           status?: string | null
           title: string
           updated_at?: string
+          virtual_tour_url?: string | null
           year_built?: number | null
         }
         Update: {
@@ -242,15 +252,20 @@ export type Database = {
           id?: string
           images?: Json | null
           lot_size?: string | null
+          meta_keywords?: string | null
+          mls_number?: string | null
           postal_code?: string | null
           price?: number
           property_type?: string
           province?: string
+          seo_description?: string | null
+          seo_title?: string | null
           square_feet?: number | null
           squarefeet?: number | null
           status?: string | null
           title?: string
           updated_at?: string
+          virtual_tour_url?: string | null
           year_built?: number | null
         }
         Relationships: []
