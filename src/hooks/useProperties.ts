@@ -24,8 +24,8 @@ export interface PropertyCreateInput {
   price: number;
   bedrooms: number;
   bathrooms: number;
-  squareFeet: number;
-  propertyType: 'house' | 'condo' | 'townhouse' | 'land';
+  square_feet: number;
+  property_type: 'house' | 'condo' | 'townhouse' | 'land';
   status: 'published' | 'draft';
   market_status?: 'for-sale' | 'for-rent' | 'sold' | 'pending';
   featured?: boolean;
@@ -48,8 +48,8 @@ export function useProperties() {
       price: Number(listing.price),
       bedrooms: listing.bedrooms || 0,
       bathrooms: listing.bathrooms || 0,
-      squareFeet: listing.square_feet || 0,
-      propertyType: validatePropertyType(listing.property_type),
+      square_feet: listing.square_feet || 0,
+      property_type: validatePropertyType(listing.property_type),
       status: listing.status === 'published' ? 'published' : 'draft',
       market_status: listing.market_status || 'for-sale',
       featured: listing.featured || false,
@@ -173,8 +173,8 @@ export function useProperties() {
           price: propertyData.price,
           bedrooms: propertyData.bedrooms,
           bathrooms: propertyData.bathrooms,
-          square_feet: propertyData.squareFeet,
-          property_type: propertyData.propertyType,
+          square_feet: propertyData.square_feet,
+          property_type: propertyData.property_type,
           status: propertyData.status,
           featured: propertyData.featured || false,
           description: propertyData.description || '',
@@ -255,8 +255,8 @@ export function useProperties() {
       if (propertyData.price !== undefined) updateData.price = propertyData.price;
       if (propertyData.bedrooms !== undefined) updateData.bedrooms = propertyData.bedrooms;
       if (propertyData.bathrooms !== undefined) updateData.bathrooms = propertyData.bathrooms;
-      if (propertyData.squareFeet !== undefined) updateData.square_feet = propertyData.squareFeet;
-      if (propertyData.propertyType !== undefined) updateData.property_type = propertyData.propertyType;
+      if (propertyData.square_feet !== undefined) updateData.square_feet = propertyData.square_feet;
+      if (propertyData.property_type !== undefined) updateData.property_type = propertyData.property_type;
       if (propertyData.status !== undefined) updateData.status = propertyData.status;
       if (propertyData.featured !== undefined) updateData.featured = propertyData.featured;
       if (propertyData.description !== undefined) updateData.description = propertyData.description;
