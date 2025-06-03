@@ -15,16 +15,6 @@ const validatePropertyType = (type: string): 'house' | 'condo' | 'townhouse' | '
   return 'house';
 };
 
-// Helper to validate property status
-const validatePropertyStatus = (status: string): 'for-sale' | 'for-rent' | 'sold' | 'pending' => {
-  if (['for-sale', 'for-rent', 'sold', 'pending'].includes(status)) {
-    return status as 'for-sale' | 'for-rent' | 'sold' | 'pending';
-  }
-  // Default to for-sale if invalid status received
-  console.warn(`Invalid property status: ${status}, defaulting to 'for-sale'`);
-  return 'for-sale';
-};
-
 // Type for new property creation
 export interface PropertyCreateInput {
   title: string;
@@ -36,7 +26,8 @@ export interface PropertyCreateInput {
   bathrooms: number;
   squareFeet: number;
   propertyType: 'house' | 'condo' | 'townhouse' | 'land';
-  status: 'for-sale' | 'for-rent' | 'sold' | 'pending';
+  status: 'published' | 'draft';
+  market_status?: 'for-sale' | 'for-rent' | 'sold' | 'pending';
   featured?: boolean;
   description?: string;
   images: string[];
@@ -59,7 +50,8 @@ export function useProperties() {
       bathrooms: listing.bathrooms || 0,
       squareFeet: listing.square_feet || 0,
       propertyType: validatePropertyType(listing.property_type),
-      status: validatePropertyStatus(listing.status),
+      status: listing.status === 'published' ? 'published' : 'draft',
+      market_status: listing.market_status || 'for-sale',
       featured: listing.featured || false,
       description: listing.description || '',
       images: Array.isArray(listing.images) ? listing.images : []

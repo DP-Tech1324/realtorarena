@@ -85,6 +85,9 @@ const PropertyCard: React.FC<PropertyCardProps> = ({ property, showViewDetails =
     }
   };
 
+  // Use market_status for display, fallback to status if market_status not available
+  const displayStatus = property.market_status || (property.status === 'published' ? 'for-sale' : 'draft');
+
   return (
     <>
       <motion.div
@@ -163,14 +166,14 @@ const PropertyCard: React.FC<PropertyCardProps> = ({ property, showViewDetails =
               <div className="absolute top-3 left-3">
                 <Badge 
                   className={`font-medium ${
-                    property.status === 'for-sale' ? 'bg-green-600' :
-                    property.status === 'for-rent' ? 'bg-blue-600' :
-                    property.status === 'sold' ? 'bg-gray-600' : 'bg-orange-600'
+                    displayStatus === 'for-sale' ? 'bg-green-600' :
+                    displayStatus === 'for-rent' ? 'bg-blue-600' :
+                    displayStatus === 'sold' ? 'bg-gray-600' : 'bg-orange-600'
                   } text-white`}
                 >
-                  {property.status === 'for-sale' ? 'For Sale' : 
-                  property.status === 'for-rent' ? 'For Rent' : 
-                  property.status === 'sold' ? 'Sold' : 'Pending'}
+                  {displayStatus === 'for-sale' ? 'For Sale' : 
+                  displayStatus === 'for-rent' ? 'For Rent' : 
+                  displayStatus === 'sold' ? 'Sold' : 'Pending'}
                 </Badge>
               </div>
 

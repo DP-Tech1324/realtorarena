@@ -13,7 +13,8 @@ export const properties: Property[] = [
     bathrooms: 3,
     squareFeet: 2800,
     propertyType: "house",
-    status: "for-sale",
+    status: "published",
+    market_status: "for-sale",
     featured: true,
     description: "Beautiful detached family home with modern finishes, open concept main floor, and a fully finished basement. Walking distance to schools and parks.",
     images: ["https://images.unsplash.com/photo-1600573472591-61770e120a4a?ixlib=rb-4.0.3", "https://images.unsplash.com/photo-1600566753190-17f0baa2a6c3", "https://images.unsplash.com/photo-1600585154084-4e5fe7c39198"]
@@ -29,7 +30,8 @@ export const properties: Property[] = [
     bathrooms: 2,
     squareFeet: 1100,
     propertyType: "condo",
-    status: "for-sale",
+    status: "published",
+    market_status: "for-sale",
     featured: true,
     description: "Stunning condo in the heart of downtown with breathtaking city views, floor-to-ceiling windows, and top-of-the-line appliances.",
     images: ["https://images.unsplash.com/photo-1545324418-cc1a3fa10c00", "https://images.unsplash.com/photo-1560448204-603b3fc33ddc", "https://images.unsplash.com/photo-1560185007-c5ca9d2c014d"]
@@ -45,7 +47,8 @@ export const properties: Property[] = [
     bathrooms: 2.5,
     squareFeet: 1850,
     propertyType: "townhouse",
-    status: "for-sale",
+    status: "published",
+    market_status: "for-sale",
     featured: true,
     description: "Well-maintained townhouse in a family-friendly neighborhood with recently renovated kitchen and bathrooms. Close to shopping and transit.",
     images: ["https://images.unsplash.com/photo-1605276374104-dee2a0ed3cd6", "https://images.unsplash.com/photo-1558036117-15d82a90b9b1", "https://images.unsplash.com/photo-1560185008-a8de49506789"]
@@ -61,7 +64,8 @@ export const properties: Property[] = [
     bathrooms: 4.5,
     squareFeet: 4200,
     propertyType: "house",
-    status: "for-sale",
+    status: "published",
+    market_status: "for-sale",
     featured: true,
     description: "Luxurious custom-built estate on a premium lot featuring a gourmet kitchen, home theater, wine cellar, and resort-style backyard with pool.",
     images: ["https://images.unsplash.com/photo-1564013799919-ab600027ffc6", "https://images.unsplash.com/photo-1600607686527-6fb886090705", "https://images.unsplash.com/photo-1600585154340-be6161a56a0c"]
@@ -77,7 +81,8 @@ export const properties: Property[] = [
     bathrooms: 3,
     squareFeet: 2200,
     propertyType: "condo",
-    status: "for-sale",
+    status: "published",
+    market_status: "for-sale",
     featured: false,
     description: "Spectacular penthouse with panoramic lake views, wraparound terrace, private elevator access, and luxury finishes throughout.",
     images: ["https://images.unsplash.com/photo-1600585154526-990dced4db0d", "https://images.unsplash.com/photo-1600607687644-a19911add663", "https://images.unsplash.com/photo-1600607687920-4e2a09cf159d"]
@@ -93,7 +98,8 @@ export const properties: Property[] = [
     bathrooms: 3,
     squareFeet: 2600,
     propertyType: "house",
-    status: "for-sale",
+    status: "published",
+    market_status: "for-sale",
     featured: false,
     description: "Beautifully restored Victorian home with original features, modern updates, and a private garden. Located in a historic neighborhood.",
     images: ["https://images.unsplash.com/photo-1577495508326-19a1b3cf65b1", "https://images.unsplash.com/photo-1600585154340-be6161a56a0c", "https://images.unsplash.com/photo-1600047509807-f8261a1f5abb"]

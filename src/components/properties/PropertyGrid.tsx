@@ -66,9 +66,15 @@ const PropertyGrid: React.FC<PropertyGridProps> = ({
         
         {/* Quick stats on mobile */}
         <div className="flex gap-2 text-sm text-gray-600 sm:hidden">
-          <span>Available: {filteredProperties.filter(p => p.status === 'for-sale' || p.status === 'for-rent').length}</span>
+          <span>Available: {filteredProperties.filter(p => {
+            const status = p.market_status || (p.status === 'published' ? 'for-sale' : 'draft');
+            return status === 'for-sale' || status === 'for-rent';
+          }).length}</span>
           <span>•</span>
-          <span>Sold: {filteredProperties.filter(p => p.status === 'sold').length}</span>
+          <span>Sold: {filteredProperties.filter(p => {
+            const status = p.market_status || (p.status === 'published' ? 'for-sale' : 'draft');
+            return status === 'sold';
+          }).length}</span>
         </div>
       </motion.div>
 
