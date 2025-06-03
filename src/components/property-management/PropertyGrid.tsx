@@ -3,24 +3,7 @@ import React from 'react';
 import { PropertyCard } from './PropertyCard';
 import { Button } from '@/components/ui/button';
 import { Loader2 } from 'lucide-react';
-
-// Define the Property type locally since we need admin-specific properties
-interface Property {
-  id: string;
-  title: string;
-  address: string;
-  city: string;
-  province: string;
-  price: number;
-  bedrooms: number;
-  bathrooms: number;
-  square_feet: number;
-  property_type: string;
-  status: 'published' | 'draft';
-  featured: boolean;
-  images: string[];
-  description?: string;
-}
+import { Property } from '@/types/Property';
 
 interface PropertyGridProps {
   properties: Property[];
