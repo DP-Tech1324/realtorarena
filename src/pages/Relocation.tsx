@@ -3,29 +3,28 @@ import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
 import PageHeader from '@/components/PageHeader';
 
-const PropertyAcquisition = () => {
+const Relocation = () => {
   return (
     <div className="min-h-screen flex flex-col">
       <Navbar />
 
       <main className="flex-grow pt-[72px]">
-        <PageHeader 
-          title="Property Acquisition" 
-          subtitle="Secure the right property with strategy, data, and expertise." 
-          bgImage="https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=1600&q=80"
+        <PageHeader
+          title="Relocation Services"
+          subtitle="Move with confidence and settle in smoothly."
+          bgImage="https://images.unsplash.com/photo-1581291518633-83b4ebd1d83e?auto=format&fit=crop&w=1600&q=80"
         />
 
         <section className="py-12">
           <div className="container mx-auto px-4 prose max-w-none text-gray-700">
             <p className="mb-4">
-              Whether you're a first-time buyer or an experienced investor, we guide you through every step of the acquisition process.
-              We analyze data, uncover off-market opportunities, and help you make confident offers.
+              Moving to a new city can be daunting. We provide the resources and expertise to make your relocation seamless, whether you're arriving in the Greater Toronto Area or heading elsewhere.
             </p>
             <ul className="list-disc pl-6 space-y-2">
-              <li>Tailored property searches and buyer consultations</li>
-              <li>Comparative market analysis and forecasting</li>
-              <li>Offer strategy and negotiations</li>
-              <li>Due diligence, inspections, and closing support</li>
+              <li>Virtual or in-person tours of prospective communities</li>
+              <li>Detailed information on schools, amenities and transport</li>
+              <li>Connections to trusted local service providers</li>
+              <li>Ongoing assistance as you settle into your new home</li>
             </ul>
           </div>
         </section>
@@ -36,4 +35,4 @@ const PropertyAcquisition = () => {
   );
 };
 
-export default PropertyAcquisition;
+export default Relocation;
