@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
 import { AspectRatio } from '@/components/ui/aspect-ratio';
@@ -172,12 +173,12 @@ const PropertyDetails = () => {
                     <div className="flex flex-col items-center p-4 bg-gray-50 rounded-md">
                       <Home className="text-realtor-navy mb-2" size={24} />
                       <span className="text-gray-600 text-sm">Area</span>
-                      <span className="font-bold text-realtor-navy">{displayProperty.squareFeet} sq ft</span>
+                      <span className="font-bold text-realtor-navy">{displayProperty.square_feet} sq ft</span>
                     </div>
                     <div className="flex flex-col items-center p-4 bg-gray-50 rounded-md">
                       <MapPin className="text-realtor-navy mb-2" size={24} />
                       <span className="text-gray-600 text-sm">Type</span>
-                      <span className="font-bold text-realtor-navy capitalize">{displayProperty.propertyType}</span>
+                      <span className="font-bold text-realtor-navy capitalize">{displayProperty.property_type}</span>
                     </div>
                   </div>
                   

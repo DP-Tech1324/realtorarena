@@ -1,4 +1,5 @@
 
+// Updated Property interface to handle both publication and market status correctly
 export interface Property {
   id: string;
   title: string;
@@ -8,17 +9,21 @@ export interface Property {
   price: number;
   bedrooms: number;
   bathrooms: number;
-  squareFeet: number;
-  propertyType: 'house' | 'condo' | 'townhouse' | 'land';
-  status: 'for-sale' | 'for-rent' | 'sold' | 'pending';
-  featured: boolean;
-  description: string;
+  property_type: string;
+  square_feet?: number;
+  status: 'published' | 'draft'; // Publication status for admin
+  market_status?: 'for-sale' | 'for-rent' | 'sold' | 'pending'; // Market status for display
+  description?: string;
+  featured?: boolean;
+  created_at?: string;
+  updated_at?: string;
+  cover_image?: string;
   images: string[];
-  mlsNumber?: string;
-  seoTitle?: string;
-  seoDescription?: string;
-  metaKeywords?: string;
-  virtualTourUrl?: string;
+  meta_keywords?: string;
+  seo_title?: string;
+  seo_description?: string;
+  virtual_tour_url?: string;
+  [key: string]: any;
 }
 
 export interface Agent {

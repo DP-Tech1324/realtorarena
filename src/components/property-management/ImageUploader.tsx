@@ -57,7 +57,7 @@ export function ImageUploader({ initialImages = [], onImagesChange, maxImages = 
     const path = imageUrl.split('/').pop();
     if (path) {
       supabase.storage
-        .from('realtorjigar-images')
+        .from('property-images')
         .remove([`property-images/${path}`])
         .then(({ error }) => {
           if (error) {
@@ -84,7 +84,7 @@ export function ImageUploader({ initialImages = [], onImagesChange, maxImages = 
       
       try {
         const { data, error } = await supabase.storage
-          .from('realtorjigar-images')
+          .from('property-images')
           .upload(filePath, file, {
             cacheControl: '3600',
             upsert: false,
@@ -93,7 +93,7 @@ export function ImageUploader({ initialImages = [], onImagesChange, maxImages = 
         if (error) throw error;
         
         const { data: { publicUrl } } = supabase.storage
-          .from('realtorjigar-images')
+          .from('property-images')
           .getPublicUrl(data.path);
         
         newImageUrls.push(publicUrl);

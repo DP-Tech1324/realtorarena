@@ -1,5 +1,5 @@
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Slider } from '@/components/ui/slider';
@@ -20,7 +20,7 @@ const MortgageCalculator: React.FC = () => {
   const [totalInterest, setTotalInterest] = useState<number>(0);
   const [totalPayment, setTotalPayment] = useState<number>(0);
 
-  const calculateMortgage = () => {
+  const calculateMortgage = useCallback(() => {
     const principal = homePrice - downPayment;
     const monthlyRate = interestRate / 100 / 12;
     const numberOfPayments = loanTerm * 12;
@@ -39,11 +39,11 @@ const MortgageCalculator: React.FC = () => {
     setMonthlyPayment(monthly);
     setTotalPayment(monthly * numberOfPayments);
     setTotalInterest((monthly * numberOfPayments) - principal);
-  };
+  }, [homePrice, downPayment, interestRate, loanTerm]);
 
   useEffect(() => {
     calculateMortgage();
-  }, [homePrice, downPayment, interestRate, loanTerm]);
+  }, [calculateMortgage]);
 
   const formatCurrency = (value: number): string => {
     return new Intl.NumberFormat('en-CA', {

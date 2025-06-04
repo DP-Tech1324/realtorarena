@@ -1,38 +1,10 @@
 
-import React, { useState } from 'react';
+import React from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Switch } from '@/components/ui/switch';
 import { Badge } from '@/components/ui/badge';
-import { 
-  AlertDialog, 
-  AlertDialogAction, 
-  AlertDialogCancel, 
-  AlertDialogContent, 
-  AlertDialogDescription, 
-  AlertDialogFooter, 
-  AlertDialogHeader, 
-  AlertDialogTitle, 
-  AlertDialogTrigger 
-} from '@/components/ui/alert-dialog';
-import { PenSquare, Trash, MapPin, Bed, Bath, Square } from 'lucide-react';
-
-interface Property {
-  id: string;
-  title: string;
-  address: string;
-  city: string;
-  province: string;
-  price: number;
-  bedrooms: number;
-  bathrooms: number;
-  square_feet: number;
-  property_type: string;
-  status: 'published' | 'draft';  // Updated to match the specific status types
-  featured: boolean;
-  images: string[];
-  description?: string;
-}
+import { Edit, Trash2, Eye, MapPin, Bed, Bath, Square, Home } from 'lucide-react';
+import { Property } from '@/types/Property';
 
 interface PropertyCardProps {
   property: Property;
@@ -42,7 +14,11 @@ interface PropertyCardProps {
 }
 
 export function PropertyCard({ property, onEdit, onDelete, onToggleStatus }: PropertyCardProps) {
-  const [isStatusLoading, setIsStatusLoading] = useState(false);
+  const handleDelete = () => {
+    if (window.confirm('Are you sure you want to delete this property?')) {
+      onDelete(property.id);
+    }
+  };
 
   const formatPrice = (price: number) => {
     return new Intl.NumberFormat('en-CA', {
@@ -52,115 +28,122 @@ export function PropertyCard({ property, onEdit, onDelete, onToggleStatus }: Pro
     }).format(price);
   };
 
-  const handleStatusToggle = async () => {
-    setIsStatusLoading(true);
-    try {
-      await onToggleStatus(property.id, property.status);
-    } finally {
-      setIsStatusLoading(false);
-    }
+  const getStatusColor = (status: 'published' | 'draft') => {
+    return status === 'published' ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800';
   };
 
-  const coverImage = property.images && property.images.length > 0 
-    ? property.images[0] 
-    : 'https://images.unsplash.com/photo-1600585154340-be6161a56a0c?ixlib=rb-4.0.3';
+  const getMarketStatusColor = (marketStatus?: string) => {
+    switch (marketStatus) {
+      case 'sold':
+        return 'bg-red-100 text-red-800';
+      case 'pending':
+        return 'bg-orange-100 text-orange-800';
+      case 'for-rent':
+        return 'bg-blue-100 text-blue-800';
+      default:
+        return 'bg-green-100 text-green-800';
+    }
+  };
 
   return (
     <Card className="overflow-hidden hover:shadow-lg transition-shadow">
       <div className="relative">
-        <img 
-          src={coverImage} 
-          alt={property.title}
-          className="w-full h-48 object-cover"
-        />
-        <div className="absolute top-3 left-3">
-          <Badge variant={property.status === 'published' ? 'default' : 'secondary'}>
-            {property.status === 'published' ? 'Published' : 'Draft'}
-          </Badge>
-        </div>
-        {property.featured && (
-          <div className="absolute top-3 right-3">
-            <Badge className="bg-realtor-gold text-realtor-navy">Featured</Badge>
+        {property.cover_image || (property.images && property.images.length > 0) ? (
+          <img
+            src={property.cover_image || property.images[0]}
+            alt={property.title}
+            className="w-full h-48 object-cover"
+          />
+        ) : (
+          <div className="w-full h-48 bg-gray-200 flex items-center justify-center">
+            <Home className="h-12 w-12 text-gray-400" />
           </div>
         )}
+        
+        <div className="absolute top-2 left-2 flex gap-2">
+          <Badge className={getStatusColor(property.status)}>
+            {property.status}
+          </Badge>
+          {property.market_status && (
+            <Badge className={getMarketStatusColor(property.market_status)}>
+              {property.market_status}
+            </Badge>
+          )}
+          {property.featured && (
+            <Badge className="bg-gold-100 text-gold-800">
+              Featured
+            </Badge>
+          )}
+        </div>
       </div>
-      
+
       <CardContent className="p-4">
         <div className="space-y-3">
           <div>
-            <h3 className="font-semibold text-lg text-realtor-navy line-clamp-1">{property.title}</h3>
-            <div className="flex items-center text-gray-600 text-sm mt-1">
-              <MapPin className="h-4 w-4 mr-1" />
-              <span className="line-clamp-1">{property.address}, {property.city}</span>
+            <h3 className="font-semibold text-lg text-realtor-navy truncate">
+              {property.title}
+            </h3>
+            <p className="text-2xl font-bold text-realtor-gold">
+              {formatPrice(property.price)}
+            </p>
+          </div>
+
+          <div className="flex items-center text-gray-600 text-sm">
+            <MapPin className="h-4 w-4 mr-1" />
+            <span className="truncate">
+              {property.address}, {property.city}, {property.province}
+            </span>
+          </div>
+
+          <div className="flex justify-between text-sm text-gray-600">
+            <div className="flex items-center">
+              <Bed className="h-4 w-4 mr-1" />
+              <span>{property.bedrooms} bed</span>
+            </div>
+            <div className="flex items-center">
+              <Bath className="h-4 w-4 mr-1" />
+              <span>{property.bathrooms} bath</span>
+            </div>
+            <div className="flex items-center">
+              <Square className="h-4 w-4 mr-1" />
+              <span>{property.square_feet || 0} sqft</span>
             </div>
           </div>
 
-          <div className="text-2xl font-bold text-realtor-navy">
-            {formatPrice(property.price)}
-          </div>
+          {property.description && (
+            <p className="text-gray-600 text-sm line-clamp-2">
+              {property.description}
+            </p>
+          )}
 
-          <div className="flex items-center justify-between text-sm text-gray-600">
-            <div className="flex items-center space-x-4">
-              <div className="flex items-center">
-                <Bed className="h-4 w-4 mr-1" />
-                <span>{property.bedrooms}</span>
-              </div>
-              <div className="flex items-center">
-                <Bath className="h-4 w-4 mr-1" />
-                <span>{property.bathrooms}</span>
-              </div>
-              <div className="flex items-center">
-                <Square className="h-4 w-4 mr-1" />
-                <span>{property.square_feet.toLocaleString()} sq ft</span>
-              </div>
-            </div>
-          </div>
-
-          <div className="flex items-center justify-between pt-3 border-t">
-            <div className="flex items-center space-x-2">
-              <span className="text-sm font-medium">Published:</span>
-              <Switch
-                checked={property.status === 'published'}
-                onCheckedChange={handleStatusToggle}
-                disabled={isStatusLoading}
-              />
-            </div>
-
-            <div className="flex items-center space-x-2">
-              <Button
-                variant="ghost"
-                size="icon"
-                onClick={() => onEdit(property)}
-                className="h-8 w-8"
-              >
-                <PenSquare className="h-4 w-4" />
-              </Button>
-
-              <AlertDialog>
-                <AlertDialogTrigger asChild>
-                  <Button variant="ghost" size="icon" className="h-8 w-8 text-red-600 hover:text-red-700">
-                    <Trash className="h-4 w-4" />
-                  </Button>
-                </AlertDialogTrigger>
-                <AlertDialogContent>
-                  <AlertDialogHeader>
-                    <AlertDialogTitle>Delete Property</AlertDialogTitle>
-                    <AlertDialogDescription>
-                      Are you sure you want to delete "{property.title}"? This action cannot be undone.
-                    </AlertDialogDescription>
-                  </AlertDialogHeader>
-                  <AlertDialogFooter>
-                    <AlertDialogCancel>Cancel</AlertDialogCancel>
-                    <AlertDialogAction 
-                      onClick={() => onDelete(property.id)}
-                      className="bg-red-600 hover:bg-red-700"
-                    >
-                      Delete
-                    </AlertDialogAction>
-                  </AlertDialogFooter>
-                </AlertDialogContent>
-              </AlertDialog>
-            </div>
+          <div className="flex gap-2 pt-2">
+            <Button
+              size="sm"
+              variant="outline"
+              onClick={() => onEdit(property)}
+              className="flex-1"
+            >
+              <Edit className="h-4 w-4 mr-1" />
+              Edit
+            </Button>
+            
+            <Button
+              size="sm"
+              variant="outline"
+              onClick={() => onToggleStatus(property.id, property.status)}
+              className="flex-1"
+            >
+              <Eye className="h-4 w-4 mr-1" />
+              {property.status === 'published' ? 'Unpublish' : 'Publish'}
+            </Button>
+            
+            <Button
+              size="sm"
+              variant="destructive"
+              onClick={handleDelete}
+            >
+              <Trash2 className="h-4 w-4" />
+            </Button>
           </div>
         </div>
       </CardContent>
