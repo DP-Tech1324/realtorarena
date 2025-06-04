@@ -1,5 +1,5 @@
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Slider } from '@/components/ui/slider';
@@ -20,7 +20,7 @@ const AffordabilityCalculator: React.FC = () => {
   const [affordablePrice, setAffordablePrice] = useState<number>(0);
   const [monthlyMortgage, setMonthlyMortgage] = useState<number>(0);
 
-  const calculateAffordability = () => {
+  const calculateAffordability = useCallback(() => {
     // Convert annual income to monthly
     const monthlyIncome = grossIncome / 12;
     
@@ -46,11 +46,11 @@ const AffordabilityCalculator: React.FC = () => {
     
     setAffordablePrice(maxPrice > 0 ? maxPrice : 0);
     setMonthlyMortgage(maxMonthlyPayment > 0 ? maxMonthlyPayment : 0);
-  };
+  }, [grossIncome, monthlyDebt, downPayment, interestRate, loanTerm]);
 
   useEffect(() => {
     calculateAffordability();
-  }, [grossIncome, monthlyDebt, downPayment, interestRate, loanTerm]);
+  }, [calculateAffordability]);
 
   const formatCurrency = (value: number): string => {
     return new Intl.NumberFormat('en-CA', {

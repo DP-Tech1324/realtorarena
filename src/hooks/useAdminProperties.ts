@@ -34,7 +34,7 @@ export function useAdminProperties() {
   const handleSubmit = async (formData: any, coverImage?: File, additionalImages?: string[]) => {
     setIsSubmitting(true);
     try {
-      let images: string[] = additionalImages || [];
+      const images: string[] = additionalImages || [];
       let coverImageUrl = '';
 
       // Handle cover image upload if a new one was selected
@@ -71,7 +71,7 @@ export function useAdminProperties() {
   const handleUpdate = async (editingProperty: Property, formData: any, coverImage?: File, additionalImages?: string[]) => {
     setIsSubmitting(true);
     try {
-      let images: string[] = additionalImages || [];
+      const images: string[] = additionalImages || [];
       let coverImageUrl = editingProperty.cover_image || '';
 
       // Handle cover image upload if a new one was selected
