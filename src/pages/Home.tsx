@@ -16,37 +16,37 @@ const serviceCards = [
     icon: <HomeIcon className="h-10 w-10 text-realtor-gold mb-4" />,
     title: "Property Sales",
     desc: "Sell properties with confidence using our marketing expertise and strategic pricing.",
-    link: "/PropertySales",
+    link: "/property-sales",
   },
   {
     icon: <Building2 className="h-10 w-10 text-realtor-gold mb-4" />,
     title: "Property Acquisition",
     desc: "Strategic support to help you acquire the right property at the right time.",
-    link: "/PropertyAcquisition",
+    link: "/property-acquisition",
   },
   {
     icon: <Move className="h-10 w-10 text-realtor-gold mb-4" />,
     title: "Relocation Services",
     desc: "Personalized relocation support for individuals and families moving into or out of town.",
-    link: "/Relocation",
+    link: "/relocation",
   },
   {
     icon: <Landmark className="h-10 w-10 text-realtor-gold mb-4" />,
     title: "Commercial Real Estate",
     desc: "End-to-end solutions for retail, office, and industrial property needs.",
-    link: "/Commercial",
+    link: "/commercial",
   },
   {
     icon: <LineChart className="h-10 w-10 text-realtor-gold mb-4" />,
     title: "Investment Properties",
     desc: "Guidance and analysis for investors seeking profitable real estate opportunities.",
-    link: "/Investment",
+    link: "/investment",
   },
   {
     icon: <Crown className="h-10 w-10 text-realtor-gold mb-4" />,
     title: "Luxury Properties",
     desc: "Exclusive high-end services for luxury property buyers and sellers.",
-    link: "/Luxury",
+    link: "/luxury",
   },
 ];
 
