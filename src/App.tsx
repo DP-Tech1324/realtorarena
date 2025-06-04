@@ -97,6 +97,19 @@ function App() {
               <Route path="/access-denied" element={<AccessDenied />} />
               
               {/* Admin Routes */}
+              <Route path="/admin" element={
+                <ProtectedRoute allowedRoles={["admin", "superadmin", "editor"]}>
+                  <AdminLayout />
+                </ProtectedRoute>
+              }>
+                <Route index element={<AdminDashboard />} />
+                <Route path="properties" element={<AdminProperties />} />
+                <Route path="inquiries" element={<AdminInquiries />} />
+                <Route path="users" element={<AdminUsers />} />
+                <Route path="analytics" element={<AdminAnalytics />} />
+                <Route path="images" element={<AdminImages />} />
+                <Route path="marketing" element={<AdminMarketing />} />
+
               <Route
                 path="/admin"
                 element={
