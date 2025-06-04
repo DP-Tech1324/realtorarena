@@ -32,6 +32,7 @@ import PropertyAcquisition from '@/pages/PropertyAcquisition';
 import RlpSearch from '@/pages/RlpSearch';
 import Favorites from '@/pages/Favorites';
 import ContactPage from '@/pages/ContactPage';
+import Booking from '@/pages/Booking';
 
 // Admin pages
 import AuthPage from '@/pages/auth/AuthPage';
@@ -91,6 +92,7 @@ function App() {
               <Route path="/rlp-search" element={<RlpSearch />} />
               <Route path="/favorites" element={<Favorites />} />
               <Route path="/contact-page" element={<ContactPage />} />
+              <Route path="/booking" element={<Booking />} />
               
               {/* Auth Routes */}
               <Route path="/auth" element={<AuthPage />} />

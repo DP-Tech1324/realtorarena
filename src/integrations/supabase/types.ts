@@ -136,6 +136,36 @@ export type Database = {
           },
         ]
       }
+      bookings: {
+        Row: {
+          id: string
+          name: string
+          email: string
+          phone: string | null
+          date: string
+          time: string
+          created_at: string | null
+        }
+        Insert: {
+          id?: string
+          name: string
+          email: string
+          phone?: string | null
+          date: string
+          time: string
+          created_at?: string | null
+        }
+        Update: {
+          id?: string
+          name?: string
+          email?: string
+          phone?: string | null
+          date?: string
+          time?: string
+          created_at?: string | null
+        }
+        Relationships: []
+      }
       inquiries: {
         Row: {
           created_at: string

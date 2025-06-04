@@ -60,6 +60,24 @@ This project is built with:
 - shadcn-ui
 - Tailwind CSS
 
+## Booking
+
+Users can schedule consultations directly from the `/booking` page. The form uses a calendar and time picker for selecting a preferred appointment slot. Submissions are stored in Supabase and double-booking is automatically prevented.
+
+### Booking API
+
+`POST /bookings`
+
+Fields:
+
+- `name` – customer name
+- `email` – contact email
+- `phone` – optional phone number
+- `date` – appointment date (YYYY-MM-DD)
+- `time` – appointment time slot
+
+If a booking already exists for the given date and time, the API returns an error.
+
 ## How can I deploy this project?
 
 Simply open [Lovable](https://lovable.dev/projects/54e95f63-a5c2-4a7a-830e-278cae2d1ce2) and click on Share -> Publish.
