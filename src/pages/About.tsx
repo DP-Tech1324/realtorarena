@@ -1,8 +1,8 @@
 import Image from "@/components/ui/Image";
 import AnimatedSection from "@/components/ui/AnimatedSection";
 
-import RECOLogo from "@/assets/images/logos/relator.jpeg";
-import CREALogo from "@/assets/images/logos/relator.jpeg";
+import RECOLogo from "@/assets/images/logos/realtor.jpeg";
+import CREALogo from "@/assets/images/logos/realtor.jpeg";
 import TRREBLogo from "@/assets/images/logos/TERB.jpg";
 import RLPLogo from "@/assets/images/logos/Jigar_Patel_Logo.png";
 
