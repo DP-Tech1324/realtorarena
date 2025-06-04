@@ -1,5 +1,5 @@
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Slider } from '@/components/ui/slider';
@@ -49,17 +49,17 @@ const ClosingCostCalculator: React.FC = () => {
   // Calculate Toronto Municipal Land Transfer Tax if property is in Toronto
   // For simplicity, we're not including this in this basic calculator
   
-  const calculateTotalClosingCosts = () => {
+  const calculateTotalClosingCosts = useCallback(() => {
     const ltt = calculateLTT(homePrice, isFirstTimeBuyer);
     setLandTransferTax(ltt);
     
     const total = ltt + legalFees + titleInsurance + homeInspection + movingCosts + adjustments;
     setTotalClosingCosts(total);
-  };
+  }, [homePrice, isFirstTimeBuyer, legalFees, titleInsurance, homeInspection, movingCosts, adjustments]);
 
   useEffect(() => {
     calculateTotalClosingCosts();
-  }, [homePrice, isFirstTimeBuyer, legalFees, titleInsurance, homeInspection, movingCosts, adjustments]);
+  }, [calculateTotalClosingCosts]);
 
   const formatCurrency = (value: number): string => {
     return new Intl.NumberFormat('en-CA', {
