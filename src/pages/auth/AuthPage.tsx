@@ -56,8 +56,6 @@ const AuthPage: React.FC = () => {
           navigate(fromPath);
         } else if (role === 'admin' || role === 'superadmin' || role === 'editor') {
           navigate('/admin');
-        } else if (role === 'agent') {
-          navigate('/manage-properties');
         } else {
           navigate('/');
         }
