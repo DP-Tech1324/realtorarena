@@ -42,7 +42,7 @@ const ServicesPage = () => {
                 <p className="text-gray-600 mb-4">
                   Sell properties with confidence using our marketing expertise and strategic pricing.
                 </p>
-                <Link to="/PropertySales">
+                <Link to="/property-sales">
                   <Button variant="outline" className="border-realtor-navy text-realtor-navy hover:bg-realtor-navy hover:text-white">
                     Learn More
                   </Button>
@@ -55,7 +55,7 @@ const ServicesPage = () => {
                 <p className="text-gray-600 mb-4">
                   Strategic support to help you acquire the right property at the right time.
                 </p>
-                <Link to="/PropertyAcquisition">
+                <Link to="/property-acquisition">
                   <Button variant="outline" className="border-realtor-navy text-realtor-navy hover:bg-realtor-navy hover:text-white">
                     Learn More
                   </Button>
@@ -68,7 +68,7 @@ const ServicesPage = () => {
                 <p className="text-gray-600 mb-4">
                   Personalized relocation support for individuals and families moving into or out of town.
                 </p>
-                <Link to="/Relocation">
+                <Link to="/relocation">
                   <Button variant="outline" className="border-realtor-navy text-realtor-navy hover:bg-realtor-navy hover:text-white">
                     Learn More
                   </Button>
@@ -81,7 +81,7 @@ const ServicesPage = () => {
                 <p className="text-gray-600 mb-4">
                   Guidance and analysis for investors seeking profitable real estate opportunities.
                 </p>
-                <Link to="/Investment">
+                <Link to="/investment">
                   <Button variant="outline" className="border-realtor-navy text-realtor-navy hover:bg-realtor-navy hover:text-white">
                     Learn More
                   </Button>
@@ -94,7 +94,7 @@ const ServicesPage = () => {
                 <p className="text-gray-600 mb-4">
                   Exclusive high-end services for luxury property buyers and sellers.
                 </p>
-                <Link to="/Luxury">
+                <Link to="/luxury">
                   <Button variant="outline" className="border-realtor-navy text-realtor-navy hover:bg-realtor-navy hover:text-white">
                     Learn More
                   </Button>
@@ -107,7 +107,7 @@ const ServicesPage = () => {
                 <p className="text-gray-600 mb-4">
                   End-to-end solutions for retail, office, and industrial property needs.
                 </p>
-                <Link to="/Commercial">
+                <Link to="/commercial">
                   <Button variant="outline" className="border-realtor-navy text-realtor-navy hover:bg-realtor-navy hover:text-white">
                     Learn More
                   </Button>
