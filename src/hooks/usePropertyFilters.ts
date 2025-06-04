@@ -18,18 +18,19 @@ export const usePropertyFilters = ({
   const [filteredProperties, setFilteredProperties] = useState<Property[]>(properties);
   const [priceRangeFilter, setPriceRangeFilter] = useState<string>(initialPriceFilter);
   const [propertyTypeFilter, setPropertyTypeFilter] = useState<string>(initialTypeFilter);
-  const [statusFilter, setStatusFilter] = useState<string>('published');
+  // default to showing all market statuses
+  const [statusFilter, setStatusFilter] = useState<string>('');
   const [sortOrder, setSortOrder] = useState<string>('price-asc');
   const [locationFilter, setLocationFilter] = useState<string>(initialLocationFilter);
 
   // Reset all filters
   const resetFilters = () => {
-  setPriceRangeFilter('');
-  setPropertyTypeFilter('');
-  setStatusFilter('published');
-  setSortOrder('price-asc');
-  setLocationFilter('');
-};
+    setPriceRangeFilter('');
+    setPropertyTypeFilter('');
+    setStatusFilter('');
+    setSortOrder('price-asc');
+    setLocationFilter('');
+  };
 
   // Apply filters when filter states change
   useEffect(() => {
@@ -60,12 +61,14 @@ export const usePropertyFilters = ({
 
     // Filter by property type
     if (propertyTypeFilter && propertyTypeFilter !== 'any') {
-      results = results.filter(p => p.propertyType === propertyTypeFilter);
+      // property objects use `property_type` as the key
+      // filter correctly by that field
+      results = results.filter(p => p.property_type === propertyTypeFilter);
     }
 
-    // Filter by status
+    // Filter by market status
     if (statusFilter) {
-      results = results.filter(p => p.status === statusFilter);
+      results = results.filter(p => p.market_status === statusFilter);
     }
 
     // Sort results

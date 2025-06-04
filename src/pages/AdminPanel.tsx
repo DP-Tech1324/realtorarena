@@ -107,7 +107,7 @@ const AdminPanel = () => {
                 </CardContent>
                 <CardFooter>
                   <Button asChild className="w-full bg-realtor-navy hover:bg-realtor-navy/90">
-                    <Link to="/manage-properties">Manage Properties</Link>
+                    <Link to="/admin/properties">Manage Properties</Link>
                   </Button>
                 </CardFooter>
               </Card>
