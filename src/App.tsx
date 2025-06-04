@@ -97,18 +97,78 @@ function App() {
               <Route path="/access-denied" element={<AccessDenied />} />
               
               {/* Admin Routes */}
-              <Route path="/admin" element={
-                <ProtectedRoute allowedRoles={["admin"]}>
-                  <AdminLayout />
-                </ProtectedRoute>
-              }>
-                <Route index element={<AdminDashboard />} />
-                <Route path="properties" element={<AdminProperties />} />
-                <Route path="inquiries" element={<AdminInquiries />} />
-                <Route path="users" element={<AdminUsers />} />
-                <Route path="analytics" element={<AdminAnalytics />} />
-                <Route path="images" element={<AdminImages />} />
-                <Route path="marketing" element={<AdminMarketing />} />
+              <Route
+                path="/admin"
+                element={
+                  <ProtectedRoute allowedRoles={["admin"]}>
+                    <AdminLayout />
+                  </ProtectedRoute>
+                }
+              >
+                <Route
+                  index
+                  element={
+                    <ProtectedRoute
+                      allowedRoles={["admin", "superadmin", "editor"]}
+                    >
+                      <AdminDashboard />
+                    </ProtectedRoute>
+                  }
+                />
+                <Route
+                  path="properties"
+                  element={
+                    <ProtectedRoute
+                      allowedRoles={["admin", "superadmin", "editor"]}
+                    >
+                      <AdminProperties />
+                    </ProtectedRoute>
+                  }
+                />
+                <Route
+                  path="inquiries"
+                  element={
+                    <ProtectedRoute
+                      allowedRoles={["admin", "superadmin", "editor"]}
+                    >
+                      <AdminInquiries />
+                    </ProtectedRoute>
+                  }
+                />
+                <Route
+                  path="users"
+                  element={
+                    <ProtectedRoute allowedRoles={["superadmin"]}>
+                      <AdminUsers />
+                    </ProtectedRoute>
+                  }
+                />
+                <Route
+                  path="analytics"
+                  element={
+                    <ProtectedRoute allowedRoles={["admin", "superadmin"]}>
+                      <AdminAnalytics />
+                    </ProtectedRoute>
+                  }
+                />
+                <Route
+                  path="images"
+                  element={
+                    <ProtectedRoute
+                      allowedRoles={["admin", "superadmin", "editor"]}
+                    >
+                      <AdminImages />
+                    </ProtectedRoute>
+                  }
+                />
+                <Route
+                  path="marketing"
+                  element={
+                    <ProtectedRoute allowedRoles={["admin", "superadmin"]}>
+                      <AdminMarketing />
+                    </ProtectedRoute>
+                  }
+                />
               </Route>
               
               {/* 404 Route */}
