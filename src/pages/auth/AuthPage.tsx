@@ -1,6 +1,6 @@
 // src/pages/AuthPage.tsx
 import React, { useState } from 'react';
-import { useNavigate, useLocation } from 'react-router-dom';
+import { useNavigate, useLocation, type Location } from 'react-router-dom';
 import {
   Card, CardContent, CardDescription, CardFooter,
   CardHeader, CardTitle
@@ -48,7 +48,9 @@ const AuthPage: React.FC = () => {
       if (success) {
         await refreshProfile();
 
-        const fromPath = (location.state as any)?.from?.pathname;
+        const fromPath = (
+          location.state as { from?: Location } | null
+        )?.from?.pathname;
         const role = localStorage.getItem('userRole');
         console.log('🔁 Redirect after login →', { fromPath, role });
 
@@ -56,8 +58,6 @@ const AuthPage: React.FC = () => {
           navigate(fromPath);
         } else if (role === 'admin' || role === 'superadmin' || role === 'editor') {
           navigate('/admin');
-        } else if (role === 'agent') {
-          navigate('/manage-properties');
         } else {
           navigate('/');
         }
