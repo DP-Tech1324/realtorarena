@@ -81,7 +81,7 @@ const PropertyDetails = () => {
           <div className="text-center">
             <h1 className="text-2xl font-bold text-realtor-navy mb-4">Property Not Found</h1>
             <p className="text-gray-600 mb-6">The property you're looking for doesn't exist or has been removed.</p>
-            <Link to="/properties">
+            <Link to="/listings">
               <Button className="bg-realtor-navy hover:bg-realtor-navy/90">
                 <ArrowLeft className="mr-2 h-4 w-4" />
                 Back to All Properties
@@ -104,7 +104,7 @@ const PropertyDetails = () => {
         {/* Property Header Section */}
         <section className="bg-white py-8 border-b">
           <div className="container mx-auto px-4">
-            <Link to="/properties" className="flex items-center text-realtor-navy hover:text-realtor-gold mb-4">
+            <Link to="/listings" className="flex items-center text-realtor-navy hover:text-realtor-gold mb-4">
               <ArrowLeft className="mr-1 h-4 w-4" />
               Back to Properties
             </Link>

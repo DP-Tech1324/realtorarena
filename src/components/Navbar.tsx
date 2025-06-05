@@ -86,15 +86,7 @@ const Navbar = () => {
           </DropdownMenu>
         )}
 
-        {/* Admin Panel Button: Only show if user is admin & NOT on admin route */}
-        {isAdmin && !isAdminRoute && (
-          <button
-            onClick={() => navigate('/admin')}
-            className="ml-4 px-4 py-2 rounded bg-realtor-gold text-white hover:bg-yellow-600 transition-all"
-          >
-            Admin Panel
-          </button>
-        )}
+      
 
         {/* Mobile menu toggle */}
         <button

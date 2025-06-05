@@ -164,21 +164,6 @@ const NavigationMenu: React.FC<NavigationMenuProps> = ({ className }) => {
         </Link>
       </li>
 
-      {/* Admin Panel Link - Only show if user is admin */}
-      {isAdmin && (
-        <li>
-          <Link 
-            to="/admin" 
-            className={cn(
-              "hover:text-realtor-gold transition-colors flex items-center gap-2",
-              location.pathname.startsWith('/admin') ? "text-realtor-gold font-semibold" : ""
-            )}
-          >
-            <ShieldCheck className="h-4 w-4" />
-            Admin Panel
-          </Link>
-        </li>
-      )}
     </ul>
   );
 };
