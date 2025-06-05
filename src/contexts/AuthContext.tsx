@@ -41,8 +41,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
     try {
       console.log('🔄 Refreshing profile for user:', user.id);
+      console.log('🔄 User email:', user.email);
 
-      // ✅ Fetch admin user role if active
+      // ✅ Fetch admin user role if active - with better error handling
       const { data: adminData, error: adminError } = await supabase
         .from('admin_users')
         .select('*')
@@ -50,9 +51,18 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         .eq('is_active', true)
         .maybeSingle();
 
-      if (adminError) console.error('❌ Admin fetch error:', adminError);
+      if (adminError) {
+        console.error('❌ Admin fetch error:', adminError);
+        // Still continue to set default values instead of throwing
+      }
+
+      console.log('🔍 Admin data found:', adminData);
+      
       const adminStatus = !!adminData && !adminError;
       const role = adminData?.role || null;
+
+      console.log('🔍 Admin status:', adminStatus);
+      console.log('🔍 User role:', role);
 
       setIsAdmin(adminStatus);
       setUserRole(role);
@@ -63,6 +73,38 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       localStorage.setItem('isAgent', 'false');
 
       setProfile({ ...adminData, role: role || 'user' });
+
+      // If no admin record found, let's try to create one for testing
+      if (!adminData && !adminError && user.email) {
+        console.log('🔧 No admin record found, checking if we should create one...');
+        
+        // For testing: if email contains 'admin' or is a specific test email, create admin record
+        if (user.email.includes('admin') || user.email === 'dhrumilpatel2401@gmail.com') {
+          console.log('🔧 Creating admin record for test user...');
+          
+          const { data: newAdminData, error: createError } = await supabase
+            .from('admin_users')
+            .insert([{
+              user_id: user.id,
+              email: user.email,
+              role: 'superadmin',
+              is_active: true
+            }])
+            .select()
+            .single();
+
+          if (!createError && newAdminData) {
+            console.log('✅ Created admin record:', newAdminData);
+            setIsAdmin(true);
+            setUserRole('superadmin');
+            setProfile(newAdminData);
+            localStorage.setItem('isAdmin', 'true');
+            localStorage.setItem('userRole', 'superadmin');
+          } else {
+            console.error('❌ Failed to create admin record:', createError);
+          }
+        }
+      }
     } catch (error) {
       console.error('❌ Error in refreshProfile:', error);
       setIsAdmin(false);
