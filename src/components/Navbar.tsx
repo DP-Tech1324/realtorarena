@@ -1,15 +1,13 @@
 
 import React, { useState, useEffect } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
-import { Menu, X, Shield } from 'lucide-react';
+import { Menu, X } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useIsMobile } from '@/hooks/use-mobile';
 import MobileMenu from './navbar/MobileMenu';
-import NavigationMenu from './navbar/NavigationMenu';
 import { useAuth } from '@/contexts/AuthContext';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger, DropdownMenuSeparator } from '@/components/ui/dropdown-menu';
-import { Button } from '@/components/ui/button';
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 
 const adminRoles = ['admin', 'superadmin', 'editor'];
 
@@ -19,7 +17,7 @@ const Navbar = () => {
   const isMobile = useIsMobile();
   const location = useLocation();
   const navigate = useNavigate();
-  const { user, userRole, signOut, isAdmin } = useAuth();
+  const { user, userRole, signOut } = useAuth();
 
   // Don't render navbar on admin routes since AdminLayout handles navigation
   const isAdminRoute = location.pathname.startsWith('/admin');
@@ -46,12 +44,10 @@ const Navbar = () => {
 
   const handleLogout = async () => {
     await signOut();
-    navigate('/');
-  };
-
-  const handleLogin = () => {
     navigate('/auth');
   };
+
+  const isAdmin = user && adminRoles.includes(userRole);
 
   return (
     <header
@@ -69,78 +65,37 @@ const Navbar = () => {
           <span className="text-realtor-gold">Jigar</span> Patel
         </Link>
 
-        {/* Desktop Navigation - hidden on mobile */}
-        <div className="hidden md:flex items-center justify-center flex-1">
-          <NavigationMenu />
-        </div>
+        {/* Mobile Menu */}
+        <MobileMenu isOpen={isOpen} />
 
-        {/* Right side actions */}
-        <div className="flex items-center space-x-4">
-          {/* Contact button - always visible on desktop */}
-          <Button 
-            className="hidden md:flex bg-realtor-gold hover:bg-realtor-gold/90 text-realtor-navy"
-            asChild
-          >
-            <Link to="/contact">Contact Agent</Link>
-          </Button>
+        {/* Admin Access Dropdown: Only show if user is admin & NOT on admin route */}
+        {isAdmin && (
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Avatar className="cursor-pointer">
+                <AvatarFallback>{user.email?.charAt(0).toUpperCase()}</AvatarFallback>
+              </Avatar>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end" className="w-48">
+              <DropdownMenuItem onClick={() => navigate('/admin')}>
+                Admin Dashboard
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={handleLogout} className="text-red-600">
+                Logout
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        )}
 
-          {/* User menu or login button */}
-          {user ? (
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Avatar className="cursor-pointer">
-                  <AvatarFallback className="bg-realtor-navy text-white">
-                    {user.email?.charAt(0).toUpperCase()}
-                  </AvatarFallback>
-                </Avatar>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="end" className="w-56">
-                <div className="px-2 py-1.5 text-sm text-gray-700">
-                  <p className="font-medium">{user.email}</p>
-                  {userRole && (
-                    <p className="text-xs text-gray-500 capitalize">Role: {userRole}</p>
-                  )}
-                </div>
-                <DropdownMenuSeparator />
-                
-                {isAdmin && (
-                  <>
-                    <DropdownMenuItem onClick={() => navigate('/admin')}>
-                      <Shield className="mr-2 h-4 w-4" />
-                      Admin Dashboard
-                    </DropdownMenuItem>
-                    <DropdownMenuSeparator />
-                  </>
-                )}
-                
-                <DropdownMenuItem onClick={handleLogout} className="text-red-600">
-                  Logout
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
-          ) : (
-            <Button 
-              variant="outline" 
-              onClick={handleLogin}
-              className="hidden md:flex border-realtor-gold text-realtor-gold hover:bg-realtor-gold hover:text-white"
-            >
-              Login
-            </Button>
-          )}
-
-          {/* Mobile menu toggle */}
-          <button
-            className="z-20 block md:hidden text-realtor-navy focus:outline-none"
-            onClick={() => setIsOpen(!isOpen)}
-            aria-label={isOpen ? 'Close menu' : 'Open menu'}
-          >
-            {isOpen ? <X size={24} /> : <Menu size={24} />}
-          </button>
-        </div>
+        {/* Mobile menu toggle */}
+        <button
+          className="z-20 block md:hidden text-realtor-navy focus:outline-none"
+          onClick={() => setIsOpen(!isOpen)}
+          aria-label={isOpen ? 'Close menu' : 'Open menu'}
+        >
+          {isOpen ? <X size={24} /> : <Menu size={24} />}
+        </button>
       </div>
-
-      {/* Mobile Menu */}
-      <MobileMenu isOpen={isOpen} />
     </header>
   );
 };
