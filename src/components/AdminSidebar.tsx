@@ -12,7 +12,8 @@ import {
   MessageSquare,
   BarChart3,
   Megaphone,
-  LogOut
+  LogOut,
+  ArrowLeft
 } from 'lucide-react';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { Separator } from '@/components/ui/separator';
@@ -25,6 +26,10 @@ const AdminSidebar = () => {
   const handleLogout = async () => {
     await signOut();
     navigate('/auth');
+  };
+
+  const handleBackToSite = () => {
+    navigate('/');
   };
 
   const links = [
@@ -51,7 +56,23 @@ const AdminSidebar = () => {
   return (
     <aside className="w-64 bg-white shadow-lg border-r h-full flex flex-col">
       <div className="p-4 space-y-6 flex flex-col h-full">
-        {/* Header with avatar and role */}
+        {/* Header with back to site button */}
+        <div className="flex flex-col space-y-3">
+          <Button
+            onClick={handleBackToSite}
+            variant="outline"
+            className="w-full justify-start text-realtor-navy border-realtor-gold hover:bg-realtor-gold/10"
+          >
+            <ArrowLeft className="w-4 h-4 mr-2" />
+            Back to Site
+          </Button>
+          
+          <div className="text-center">
+            <h2 className="text-lg font-bold text-realtor-navy">Admin Panel</h2>
+          </div>
+        </div>
+
+        {/* User info with avatar and role */}
         <div className="flex flex-col items-center space-y-3 pt-2">
           <Avatar className="h-12 w-12">
             <AvatarFallback className="bg-realtor-gold text-white text-lg font-semibold">
@@ -60,10 +81,10 @@ const AdminSidebar = () => {
           </Avatar>
           <div className="text-center">
             <div className="text-sm font-semibold text-gray-900 capitalize">
-              {userRole}
+              {userRole || 'User'}
             </div>
             {user?.email && (
-              <div className="text-xs text-gray-500 mt-1">
+              <div className="text-xs text-gray-500 mt-1 truncate max-w-[200px]">
                 {user.email}
               </div>
             )}
@@ -98,8 +119,8 @@ const AdminSidebar = () => {
           </ul>
         </nav>
 
-        {/* Logout Button - Only visible on desktop */}
-        <div className="border-t pt-4 hidden lg:block">
+        {/* Logout Button - Always visible */}
+        <div className="border-t pt-4">
           <Button
             onClick={handleLogout}
             variant="outline"
