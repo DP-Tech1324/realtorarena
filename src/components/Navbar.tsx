@@ -17,7 +17,7 @@ const Navbar = () => {
   const isMobile = useIsMobile();
   const location = useLocation();
   const navigate = useNavigate();
-  const { user, userRole, signOut } = useAuth();
+  const { user, userRole, signOut, isLoading } = useAuth();
 
   // Don't render navbar on admin routes since AdminLayout handles navigation
   const isAdminRoute = location.pathname.startsWith('/admin');
@@ -47,7 +47,7 @@ const Navbar = () => {
     navigate('/auth');
   };
 
-  const isAdmin = user && adminRoles.includes(userRole);
+  const isAdmin = user && userRole && adminRoles.includes(userRole);
 
   return (
     <header
@@ -68,24 +68,59 @@ const Navbar = () => {
         {/* Mobile Menu */}
         <MobileMenu isOpen={isOpen} />
 
-        {/* Admin Access Dropdown: Only show if user is admin & NOT on admin route */}
-        {isAdmin && (
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Avatar className="cursor-pointer">
-                <AvatarFallback>{user.email?.charAt(0).toUpperCase()}</AvatarFallback>
-              </Avatar>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end" className="w-48">
-              <DropdownMenuItem onClick={() => navigate('/admin')}>
-                Admin Dashboard
-              </DropdownMenuItem>
-              <DropdownMenuItem onClick={handleLogout} className="text-red-600">
-                Logout
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
-        )}
+        {/* User Authentication Section */}
+        <div className="flex items-center gap-4">
+          {!isLoading && user ? (
+            <>
+              {/* Admin Access Dropdown: Only show if user is admin & NOT on admin route */}
+              {isAdmin && (
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <Avatar className="cursor-pointer">
+                      <AvatarFallback className="bg-realtor-gold text-white">
+                        {user.email?.charAt(0).toUpperCase()}
+                      </AvatarFallback>
+                    </Avatar>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent align="end" className="w-48">
+                    <DropdownMenuItem onClick={() => navigate('/admin')}>
+                      Admin Dashboard
+                    </DropdownMenuItem>
+                    <DropdownMenuItem onClick={handleLogout} className="text-red-600">
+                      Logout
+                    </DropdownMenuItem>
+                  </DropdownMenuContent>
+                </DropdownMenu>
+              )}
+              
+              {/* Regular user - just show email initial and logout option */}
+              {!isAdmin && (
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <Avatar className="cursor-pointer">
+                      <AvatarFallback className="bg-gray-500 text-white">
+                        {user.email?.charAt(0).toUpperCase()}
+                      </AvatarFallback>
+                    </Avatar>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent align="end" className="w-48">
+                    <DropdownMenuItem onClick={handleLogout} className="text-red-600">
+                      Logout
+                    </DropdownMenuItem>
+                  </DropdownMenuContent>
+                </DropdownMenu>
+              )}
+            </>
+          ) : !isLoading ? (
+            /* Show login link for non-authenticated users */
+            <Link
+              to="/auth"
+              className="text-realtor-navy hover:text-realtor-gold transition-colors font-medium"
+            >
+              Sign In
+            </Link>
+          ) : null}
+        </div>
 
         {/* Mobile menu toggle */}
         <button

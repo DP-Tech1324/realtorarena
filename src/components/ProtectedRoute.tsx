@@ -1,3 +1,4 @@
+
 // src/components/ProtectedRoute.tsx
 import React from 'react';
 import { Navigate, useLocation } from 'react-router-dom';
@@ -21,23 +22,14 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> = ({
 
   console.log('🔍 ProtectedRoute:', {
     isLoading,
-    user,
+    user: !!user,
     userRole,
     isAdmin,
     location: location.pathname
   });
 
-  
-
-  // 🚫 Not signed in? Redirect to login with intended destination saved
-  if (!user) {
-    return <Navigate to="/auth" state={{ from: location }} replace />;
-  }
-  // ✅ Wait until both auth state and userRole resolve before rendering access logic
-  if (
-    isLoading || 
-    (user && (allowedRoles.length > 0 || requireAdmin || requireAgent) && userRole === null)
-  ) {
+  // Show loading while auth state is being determined
+  if (isLoading) {
     return (
       <div className="flex items-center justify-center min-h-screen">
         <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-realtor-gold"></div>
@@ -45,12 +37,17 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> = ({
     );
   }
 
-  // ❌ If role list is provided but user's role is not included → deny
+  // Not signed in? Redirect to login with intended destination saved
+  if (!user) {
+    return <Navigate to="/auth" state={{ from: location }} replace />;
+  }
+
+  // Check role-based access
   if (allowedRoles.length > 0 && (!userRole || !allowedRoles.includes(userRole))) {
     return <Navigate to="/access-denied" replace />;
   }
 
-  // 🧭 Legacy backward compatibility checks
+  // Legacy backward compatibility checks
   if (requireAdmin && !isAdmin) {
     return <Navigate to="/access-denied" replace />;
   }
@@ -59,7 +56,7 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> = ({
     return <Navigate to="/access-denied" replace />;
   }
 
-  // ✅ Access granted
+  // Access granted
   return <>{children}</>;
 };
 

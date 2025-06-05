@@ -9,7 +9,7 @@ import { LogOut, Menu, X } from 'lucide-react';
 const AdminLayout = () => {
   const location = useLocation();
   const navigate = useNavigate();
-  const { isAdmin, userRole, signOut, user } = useAuth();
+  const { isAdmin, userRole, signOut, user, isLoading } = useAuth();
   const [sidebarOpen, setSidebarOpen] = React.useState(false);
 
   const handleLogout = async () => {
@@ -17,8 +17,18 @@ const AdminLayout = () => {
     navigate('/auth');
   };
 
+  // Show loading while auth state is being determined
+  if (isLoading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-realtor-gold"></div>
+      </div>
+    );
+  }
+
+  // Only allow access to authenticated admin users
   if (!isAdmin) {
-    return <Navigate to="/auth" state={{ from: location }} replace />;
+    return <Navigate to="/access-denied" state={{ from: location }} replace />;
   }
 
   return (

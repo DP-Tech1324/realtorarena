@@ -1,3 +1,4 @@
+
 // src/contexts/AuthContext.tsx
 import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
 import { Session, User } from '@supabase/supabase-js';
@@ -41,68 +42,39 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
     try {
       console.log('🔄 Refreshing profile for user:', user.id);
-      console.log('🔄 User email:', user.email);
 
-      // ✅ Fetch admin user role if active - with better error handling
-      const { data: adminData, error: adminError } = await supabase
-        .from('admin_users')
-        .select('*')
-        .eq('user_id', user.id)
-        .eq('is_active', true)
-        .maybeSingle();
+      // Use the secure function to get current user role
+      const { data: roleData, error: roleError } = await supabase
+        .rpc('get_current_user_role');
 
-      if (adminError) {
-        console.error('❌ Admin fetch error:', adminError);
-        // Still continue to set default values instead of throwing
+      if (roleError) {
+        console.error('❌ Role fetch error:', roleError);
+        setIsAdmin(false);
+        setUserRole(null);
+        return;
       }
 
-      console.log('🔍 Admin data found:', adminData);
-      
-      const adminStatus = !!adminData && !adminError;
-      const role = adminData?.role || null;
+      const role = roleData || null;
+      const adminStatus = ['admin', 'superadmin', 'editor'].includes(role);
 
-      console.log('🔍 Admin status:', adminStatus);
       console.log('🔍 User role:', role);
+      console.log('🔍 Admin status:', adminStatus);
 
       setIsAdmin(adminStatus);
       setUserRole(role);
-      localStorage.setItem('isAdmin', adminStatus.toString());
-      localStorage.setItem('userRole', role || '');
+      setIsAgent(false); // Not used in this system
 
-      setIsAgent(false);
-      localStorage.setItem('isAgent', 'false');
+      // Fetch full admin user record for profile
+      if (adminStatus) {
+        const { data: adminData, error: adminError } = await supabase
+          .from('admin_users')
+          .select('*')
+          .eq('user_id', user.id)
+          .eq('is_active', true)
+          .single();
 
-      setProfile({ ...adminData, role: role || 'user' });
-
-      // If no admin record found, let's try to create one for testing
-      if (!adminData && !adminError && user.email) {
-        console.log('🔧 No admin record found, checking if we should create one...');
-        
-        // For testing: if email contains 'admin' or is a specific test email, create admin record
-        if (user.email.includes('admin') || user.email === 'dhrumilpatel2401@gmail.com') {
-          console.log('🔧 Creating admin record for test user...');
-          
-          const { data: newAdminData, error: createError } = await supabase
-            .from('admin_users')
-            .insert([{
-              user_id: user.id,
-              email: user.email,
-              role: 'superadmin',
-              is_active: true
-            }])
-            .select()
-            .single();
-
-          if (!createError && newAdminData) {
-            console.log('✅ Created admin record:', newAdminData);
-            setIsAdmin(true);
-            setUserRole('superadmin');
-            setProfile(newAdminData);
-            localStorage.setItem('isAdmin', 'true');
-            localStorage.setItem('userRole', 'superadmin');
-          } else {
-            console.error('❌ Failed to create admin record:', createError);
-          }
+        if (!adminError && adminData) {
+          setProfile(adminData);
         }
       }
     } catch (error) {
@@ -110,9 +82,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       setIsAdmin(false);
       setIsAgent(false);
       setUserRole(null);
-      localStorage.setItem('isAdmin', 'false');
-      localStorage.setItem('isAgent', 'false');
-      localStorage.setItem('userRole', '');
     }
   }, [user]);
 
@@ -124,15 +93,15 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         setUser(currentSession?.user ?? null);
 
         if (currentSession?.user) {
-          await refreshProfile();
+          // Defer the profile refresh to avoid recursion
+          setTimeout(() => {
+            refreshProfile();
+          }, 0);
         } else {
           setProfile(null);
           setIsAdmin(false);
           setIsAgent(false);
           setUserRole(null);
-          localStorage.removeItem('isAdmin');
-          localStorage.removeItem('isAgent');
-          localStorage.removeItem('userRole');
         }
         setIsLoading(false);
       }
@@ -176,7 +145,10 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       const { error } = await supabase.auth.signUp({
         email,
         password,
-        options: { data: { first_name: firstName, last_name: lastName } }
+        options: { 
+          data: { first_name: firstName, last_name: lastName },
+          emailRedirectTo: `${window.location.origin}/`
+        }
       });
 
       if (error) {
@@ -194,9 +166,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   const signOut = async () => {
     await supabase.auth.signOut();
-    localStorage.removeItem('isAdmin');
-    localStorage.removeItem('isAgent');
-    localStorage.removeItem('userRole');
     setIsAdmin(false);
     setIsAgent(false);
     setUserRole(null);
