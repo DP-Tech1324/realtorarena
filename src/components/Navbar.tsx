@@ -1,4 +1,4 @@
-// src/components/Navbar.tsx
+
 import React, { useState, useEffect } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { Menu, X } from 'lucide-react';
@@ -18,6 +18,12 @@ const Navbar = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const { user, userRole, signOut } = useAuth();
+
+  // Don't render navbar on admin routes since AdminLayout handles navigation
+  const isAdminRoute = location.pathname.startsWith('/admin');
+  if (isAdminRoute) {
+    return null;
+  }
 
   // Scroll effect
   useEffect(() => {
@@ -42,7 +48,6 @@ const Navbar = () => {
   };
 
   const isAdmin = user && adminRoles.includes(userRole);
-  const isAdminRoute = location.pathname.startsWith('/admin');
 
   return (
     <header
@@ -63,8 +68,8 @@ const Navbar = () => {
         {/* Mobile Menu */}
         <MobileMenu isOpen={isOpen} />
 
-        {/* Admin Dropdown: Only show if user is admin & on admin route */}
-        {isAdmin && isAdminRoute && (
+        {/* Admin Access Dropdown: Only show if user is admin & NOT on admin route */}
+        {isAdmin && (
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Avatar className="cursor-pointer">
@@ -72,12 +77,8 @@ const Navbar = () => {
               </Avatar>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end" className="w-48">
-              <DropdownMenuItem onClick={() => navigate('/admin')}>Admin Dashboard</DropdownMenuItem>
-              {/* "View Site" opens homepage in a new tab */}
-              <DropdownMenuItem asChild>
-                <a href="/" target="_blank" rel="noopener noreferrer">
-                  View Site
-                </a>
+              <DropdownMenuItem onClick={() => navigate('/admin')}>
+                Admin Dashboard
               </DropdownMenuItem>
               <DropdownMenuItem onClick={handleLogout} className="text-red-600">
                 Logout
@@ -85,8 +86,6 @@ const Navbar = () => {
             </DropdownMenuContent>
           </DropdownMenu>
         )}
-
-      
 
         {/* Mobile menu toggle */}
         <button

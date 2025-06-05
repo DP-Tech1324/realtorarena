@@ -36,6 +36,36 @@ export type Database = {
         }
         Relationships: []
       }
+      bookings: {
+        Row: {
+          created_at: string | null
+          date: string
+          email: string
+          id: string
+          name: string
+          phone: string | null
+          time: string
+        }
+        Insert: {
+          created_at?: string | null
+          date: string
+          email: string
+          id?: string
+          name: string
+          phone?: string | null
+          time: string
+        }
+        Update: {
+          created_at?: string | null
+          date?: string
+          email?: string
+          id?: string
+          name?: string
+          phone?: string | null
+          time?: string
+        }
+        Relationships: []
+      }
       consultations: {
         Row: {
           consultation_type: string

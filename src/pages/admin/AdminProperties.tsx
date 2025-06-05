@@ -1,8 +1,5 @@
 
 import React, { useState } from 'react';
-import Navbar from '@/components/Navbar';
-import Footer from '@/components/Footer';
-import AdminSidebar from '@/components/AdminSidebar';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Plus } from 'lucide-react';
@@ -61,61 +58,50 @@ const AdminProperties = () => {
   const featured = properties.filter((p) => p.featured).length;
 
   return (
-    <div className="min-h-screen flex flex-col">
-      <Navbar />
-      <main className="flex-grow pt-[72px]">
-        <div className="flex">
-          <AdminSidebar />
-          <div className="flex-1 p-8">
-            <div className="space-y-6">
-              <div className="flex justify-between items-center">
-                <div>
-                  <h1 className="text-3xl font-bold text-realtor-navy">Properties Management</h1>
-                  <p className="text-gray-600 mt-2">Manage property listings and details</p>
-                </div>
-                <Button 
-                  className="bg-realtor-gold hover:bg-realtor-gold/90" 
-                  onClick={() => { setModalOpen(true); setEditingProperty(null); }}
-                >
-                  <Plus className="mr-2 h-4 w-4" />
-                  Add Property
-                </Button>
-              </div>
-
-              <PropertyStats 
-                total={total}
-                published={published}
-                draft={draft}
-                featured={featured}
-              />
-
-              <Card>
-                <CardHeader>
-                  <CardTitle>Property Listings</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <PropertyGrid
-                    properties={properties}
-                    onEdit={handleEdit}
-                    onDelete={handleDelete}
-                    onToggleStatus={handleToggleStatus}
-                    isLoading={loading}
-                  />
-                </CardContent>
-              </Card>
-
-              <PropertyFormModal
-                isOpen={modalOpen}
-                editingProperty={editingProperty}
-                isSubmitting={isSubmitting}
-                onSubmit={handleFormSubmit}
-                onClose={handleCloseModal}
-              />
-            </div>
-          </div>
+    <div className="space-y-6">
+      <div className="flex justify-between items-center">
+        <div>
+          <h1 className="text-3xl font-bold text-realtor-navy">Properties Management</h1>
+          <p className="text-gray-600 mt-2">Manage property listings and details</p>
         </div>
-      </main>
-      <Footer />
+        <Button 
+          className="bg-realtor-gold hover:bg-realtor-gold/90" 
+          onClick={() => { setModalOpen(true); setEditingProperty(null); }}
+        >
+          <Plus className="mr-2 h-4 w-4" />
+          Add Property
+        </Button>
+      </div>
+
+      <PropertyStats 
+        total={total}
+        published={published}
+        draft={draft}
+        featured={featured}
+      />
+
+      <Card>
+        <CardHeader>
+          <CardTitle>Property Listings</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <PropertyGrid
+            properties={properties}
+            onEdit={handleEdit}
+            onDelete={handleDelete}
+            onToggleStatus={handleToggleStatus}
+            isLoading={loading}
+          />
+        </CardContent>
+      </Card>
+
+      <PropertyFormModal
+        isOpen={modalOpen}
+        editingProperty={editingProperty}
+        isSubmitting={isSubmitting}
+        onSubmit={handleFormSubmit}
+        onClose={handleCloseModal}
+      />
     </div>
   );
 };
