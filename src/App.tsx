@@ -61,109 +61,112 @@ function App() {
   return (
     <QueryClientProvider client={queryClient}>
       <AuthProvider>
-        <Routes>
-          {/* Public Routes */}
-          <Route path="/" element={<Home />} />
-          <Route path="/about" element={<About />} />
-          <Route path="/listings" element={<Listings />} />
-          <Route path="/properties" element={<Properties />} />
-          <Route path="/properties/:propertyId" element={<PropertyDetails />} />
-          <Route path="/contact" element={<Contact />} />
-          <Route path="/buyers" element={<Buyers />} />
-          <Route path="/sellers" element={<Sellers />} />
-          <Route path="/services" element={<ServicesPage />} />
-          <Route path="/services/:serviceId" element={<ServiceDetail />} />
-          <Route path="/blog" element={<Blog />} />
-          <Route path="/blog/:postId" element={<BlogPostPage />} />
-          <Route path="/calculators" element={<Calculators />} />
-          <Route path="/home-valuation" element={<HomeValuation />} />
-          <Route path="/resources" element={<Resources />} />
-          <Route path="/agents" element={<AgentsPage />} />
-          <Route path="/luxury" element={<Luxury />} />
-          <Route path="/investment" element={<Investment />} />
-          <Route path="/commercial" element={<Commercial />} />
-          <Route path="/relocation" element={<Relocation />} />
-          <Route path="/property-sales" element={<PropertySales />} />
-          <Route path="/property-acquisition" element={<PropertyAcquisition />} />
-          <Route path="/rlp-search" element={<RlpSearch />} />
-          <Route path="/favorites" element={<Favorites />} />
-          <Route path="/contact-page" element={<ContactPage />} />
-          
-          {/* Auth Routes */}
-          <Route path="/auth" element={<AuthPage />} />
-          <Route path="/access-denied" element={<AccessDenied />} />
-          
-          {/* Admin Routes - Fixed role checking */}
-          <Route
-            path="/admin"
-            element={
-              <ProtectedRoute allowedRoles={["admin", "superadmin", "editor"]}>
-                <AdminLayout />
-              </ProtectedRoute>
-            }
-          >
+        <Router>
+          <ScrollToTop />
+          <Routes>
+            {/* Public Routes */}
+            <Route path="/" element={<Home />} />
+            <Route path="/about" element={<About />} />
+            <Route path="/listings" element={<Listings />} />
+            <Route path="/properties" element={<Properties />} />
+            <Route path="/properties/:propertyId" element={<PropertyDetails />} />
+            <Route path="/contact" element={<Contact />} />
+            <Route path="/buyers" element={<Buyers />} />
+            <Route path="/sellers" element={<Sellers />} />
+            <Route path="/services" element={<ServicesPage />} />
+            <Route path="/services/:serviceId" element={<ServiceDetail />} />
+            <Route path="/blog" element={<Blog />} />
+            <Route path="/blog/:postId" element={<BlogPostPage />} />
+            <Route path="/calculators" element={<Calculators />} />
+            <Route path="/home-valuation" element={<HomeValuation />} />
+            <Route path="/resources" element={<Resources />} />
+            <Route path="/agents" element={<AgentsPage />} />
+            <Route path="/luxury" element={<Luxury />} />
+            <Route path="/investment" element={<Investment />} />
+            <Route path="/commercial" element={<Commercial />} />
+            <Route path="/relocation" element={<Relocation />} />
+            <Route path="/property-sales" element={<PropertySales />} />
+            <Route path="/property-acquisition" element={<PropertyAcquisition />} />
+            <Route path="/rlp-search" element={<RlpSearch />} />
+            <Route path="/favorites" element={<Favorites />} />
+            <Route path="/contact-page" element={<ContactPage />} />
+            
+            {/* Auth Routes */}
+            <Route path="/auth" element={<AuthPage />} />
+            <Route path="/access-denied" element={<AccessDenied />} />
+            
+            {/* Admin Routes */}
             <Route
-              index
+              path="/admin"
               element={
                 <ProtectedRoute allowedRoles={["admin", "superadmin", "editor"]}>
-                  <AdminDashboard />
+                  <AdminLayout />
                 </ProtectedRoute>
               }
-            />
-            <Route
-              path="properties"
-              element={
-                <ProtectedRoute allowedRoles={["admin", "superadmin", "editor"]}>
-                  <AdminProperties />
-                </ProtectedRoute>
-              }
-            />
-            <Route
-              path="inquiries"
-              element={
-                <ProtectedRoute allowedRoles={["admin", "superadmin", "editor"]}>
-                  <AdminInquiries />
-                </ProtectedRoute>
-              }
-            />
-            <Route
-              path="users"
-              element={
-                <ProtectedRoute allowedRoles={["superadmin"]}>
-                  <AdminUsers />
-                </ProtectedRoute>
-              }
-            />
-            <Route
-              path="analytics"
-              element={
-                <ProtectedRoute allowedRoles={["admin", "superadmin"]}>
-                  <AdminAnalytics />
-                </ProtectedRoute>
-              }
-            />
-            <Route
-              path="images"
-              element={
-                <ProtectedRoute allowedRoles={["admin", "superadmin", "editor"]}>
-                  <AdminImages />
-                </ProtectedRoute>
-              }
-            />
-            <Route
-              path="marketing"
-              element={
-                <ProtectedRoute allowedRoles={["admin", "superadmin"]}>
-                  <AdminMarketing />
-                </ProtectedRoute>
-              }
-            />
-          </Route>
-          
-          {/* 404 Route */}
-          <Route path="*" element={<NotFound />} />
-        </Routes>
-        <Toaster />
+            >
+              <Route
+                index
+                element={
+                  <ProtectedRoute allowedRoles={["admin", "superadmin", "editor"]}>
+                    <AdminDashboard />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="properties"
+                element={
+                  <ProtectedRoute allowedRoles={["admin", "superadmin", "editor"]}>
+                    <AdminProperties />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="inquiries"
+                element={
+                  <ProtectedRoute allowedRoles={["admin", "superadmin", "editor"]}>
+                    <AdminInquiries />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="users"
+                element={
+                  <ProtectedRoute allowedRoles={["superadmin"]}>
+                    <AdminUsers />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="analytics"
+                element={
+                  <ProtectedRoute allowedRoles={["admin", "superadmin"]}>
+                    <AdminAnalytics />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="images"
+                element={
+                  <ProtectedRoute allowedRoles={["admin", "superadmin", "editor"]}>
+                    <AdminImages />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="marketing"
+                element={
+                  <ProtectedRoute allowedRoles={["admin", "superadmin"]}>
+                    <AdminMarketing />
+                  </ProtectedRoute>
+                }
+              />
+            </Route>
+            
+            {/* 404 Route */}
+            <Route path="*" element={<NotFound />} />
+          </Routes>
+          <Toaster />
+        </Router>
       </AuthProvider>
     </QueryClientProvider>
   );
