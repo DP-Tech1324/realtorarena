@@ -1,5 +1,3 @@
-
-// src/components/ProtectedRoute.tsx
 import React from 'react';
 import { Navigate, useLocation } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
@@ -20,15 +18,18 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> = ({
   const { user, isLoading, isAdmin, isAgent, userRole } = useAuth();
   const location = useLocation();
 
-  console.log('🔍 ProtectedRoute:', {
+  const resolvedRole = userRole || localStorage.getItem('userRole');
+  const resolvedAdmin = isAdmin || localStorage.getItem('isAdmin') === 'true';
+
+  console.log('🔐 ProtectedRoute DEBUG', {
     isLoading,
     user: !!user,
-    userRole,
-    isAdmin,
-    location: location.pathname
+    resolvedRole,
+    resolvedAdmin,
+    location: location.pathname,
   });
 
-  // Show loading while auth state is being determined
+  // Wait for auth to fully load
   if (isLoading) {
     return (
       <div className="flex items-center justify-center min-h-screen">
@@ -37,26 +38,26 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> = ({
     );
   }
 
-  // Not signed in? Redirect to login with intended destination saved
+  // If not authenticated
   if (!user) {
     return <Navigate to="/auth" state={{ from: location }} replace />;
   }
 
-  // Check role-based access
-  if (allowedRoles.length > 0 && (!userRole || !allowedRoles.includes(userRole))) {
+  // Role check
+  if (allowedRoles.length > 0 && (!resolvedRole || !allowedRoles.includes(resolvedRole))) {
     return <Navigate to="/access-denied" replace />;
   }
 
-  // Legacy backward compatibility checks
-  if (requireAdmin && !isAdmin) {
+  // Admin check
+  if (requireAdmin && !resolvedAdmin) {
     return <Navigate to="/access-denied" replace />;
   }
 
+  // Agent check
   if (requireAgent && !isAgent) {
     return <Navigate to="/access-denied" replace />;
   }
 
-  // Access granted
   return <>{children}</>;
 };
 
