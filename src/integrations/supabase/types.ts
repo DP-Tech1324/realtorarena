@@ -439,15 +439,7 @@ export type Database = {
           user_email?: string | null
           view_count?: number | null
         }
-        Relationships: [
-          {
-            foreignKeyName: "realtorjigar_x8d1y_analytics_property_id_fkey"
-            columns: ["property_id"]
-            isOneToOne: false
-            referencedRelation: "realtorjigar_x8d1y_listings"
-            referencedColumns: ["id"]
-          },
-        ]
+        Relationships: []
       }
       realtorjigar_x8d1y_inquiries: {
         Row: {
@@ -479,81 +471,6 @@ export type Database = {
           phone?: string | null
           property_id?: string | null
           status?: string | null
-        }
-        Relationships: []
-      }
-      realtorjigar_x8d1y_listings: {
-        Row: {
-          address: string
-          bathrooms: number
-          bedrooms: number
-          city: string
-          created_at: string
-          description: string | null
-          featured: boolean | null
-          id: string
-          images: string[] | null
-          meta_keywords: string | null
-          price: number
-          property_type: string
-          province: string
-          seo_description: string | null
-          seo_title: string | null
-          square_feet: number
-          status: string
-          title: string
-          updated_at: string
-          user_email: string
-          view_count: number | null
-          virtual_tour_url: string | null
-        }
-        Insert: {
-          address: string
-          bathrooms: number
-          bedrooms: number
-          city: string
-          created_at?: string
-          description?: string | null
-          featured?: boolean | null
-          id?: string
-          images?: string[] | null
-          meta_keywords?: string | null
-          price: number
-          property_type: string
-          province: string
-          seo_description?: string | null
-          seo_title?: string | null
-          square_feet: number
-          status: string
-          title: string
-          updated_at?: string
-          user_email: string
-          view_count?: number | null
-          virtual_tour_url?: string | null
-        }
-        Update: {
-          address?: string
-          bathrooms?: number
-          bedrooms?: number
-          city?: string
-          created_at?: string
-          description?: string | null
-          featured?: boolean | null
-          id?: string
-          images?: string[] | null
-          meta_keywords?: string | null
-          price?: number
-          property_type?: string
-          province?: string
-          seo_description?: string | null
-          seo_title?: string | null
-          square_feet?: number
-          status?: string
-          title?: string
-          updated_at?: string
-          user_email?: string
-          view_count?: number | null
-          virtual_tour_url?: string | null
         }
         Relationships: []
       }
