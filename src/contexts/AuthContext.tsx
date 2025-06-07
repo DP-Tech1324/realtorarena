@@ -1,5 +1,3 @@
-
-// src/contexts/AuthContext.tsx
 import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
 import { Session, User } from '@supabase/supabase-js';
 import { supabase } from '@/integrations/supabase/client';
@@ -37,34 +35,49 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       setIsAdmin(false);
       setIsAgent(false);
       setUserRole(null);
+      localStorage.removeItem('userRole');
+      localStorage.removeItem('isAdmin');
       return;
     }
 
     try {
       console.log('🔄 Refreshing profile for user:', user.id);
 
-      // Use the secure function to get current user role
-      const { data: roleData, error: roleError } = await supabase
-        .rpc('get_current_user_role');
+      const { data: roleData, error: roleError } = await supabase.rpc('get_current_user_role');
+      if (roleError || !roleData) {
+  console.error('❌ Role fetch error:', roleError);
 
-      if (roleError) {
-        console.error('❌ Role fetch error:', roleError);
-        setIsAdmin(false);
-        setUserRole(null);
-        return;
-      }
+  // Graceful fallback using localStorage
+  const fallbackRole = localStorage.getItem('userRole');
+  const fallbackAdmin = localStorage.getItem('isAdmin') === 'true';
 
-      const role = roleData || null;
+  if (fallbackRole) {
+    console.warn('⚠️ Using fallback from localStorage');
+    setUserRole(fallbackRole);
+    setIsAdmin(fallbackAdmin);
+    return;
+  }
+
+  setIsAdmin(false);
+  setUserRole(null);
+  localStorage.removeItem('userRole');
+  localStorage.removeItem('isAdmin');
+  return;
+}
+      
+      const role = roleData;
       const adminStatus = ['admin', 'superadmin', 'editor'].includes(role);
 
       console.log('🔍 User role:', role);
-      console.log('🔍 Admin status:', adminStatus);
+      console.log('🔐 Is Admin:', adminStatus);
 
-      setIsAdmin(adminStatus);
       setUserRole(role);
-      setIsAgent(false); // Not used in this system
+      setIsAdmin(adminStatus);
+      setIsAgent(false);
 
-      // Fetch full admin user record for profile
+      localStorage.setItem('userRole', role);
+      localStorage.setItem('isAdmin', adminStatus.toString());
+
       if (adminStatus) {
         const { data: adminData, error: adminError } = await supabase
           .from('admin_users')
@@ -82,6 +95,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       setIsAdmin(false);
       setIsAgent(false);
       setUserRole(null);
+      localStorage.removeItem('userRole');
+      localStorage.removeItem('isAdmin');
     }
   }, [user]);
 
@@ -93,15 +108,14 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         setUser(currentSession?.user ?? null);
 
         if (currentSession?.user) {
-          // Defer the profile refresh to avoid recursion
-          setTimeout(() => {
-            refreshProfile();
-          }, 0);
+          setTimeout(() => refreshProfile(), 0);
         } else {
           setProfile(null);
           setIsAdmin(false);
           setIsAgent(false);
           setUserRole(null);
+          localStorage.removeItem('userRole');
+          localStorage.removeItem('isAdmin');
         }
         setIsLoading(false);
       }
@@ -113,8 +127,17 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       setUser(currentSession?.user ?? null);
 
       if (currentSession?.user) {
+        const savedRole = localStorage.getItem('userRole');
+        const savedAdmin = localStorage.getItem('isAdmin') === 'true';
+
+        if (savedRole) {
+          setUserRole(savedRole);
+          setIsAdmin(savedAdmin);
+        }
+
         await refreshProfile();
       }
+
       setIsLoading(false);
     });
 
@@ -145,7 +168,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       const { error } = await supabase.auth.signUp({
         email,
         password,
-        options: { 
+        options: {
           data: { first_name: firstName, last_name: lastName },
           emailRedirectTo: `${window.location.origin}/`
         }
@@ -170,6 +193,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     setIsAgent(false);
     setUserRole(null);
     setProfile(null);
+    localStorage.removeItem('userRole');
+    localStorage.removeItem('isAdmin');
     toast({ title: "Signed out", description: "You have been signed out successfully." });
   };
 
