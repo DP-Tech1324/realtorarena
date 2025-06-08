@@ -1,6 +1,12 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { Send, Home } from 'lucide-react';
 
+// Utility function to remove <think>...</think> from AI output
+function cleanAIReply(content: string) {
+  return content.replace(/<think>[\s\S]*?<\/think>/gi, '').trim();
+}
+
+
 type Message = {
   role: 'user' | 'assistant';
   content: string;
@@ -109,7 +115,7 @@ const AiChatBubble = () => {
               <Home className="bg-yellow-400 text-realtor-navy rounded-full p-1" size={32} />
               <div>
                 <span className="font-semibold">AI Realtor Chat</span>
-                <div className="text-xs opacity-75">Powered by Qwen-32B</div>
+                <div className="text-xs opacity-75">AI Powered </div>
               </div>
               <button
                 onClick={toggleChat}
@@ -122,22 +128,24 @@ const AiChatBubble = () => {
             {/* Messages */}
             <div className="flex-1 overflow-y-auto px-3 py-2 space-y-2 bg-gray-50">
               {messages.map((msg, i) => (
-                <div
-                  key={i}
-                  className={
-                    msg.role === 'user'
-                      ? "flex justify-end"
-                      : "flex justify-start"
-                  }
-                >
-                  <div className={`rounded-xl px-3 py-2 max-w-[75%] shadow-sm text-sm whitespace-pre-wrap ${msg.role === 'user'
-                    ? 'bg-realtor-gold text-right text-realtor-navy'
-                    : 'bg-white border border-yellow-300 text-gray-700'
-                  }`}>
-                    {msg.content}
-                  </div>
-                </div>
-              ))}
+  <div
+    key={i}
+    className={
+      msg.role === 'user'
+        ? "flex justify-end"
+        : "flex justify-start"
+    }
+  >
+    <div className={`rounded-xl px-3 py-2 max-w-[75%] shadow-sm text-sm whitespace-pre-wrap ${msg.role === 'user'
+      ? 'bg-realtor-gold text-right text-realtor-navy'
+      : 'bg-white border border-yellow-300 text-gray-700'
+    }`}>
+      {msg.role === 'assistant'
+        ? cleanAIReply(msg.content)
+        : msg.content}
+    </div>
+  </div>
+))}
               {loading && (
                 <div className="flex justify-start">
                   <div className="rounded-xl px-3 py-2 bg-white border border-yellow-300 shadow-sm text-sm text-gray-400 animate-pulse">
