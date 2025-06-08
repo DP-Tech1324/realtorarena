@@ -31,3 +31,4 @@ export default async function handler(req, res) {
     res.status(500).json({ error: 'Groq error', detail: err?.message || err });
   }
 }
+console.log("GROQ_API_KEY:", process.env.GROQ_API_KEY ? process.env.GROQ_API_KEY.slice(0,6) + '...' + process.env.GROQ_API_KEY.slice(-4) : 'undefined');
