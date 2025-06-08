@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { Send } from 'lucide-react';
 
 type Message = {
@@ -12,56 +12,83 @@ const AiChatBubble = () => {
   const [messages, setMessages] = useState<Message[]>([]);
   const [loading, setLoading] = useState(false);
 
-  const toggleChat = () => setIsOpen(!isOpen);
+  const inputRef = useRef<HTMLInputElement>(null);
+  const messagesEndRef = useRef<HTMLDivElement>(null);
+
+  // Auto-scroll to the latest message
+  useEffect(() => {
+    if (isOpen && messagesEndRef.current) {
+      messagesEndRef.current.scrollIntoView({ behavior: 'smooth' });
+    }
+  }, [messages, isOpen]);
+
+  // Auto-focus input when chat opens
+  useEffect(() => {
+    if (isOpen && inputRef.current) {
+      inputRef.current.focus();
+    }
+  }, [isOpen]);
+
+  const toggleChat = () => setIsOpen((open) => !open);
 
   const handleSend = async () => {
+    if (loading) return; // Prevent double send
     if (!input.trim()) {
-      setMessages(prev => [...prev, { role: 'assistant', content: 'Please enter a message first!' }]);
+      setMessages(prev => [
+        ...prev,
+        { role: 'assistant', content: 'Please enter a message first!' },
+      ]);
       return;
     }
 
-
     const userMessage = input.trim();
-    setMessages(prev => [...prev, { role: 'user', content: userMessage }]);
+    const newMessages: Message[] = [
+      ...messages,
+      { role: 'user', content: userMessage },
+    ];
+    setMessages(newMessages);
     setInput('');
     setLoading(true);
 
     try {
-      const apiKey = import.meta.env.VITE_OPENAI_API_KEY;
-      if (!apiKey) {
-        setMessages(prev => [...prev, { role: 'assistant', content: 'API key not configured. Please contact the administrator.' }]);
-        return;
-      }
-      
-      const res = await fetch('https://api.openai.com/v1/chat/completions', {
+      const res = await fetch('/api/groq-chat', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${apiKey}`,
-        },
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          model: 'gpt-3.5-turbo',
-          messages: [
-            { 
-              role: 'system', 
-              content: 'You are a helpful real estate assistant for RealtorJigar. Help users with property listings, mortgage calculations, and general real estate questions. Keep responses concise and professional.' 
-            },
-            ...messages.map(msg => ({ role: msg.role, content: msg.content })),
-            { role: 'user', content: userMessage },
-          ],
-          temperature: 0.7,
-          max_tokens: 150,
+          messages: newMessages.map(msg => ({
+            role: msg.role,
+            content: msg.content,
+          })),
         }),
       });
 
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
       const data = await res.json();
       const reply = data.choices?.[0]?.message?.content || 'Sorry, I didn’t understand that.';
-      setMessages(prev => [...prev, { role: 'assistant', content: reply }]);
+      setMessages(prev => [
+        ...prev,
+        { role: 'assistant', content: reply },
+      ]);
     } catch (error) {
-      console.error('OpenAI error:', error);
-      setMessages(prev => [...prev, { role: 'assistant', content: 'There was an error. Please try again later.' }]);
+      setMessages(prev => [
+        ...prev,
+        { role: 'assistant', content: 'There was an error. Please try again later.' },
+      ]);
+      console.error('Groq error:', error);
     } finally {
       setLoading(false);
+    }
+  };
+
+  // Handle Enter key to send
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (
+      e.key === 'Enter' &&
+      !loading &&
+      input.trim().length > 0
+    ) {
+      e.preventDefault();
+      handleSend();
     }
   };
 
@@ -69,6 +96,7 @@ const AiChatBubble = () => {
     <div className="fixed bottom-5 right-5 z-[1000] block visible">
       <button
         onClick={toggleChat}
+        aria-label={isOpen ? 'Close chat' : 'Open AI chat'}
         className="w-16 h-16 bg-realtor-gold text-realtor-navy rounded-full shadow-lg hover:shadow-xl transition-all flex items-center justify-center cursor-pointer"
       >
         <span className="text-sm font-medium">{isOpen ? '✕' : '💬'}</span>
@@ -82,23 +110,34 @@ const AiChatBubble = () => {
                 <strong>{msg.role === 'user' ? '👤 You' : '🤖 AI'}:</strong> {msg.content}
               </div>
             ))}
+            <div ref={messagesEndRef} />
           </div>
 
-          <div className="flex items-center gap-2">
+          <form
+            className="flex items-center gap-2"
+            onSubmit={e => {
+              e.preventDefault();
+              handleSend();
+            }}
+          >
             <input
+              ref={inputRef}
               className="flex-grow border border-gray-300 rounded px-2 py-1"
               value={input}
               onChange={e => setInput(e.target.value)}
               placeholder="Ask about listings..."
-              onKeyDown={e => e.key === 'Enter' && handleSend()}
+              onKeyDown={handleKeyDown}
+              disabled={loading}
+              aria-label="Type your message"
             />
             <button
-              onClick={handleSend}
-              className="bg-realtor-navy text-white px-2 py-1 rounded hover:bg-realtor-navy/90"
+              type="submit"
+              disabled={loading || input.trim().length === 0}
+              className="bg-realtor-navy text-white px-2 py-1 rounded hover:bg-realtor-navy/90 disabled:opacity-50"
             >
               <Send size={16} />
             </button>
-          </div>
+          </form>
 
           {loading && <p className="text-xs text-gray-500 mt-2">Thinking...</p>}
         </div>
