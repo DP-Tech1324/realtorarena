@@ -1,38 +1,41 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { Send } from 'lucide-react';
+import { Send, Home } from 'lucide-react';
 
 type Message = {
   role: 'user' | 'assistant';
   content: string;
 };
 
+const welcomeMsg: Message = {
+  role: 'assistant',
+  content: "👋 Hi! I'm your AI Realtor Assistant. Ask me anything about listings, buying, selling, or the real estate market!"
+};
+
 const AiChatBubble = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [input, setInput] = useState('');
-  const [messages, setMessages] = useState<Message[]>([]);
+  const [messages, setMessages] = useState<Message[]>([welcomeMsg]);
   const [loading, setLoading] = useState(false);
 
   const inputRef = useRef<HTMLInputElement>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
-  // Auto-scroll to the latest message
+  // Auto-scroll to latest
   useEffect(() => {
     if (isOpen && messagesEndRef.current) {
       messagesEndRef.current.scrollIntoView({ behavior: 'smooth' });
     }
   }, [messages, isOpen]);
 
-  // Auto-focus input when chat opens
+  // Auto-focus input
   useEffect(() => {
-    if (isOpen && inputRef.current) {
-      inputRef.current.focus();
-    }
+    if (isOpen && inputRef.current) inputRef.current.focus();
   }, [isOpen]);
 
   const toggleChat = () => setIsOpen((open) => !open);
 
   const handleSend = async () => {
-    if (loading) return; // Prevent double send
+    if (loading) return;
     if (!input.trim()) {
       setMessages(prev => [
         ...prev,
@@ -40,11 +43,10 @@ const AiChatBubble = () => {
       ]);
       return;
     }
-
     const userMessage = input.trim();
     const newMessages: Message[] = [
       ...messages,
-      { role: 'user', content: userMessage },
+      { role: 'user', content: userMessage }
     ];
     setMessages(newMessages);
     setInput('');
@@ -61,18 +63,17 @@ const AiChatBubble = () => {
           })),
         }),
       });
-
       if (!res.ok) throw new Error(`HTTP ${res.status}`);
       const data = await res.json();
       const reply = data.choices?.[0]?.message?.content || 'Sorry, I didn’t understand that.';
       setMessages(prev => [
         ...prev,
-        { role: 'assistant', content: reply },
+        { role: 'assistant', content: reply }
       ]);
     } catch (error) {
       setMessages(prev => [
         ...prev,
-        { role: 'assistant', content: 'There was an error. Please try again later.' },
+        { role: 'assistant', content: 'There was an error. Please try again later.' }
       ]);
       console.error('Groq error:', error);
     } finally {
@@ -80,13 +81,8 @@ const AiChatBubble = () => {
     }
   };
 
-  // Handle Enter key to send
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    if (
-      e.key === 'Enter' &&
-      !loading &&
-      input.trim().length > 0
-    ) {
+    if (e.key === 'Enter' && !loading && input.trim().length > 0) {
       e.preventDefault();
       handleSend();
     }
@@ -94,56 +90,98 @@ const AiChatBubble = () => {
 
   return (
     <div className="fixed bottom-5 right-5 z-[1000] block visible">
+      {/* Floating Button */}
       <button
         onClick={toggleChat}
         aria-label={isOpen ? 'Close chat' : 'Open AI chat'}
-        className="w-16 h-16 bg-realtor-gold text-realtor-navy rounded-full shadow-lg hover:shadow-xl transition-all flex items-center justify-center cursor-pointer"
+        className="w-16 h-16 bg-gradient-to-br from-yellow-400 to-yellow-600 text-realtor-navy rounded-full shadow-xl hover:scale-105 transition-transform flex items-center justify-center"
+        style={{ boxShadow: '0 4px 24px rgba(50,50,100,.08)' }}
       >
-        <span className="text-sm font-medium">{isOpen ? '✕' : '💬'}</span>
+        {isOpen ? <span className="text-2xl">✕</span> : <Home size={32} />}
       </button>
 
-      {isOpen && (
-        <div className="mt-4 w-80 bg-white shadow-xl rounded-lg p-4 border border-realtor-navy">
-          <div className="h-64 overflow-y-auto mb-2 space-y-2 text-sm text-gray-800">
-            {messages.map((msg, i) => (
-              <div key={i} className={msg.role === 'user' ? 'text-blue-600' : 'text-yellow-700'}>
-                <strong>{msg.role === 'user' ? '👤 You' : '🤖 AI'}:</strong> {msg.content}
+      {/* Chat Bubble */}
+      <div className={`transition-all duration-300 ${isOpen ? 'opacity-100 translate-y-0' : 'opacity-0 pointer-events-none translate-y-6'} fixed bottom-24 right-6 w-80 max-w-xs sm:max-w-sm bg-white shadow-2xl rounded-2xl border border-gray-200`}>
+        {isOpen && (
+          <div className="flex flex-col h-[440px]">
+            {/* Header */}
+            <div className="flex items-center gap-2 bg-realtor-navy text-white rounded-t-2xl p-3 shadow">
+              <Home className="bg-yellow-400 text-realtor-navy rounded-full p-1" size={32} />
+              <div>
+                <span className="font-semibold">AI Realtor Chat</span>
+                <div className="text-xs opacity-75">Powered by Qwen-32B</div>
               </div>
-            ))}
-            <div ref={messagesEndRef} />
-          </div>
-
-          <form
-            className="flex items-center gap-2"
-            onSubmit={e => {
-              e.preventDefault();
-              handleSend();
-            }}
-          >
-            <input
-              ref={inputRef}
-              className="flex-grow border border-gray-300 rounded px-2 py-1"
-              value={input}
-              onChange={e => setInput(e.target.value)}
-              placeholder="Ask about listings..."
-              onKeyDown={handleKeyDown}
-              disabled={loading}
-              aria-label="Type your message"
-            />
-            <button
-              type="submit"
-              disabled={loading || input.trim().length === 0}
-              className="bg-realtor-navy text-white px-2 py-1 rounded hover:bg-realtor-navy/90 disabled:opacity-50"
+              <button
+                onClick={toggleChat}
+                className="ml-auto p-2 hover:bg-realtor-gold/10 rounded-lg transition-colors"
+                aria-label="Close"
+              >
+                <span className="text-xl">✕</span>
+              </button>
+            </div>
+            {/* Messages */}
+            <div className="flex-1 overflow-y-auto px-3 py-2 space-y-2 bg-gray-50">
+              {messages.map((msg, i) => (
+                <div
+                  key={i}
+                  className={
+                    msg.role === 'user'
+                      ? "flex justify-end"
+                      : "flex justify-start"
+                  }
+                >
+                  <div className={`rounded-xl px-3 py-2 max-w-[75%] shadow-sm text-sm whitespace-pre-wrap ${msg.role === 'user'
+                    ? 'bg-realtor-gold text-right text-realtor-navy'
+                    : 'bg-white border border-yellow-300 text-gray-700'
+                  }`}>
+                    {msg.content}
+                  </div>
+                </div>
+              ))}
+              {loading && (
+                <div className="flex justify-start">
+                  <div className="rounded-xl px-3 py-2 bg-white border border-yellow-300 shadow-sm text-sm text-gray-400 animate-pulse">
+                    <span>🤖 AI is typing</span>
+                    <span className="ml-2 animate-bounce">...</span>
+                  </div>
+                </div>
+              )}
+              <div ref={messagesEndRef} />
+            </div>
+            {/* Input */}
+            <form
+              className="flex items-center gap-2 border-t border-gray-200 px-3 py-2 bg-white rounded-b-2xl"
+              onSubmit={e => {
+                e.preventDefault();
+                handleSend();
+              }}
             >
-              <Send size={16} />
-            </button>
-          </form>
-
-          {loading && <p className="text-xs text-gray-500 mt-2">Thinking...</p>}
-        </div>
-      )}
+              <input
+                ref={inputRef}
+                className="flex-grow border border-gray-300 rounded-lg px-3 py-2 text-base outline-none focus:ring-2 focus:ring-realtor-gold transition"
+                value={input}
+                onChange={e => setInput(e.target.value)}
+                placeholder="Ask a real estate question…"
+                onKeyDown={handleKeyDown}
+                disabled={loading}
+                aria-label="Type your message"
+                autoComplete="off"
+              />
+              <button
+                type="submit"
+                disabled={loading || input.trim().length === 0}
+                className="bg-gradient-to-br from-realtor-gold to-yellow-400 text-realtor-navy rounded-lg p-2 shadow-md hover:scale-110 transition-transform disabled:opacity-50"
+                aria-label="Send"
+              >
+                <Send size={20} />
+              </button>
+            </form>
+          </div>
+        )}
+      </div>
     </div>
   );
 };
 
 export default AiChatBubble;
+// Note: Ensure you have the necessary styles and dependencies installed for this component to work correctly.
