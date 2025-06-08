@@ -4,6 +4,7 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { Toaster } from '@/components/ui/toaster';
 import { AuthProvider } from '@/contexts/AuthContext';
 import ScrollToTop from '@/components/ScrollToTop';
+import AiChatBubble from "@/components/AiChatBubble";
 
 // Import all pages
 import Home from '@/pages/Home';
@@ -166,9 +167,11 @@ function App() {
             <Route path="*" element={<NotFound />} />
           </Routes>
           <Toaster />
+          <AiChatBubble />
         </Router>
       </AuthProvider>
     </QueryClientProvider>
+    
   );
 }
 
