@@ -12,17 +12,17 @@ export default async function handler(req, res) {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        model: 'meta-llama/llama-3-70b-instruct', // Fastest, you can change to Mixtral or others
-        messages: [
-          { 
-            role: 'system', 
-            content: 'You are a helpful real estate assistant for RealtorJigar. Help users with property listings, mortgage calculations, and general real estate questions. Keep responses concise and professional.' 
-          },
-          ...messages
-        ],
-        temperature: 0.7,
-        max_tokens: 150,
-      }),
+  model: 'llama-3-8b-8192',
+  messages: [
+    {
+      role: 'system',
+      content: 'You are a helpful real estate assistant for RealtorJigar. Help users with property listings, mortgage calculations, and general real estate questions. Keep responses concise and professional.'
+    },
+    ...messages
+  ],
+  temperature: 0.7,
+  max_tokens: 150,
+}),
     });
 
     const data = await groqRes.json();
