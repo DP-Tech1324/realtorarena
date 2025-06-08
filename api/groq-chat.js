@@ -1,34 +1,16 @@
 // /api/groq-chat.js
+import { groq } from '@ai-sdk/groq';
+import { streamText } from 'ai';
+
+export const maxDuration = 30; // seconds
+
 export default async function handler(req, res) {
-  if (req.method !== 'POST') return res.status(405).end();
-  try {
-    const { messages } = req.body;
-    const apiKey = process.env.GROQ_API_KEY;
+  const { messages } = req.body;
 
-    const groqRes = await fetch('https://api.groq.com/openai/v1/chat/completions', {
-      method: 'POST',
-      headers: {
-        'Authorization': `Bearer ${apiKey}`,
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-  model: 'llama-3-8b-8192',
-  messages: [
-    {
-      role: 'system',
-      content: 'You are a helpful real estate assistant for RealtorJigar. Help users with property listings, mortgage calculations, and general real estate questions. Keep responses concise and professional.'
-    },
-    ...messages
-  ],
-  temperature: 0.7,
-  max_tokens: 150,
-}),
-    });
+  const textStream = await streamText({
+    model: groq('llama-3-8b-8192'), // Replace with your preferred/available model
+    messages,
+  });
 
-    const data = await groqRes.json();
-    res.status(200).json(data);
-  } catch (err) {
-    res.status(500).json({ error: 'Groq error', detail: err?.message || err });
-  }
+  textStream.toNodeResponse(res);
 }
-console.log("GROQ_API_KEY:", process.env.GROQ_API_KEY ? process.env.GROQ_API_KEY.slice(0,6) + '...' + process.env.GROQ_API_KEY.slice(-4) : 'undefined');
