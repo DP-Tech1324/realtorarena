@@ -114,8 +114,28 @@ export const useInquiriesManagement = () => {
     return matchesSearch && matchesStatus;
   });
 
+  // Set up real-time subscription for inquiries
   useEffect(() => {
     fetchInquiries();
+    
+    const channel = supabase
+      .channel('inquiries-changes')
+      .on(
+        'postgres_changes',
+        {
+          event: '*',
+          schema: 'public',
+          table: 'inquiries'
+        },
+        () => {
+          fetchInquiries();
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
   }, []);
 
   return {

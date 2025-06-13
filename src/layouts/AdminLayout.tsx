@@ -68,8 +68,8 @@ const AdminLayout = () => {
       {/* Main content area */}
       <main className="flex-1 flex flex-col min-h-screen lg:ml-0">
         {/* Enhanced top header bar */}
-        <header className="flex items-center justify-between p-4 bg-white shadow-sm border-b sticky top-0 z-40">
-          <div className="flex items-center gap-4">
+        <header className="flex items-center justify-between p-3 sm:p-4 bg-white shadow-sm border-b sticky top-0 z-40">
+          <div className="flex items-center gap-2 sm:gap-4">
             {/* Mobile menu button */}
             <Button 
               size="icon" 
@@ -80,9 +80,10 @@ const AdminLayout = () => {
               <Menu className="h-4 w-4" />
             </Button>
             
-            <div className="flex items-center gap-4">
-              <div className="text-sm text-gray-600">
-                Logged in as: <span className="capitalize font-semibold text-realtor-navy">{userRole}</span>
+            <div className="flex items-center gap-2 sm:gap-4">
+              <div className="text-xs sm:text-sm text-gray-600">
+                <span className="hidden sm:inline">Logged in as: </span>
+                <span className="capitalize font-semibold text-realtor-navy">{userRole}</span>
               </div>
               
               {/* Refresh profile button */}
@@ -91,14 +92,14 @@ const AdminLayout = () => {
                 variant="ghost"
                 onClick={handleRefreshProfile}
                 disabled={refreshing}
-                className="text-gray-500 hover:text-realtor-navy"
+                className="text-gray-500 hover:text-realtor-navy p-1 sm:p-2"
               >
-                <RefreshCw className={`h-4 w-4 ${refreshing ? 'animate-spin' : ''}`} />
+                <RefreshCw className={`h-3 w-3 sm:h-4 sm:w-4 ${refreshing ? 'animate-spin' : ''}`} />
               </Button>
             </div>
           </div>
 
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-1 sm:gap-2">
             {/* Notifications Panel */}
             <NotificationPanel />
             
@@ -106,16 +107,17 @@ const AdminLayout = () => {
             <Button 
               variant="outline" 
               onClick={handleLogout} 
-              className="lg:hidden text-red-600 border-red-200 hover:bg-red-50"
+              size="sm"
+              className="lg:hidden text-red-600 border-red-200 hover:bg-red-50 px-2 py-1 text-xs"
             >
-              <LogOut className="h-4 w-4 mr-2" />
-              Logout
+              <LogOut className="h-3 w-3 mr-1" />
+              <span className="hidden xs:inline">Logout</span>
             </Button>
           </div>
         </header>
 
         {/* Page content with better spacing */}
-        <section className="flex-1 p-4 sm:p-6 overflow-auto">
+        <section className="flex-1 p-3 sm:p-4 lg:p-6 overflow-auto">
           <div className="max-w-7xl mx-auto">
             <Outlet />
           </div>
