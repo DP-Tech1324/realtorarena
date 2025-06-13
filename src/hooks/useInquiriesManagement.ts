@@ -9,7 +9,7 @@ export interface Inquiry {
   email: string;
   phone?: string;
   message: string;
-  status: 'new' | 'in-progress' | 'resolved' | 'closed';
+  status: string; // Changed from union type to string to match database
   property_id?: string;
   created_at: string;
 }
@@ -30,7 +30,20 @@ export const useInquiriesManagement = () => {
         .order('created_at', { ascending: false });
 
       if (error) throw error;
-      setInquiries(data || []);
+      
+      // Transform the data to match our interface
+      const transformedData: Inquiry[] = (data || []).map(item => ({
+        id: item.id,
+        name: item.name,
+        email: item.email,
+        phone: item.phone || undefined,
+        message: item.message,
+        status: item.status || 'new',
+        property_id: item.listing_id || undefined,
+        created_at: item.created_at,
+      }));
+      
+      setInquiries(transformedData);
     } catch (error) {
       console.error('Error fetching inquiries:', error);
       toast({

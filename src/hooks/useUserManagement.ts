@@ -7,7 +7,7 @@ export interface AdminUser {
   id: string;
   user_id: string;
   email: string;
-  role: 'admin' | 'superadmin' | 'editor';
+  role: string; // Changed from union type to string to match database
   is_active: boolean;
   created_at: string;
 }
@@ -28,7 +28,18 @@ export const useUserManagement = () => {
         .order('created_at', { ascending: false });
 
       if (error) throw error;
-      setUsers(data || []);
+      
+      // Transform the data to match our interface
+      const transformedData: AdminUser[] = (data || []).map(item => ({
+        id: item.id,
+        user_id: item.user_id,
+        email: item.email || '',
+        role: item.role,
+        is_active: item.is_active ?? true,
+        created_at: item.created_at,
+      }));
+      
+      setUsers(transformedData);
     } catch (error) {
       console.error('Error fetching users:', error);
       toast({
