@@ -44,6 +44,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       console.log('🔄 Refreshing profile for user:', user.id);
 
       const { data: roleData, error: roleError } = await supabase.rpc('get_current_user_role');
+        console.log('DEBUG: get_current_user_role returned:', { roleData, roleError, userId: user?.id });
+      // Check if roleData is null or undefined
       if (roleError || !roleData) {
   console.error('❌ Role fetch error:', roleError);
 
@@ -144,7 +146,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     return () => {
       subscription.unsubscribe();
     };
-  }, [refreshProfile]);
+  }, []);
 
   const signIn = async (email: string, password: string) => {
     try {
