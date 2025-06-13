@@ -44,26 +44,28 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       console.log('🔄 Refreshing profile for user:', user.id);
 
       const { data: roleData, error: roleError } = await supabase.rpc('get_current_user_role');
+      console.log('DEBUG: get_current_user_role returned:', { roleData, roleError, userId: user?.id });
+
       if (roleError || !roleData) {
-  console.error('❌ Role fetch error:', roleError);
+        console.error('❌ Role fetch error:', roleError);
 
-  // Graceful fallback using localStorage
-  const fallbackRole = localStorage.getItem('userRole');
-  const fallbackAdmin = localStorage.getItem('isAdmin') === 'true';
+        // Graceful fallback using localStorage
+        const fallbackRole = localStorage.getItem('userRole');
+        const fallbackAdmin = localStorage.getItem('isAdmin') === 'true';
 
-  if (fallbackRole) {
-    console.warn('⚠️ Using fallback from localStorage');
-    setUserRole(fallbackRole);
-    setIsAdmin(fallbackAdmin);
-    return;
-  }
+        if (fallbackRole) {
+          console.warn('⚠️ Using fallback from localStorage');
+          setUserRole(fallbackRole);
+          setIsAdmin(fallbackAdmin);
+          return;
+        }
 
-  setIsAdmin(false);
-  setUserRole(null);
-  localStorage.removeItem('userRole');
-  localStorage.removeItem('isAdmin');
-  return;
-}
+        setIsAdmin(false);
+        setUserRole(null);
+        localStorage.removeItem('userRole');
+        localStorage.removeItem('isAdmin');
+        return;
+      }
       
       const role = roleData;
       const adminStatus = ['admin', 'superadmin', 'editor'].includes(role);
