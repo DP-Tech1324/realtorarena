@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
@@ -7,7 +6,7 @@ export interface AdminUser {
   id: string;
   user_id: string;
   email: string;
-  role: string; // Changed from union type to string to match database
+  role: 'admin' | 'agent' | 'viewer' | 'editor' | 'superadmin';
   is_active: boolean;
   created_at: string;
 }
@@ -34,7 +33,7 @@ export const useUserManagement = () => {
         id: item.id,
         user_id: item.user_id,
         email: item.email || '',
-        role: item.role,
+        role: item.role as AdminUser['role'],
         is_active: item.is_active ?? true,
         created_at: item.created_at,
       }));
@@ -52,7 +51,7 @@ export const useUserManagement = () => {
     }
   };
 
-  const updateUserRole = async (userId: string, newRole: string) => {
+  const updateUserRole = async (userId: string, newRole: AdminUser['role']) => {
     try {
       const { error } = await supabase
         .from('admin_users')
