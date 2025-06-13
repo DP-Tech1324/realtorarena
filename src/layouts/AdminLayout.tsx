@@ -3,25 +3,37 @@ import React from 'react';
 import { Outlet, useLocation, Navigate, useNavigate } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
 import AdminSidebar from '@/components/AdminSidebar';
+import NotificationPanel from '@/components/ui/NotificationPanel';
 import { Button } from '@/components/ui/button';
-import { LogOut, Menu, X } from 'lucide-react';
+import { LogOut, Menu, X, RefreshCw } from 'lucide-react';
+import LoadingSpinner from '@/components/ui/LoadingSpinner';
 
 const AdminLayout = () => {
   const location = useLocation();
   const navigate = useNavigate();
-  const { isAdmin, userRole, signOut, user, isLoading } = useAuth();
+  const { isAdmin, userRole, signOut, user, isLoading, refreshProfile } = useAuth();
   const [sidebarOpen, setSidebarOpen] = React.useState(false);
+  const [refreshing, setRefreshing] = React.useState(false);
 
   const handleLogout = async () => {
     await signOut();
     navigate('/auth');
   };
 
+  const handleRefreshProfile = async () => {
+    setRefreshing(true);
+    await refreshProfile();
+    setTimeout(() => setRefreshing(false), 1000);
+  };
+
   // Show loading while auth state is being determined
   if (isLoading) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-realtor-gold"></div>
+      <div className="min-h-screen flex items-center justify-center bg-gray-50">
+        <div className="text-center">
+          <LoadingSpinner size="lg" />
+          <p className="mt-4 text-gray-600">Loading admin panel...</p>
+        </div>
       </div>
     );
   }
@@ -43,7 +55,7 @@ const AdminLayout = () => {
         <div className="lg:hidden fixed inset-0 z-50 bg-black/40" onClick={() => setSidebarOpen(false)}>
           <div className="bg-white w-64 h-full shadow-xl" onClick={e => e.stopPropagation()}>
             <div className="p-4 border-b flex items-center justify-between">
-              <h2 className="font-semibold text-lg">Admin Panel</h2>
+              <h2 className="font-semibold text-lg text-realtor-navy">Admin Panel</h2>
               <Button size="icon" variant="ghost" onClick={() => setSidebarOpen(false)}>
                 <X className="h-4 w-4" />
               </Button>
@@ -55,8 +67,8 @@ const AdminLayout = () => {
 
       {/* Main content area */}
       <main className="flex-1 flex flex-col min-h-screen lg:ml-0">
-        {/* Top header bar */}
-        <header className="flex items-center justify-between p-4 border-b bg-white shadow-sm">
+        {/* Enhanced top header bar */}
+        <header className="flex items-center justify-between p-4 bg-white shadow-sm border-b sticky top-0 z-40">
           <div className="flex items-center gap-4">
             {/* Mobile menu button */}
             <Button 
@@ -68,26 +80,45 @@ const AdminLayout = () => {
               <Menu className="h-4 w-4" />
             </Button>
             
-            <div className="text-sm text-gray-600">
-              Logged in as: <span className="capitalize font-semibold">{userRole}</span>
-              {user?.email && <span className="ml-2 text-gray-500">({user.email})</span>}
+            <div className="flex items-center gap-4">
+              <div className="text-sm text-gray-600">
+                Logged in as: <span className="capitalize font-semibold text-realtor-navy">{userRole}</span>
+              </div>
+              
+              {/* Refresh profile button */}
+              <Button
+                size="sm"
+                variant="ghost"
+                onClick={handleRefreshProfile}
+                disabled={refreshing}
+                className="text-gray-500 hover:text-realtor-navy"
+              >
+                <RefreshCw className={`h-4 w-4 ${refreshing ? 'animate-spin' : ''}`} />
+              </Button>
             </div>
           </div>
 
-          {/* Logout button - only in header for mobile, hidden on desktop since it's in sidebar */}
-          <Button 
-            variant="outline" 
-            onClick={handleLogout} 
-            className="lg:hidden text-red-600 border-red-200 hover:bg-red-50"
-          >
-            <LogOut className="h-4 w-4 mr-2" />
-            Logout
-          </Button>
+          <div className="flex items-center gap-2">
+            {/* Notifications Panel */}
+            <NotificationPanel />
+            
+            {/* Logout button - visible on mobile */}
+            <Button 
+              variant="outline" 
+              onClick={handleLogout} 
+              className="lg:hidden text-red-600 border-red-200 hover:bg-red-50"
+            >
+              <LogOut className="h-4 w-4 mr-2" />
+              Logout
+            </Button>
+          </div>
         </header>
 
-        {/* Page content */}
-        <section className="flex-1 p-6 overflow-auto">
-          <Outlet />
+        {/* Page content with better spacing */}
+        <section className="flex-1 p-4 sm:p-6 overflow-auto">
+          <div className="max-w-7xl mx-auto">
+            <Outlet />
+          </div>
         </section>
       </main>
     </div>

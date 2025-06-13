@@ -1,104 +1,187 @@
 
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import { Link } from 'react-router-dom';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Building, Users, MessageSquare, BarChart3 } from 'lucide-react';
-import { supabase } from '@/integrations/supabase/client';
+import { Building, Users, MessageSquare, BarChart3, TrendingUp, Clock } from 'lucide-react';
+import { useAdminData } from '@/hooks/useAdminData';
+import { useAuth } from '@/contexts/AuthContext';
+import LoadingSpinner from '@/components/ui/LoadingSpinner';
 
 const AdminDashboard = () => {
-  const [stats, setStats] = useState({
-    properties: 0,
-    users: 0,
-    inquiries: 0,
-    views: 3500, // Static for now
-  });
+  const { stats, loading } = useAdminData();
+  const { userRole } = useAuth();
 
-  useEffect(() => {
-    const fetchCounts = async () => {
-      const [properties, users, inquiries] = await Promise.all([
-        supabase.from('listings').select('id', { count: 'exact', head: true }),
-        supabase.from('admin_users').select('id', { count: 'exact', head: true }),
-        supabase.from('inquiries').select('id', { count: 'exact', head: true }),
-      ]);
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center min-h-[400px]">
+        <LoadingSpinner size="lg" text="Loading dashboard..." />
+      </div>
+    );
+  }
 
-      setStats({
-        properties: properties.count ?? 0,
-        users: users.count ?? 0,
-        inquiries: inquiries.count ?? 0,
-        views: 3500, // mock value
-      });
-    };
+  const statsCards = [
+    {
+      title: 'Properties',
+      value: stats.totalProperties,
+      subtitle: `${stats.activeProperties} active`,
+      icon: Building,
+      color: 'text-blue-600',
+      bgColor: 'bg-blue-50',
+      link: '/admin/properties',
+    },
+    {
+      title: 'Users',
+      value: stats.totalUsers,
+      subtitle: 'Admin users',
+      icon: Users,
+      color: 'text-green-600',
+      bgColor: 'bg-green-50',
+      link: '/admin/users',
+      roles: ['superadmin'],
+    },
+    {
+      title: 'Inquiries',
+      value: stats.totalInquiries,
+      subtitle: `${stats.pendingInquiries} pending`,
+      icon: MessageSquare,
+      color: 'text-orange-600',
+      bgColor: 'bg-orange-50',
+      link: '/admin/inquiries',
+    },
+    {
+      title: 'Analytics',
+      value: stats.monthlyViews.toLocaleString(),
+      subtitle: 'Monthly views',
+      icon: BarChart3,
+      color: 'text-purple-600',
+      bgColor: 'bg-purple-50',
+      link: '/admin/analytics',
+      roles: ['admin', 'superadmin'],
+    },
+  ];
 
-    fetchCounts();
-  }, []);
+  const filteredCards = statsCards.filter(card => 
+    !card.roles || card.roles.includes(userRole || '')
+  );
 
   return (
-    <div className="space-y-6">
-      <div className="mb-8">
-        <h1 className="text-3xl font-bold text-realtor-navy">Admin Dashboard</h1>
-        <p className="text-gray-600 mt-2">Welcome to your admin panel</p>
+    <div className="space-y-8">
+      {/* Header */}
+      <div className="bg-gradient-to-r from-realtor-navy to-blue-800 rounded-lg p-8 text-white">
+        <div className="flex items-center justify-between">
+          <div>
+            <h1 className="text-4xl font-bold mb-2">Admin Dashboard</h1>
+            <p className="text-blue-100 text-lg">
+              Welcome back! Here's what's happening with your real estate business.
+            </p>
+          </div>
+          <div className="hidden md:flex items-center space-x-4">
+            <div className="text-right">
+              <p className="text-sm text-blue-200">Last updated</p>
+              <p className="text-lg font-semibold">{new Date().toLocaleTimeString()}</p>
+            </div>
+            <Clock className="h-8 w-8 text-blue-200" />
+          </div>
+        </div>
       </div>
 
+      {/* Stats Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-        <Link to="/admin/properties">
-          <Card className="cursor-pointer hover:shadow-lg transition-shadow duration-200">
-            <CardHeader className="pb-2">
-              <CardTitle className="text-lg flex items-center gap-2">
-                <Building className="h-5 w-5 text-realtor-gold" />
-                Properties
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="text-3xl font-bold">{stats.properties}</div>
-              <p className="text-sm text-muted-foreground">Total listings</p>
-            </CardContent>
-          </Card>
-        </Link>
+        {filteredCards.map((stat) => {
+          const IconComponent = stat.icon;
+          return (
+            <Link key={stat.title} to={stat.link}>
+              <Card className="cursor-pointer hover:shadow-lg transition-all duration-200 hover:scale-105 border-0 shadow-md">
+                <CardHeader className="pb-3">
+                  <div className="flex items-center justify-between">
+                    <CardTitle className="text-sm font-medium text-gray-600">
+                      {stat.title}
+                    </CardTitle>
+                    <div className={`p-2 rounded-full ${stat.bgColor}`}>
+                      <IconComponent className={`h-5 w-5 ${stat.color}`} />
+                    </div>
+                  </div>
+                </CardHeader>
+                <CardContent className="pt-0">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <div className="text-3xl font-bold text-gray-900 mb-1">
+                        {typeof stat.value === 'number' ? stat.value.toLocaleString() : stat.value}
+                      </div>
+                      <p className="text-sm text-gray-500">{stat.subtitle}</p>
+                    </div>
+                    <TrendingUp className="h-4 w-4 text-green-500" />
+                  </div>
+                </CardContent>
+              </Card>
+            </Link>
+          );
+        })}
+      </div>
 
-        <Link to="/admin/users">
-          <Card className="cursor-pointer hover:shadow-lg transition-shadow duration-200">
-            <CardHeader className="pb-2">
-              <CardTitle className="text-lg flex items-center gap-2">
-                <Users className="h-5 w-5 text-realtor-gold" />
-                Users
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="text-3xl font-bold">{stats.users}</div>
-              <p className="text-sm text-muted-foreground">Registered users</p>
-            </CardContent>
-          </Card>
-        </Link>
+      {/* Quick Actions */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <Card className="border-0 shadow-md">
+          <CardHeader>
+            <CardTitle className="text-lg">Quick Actions</CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-3">
+            <Link
+              to="/admin/properties"
+              className="flex items-center p-3 rounded-lg hover:bg-gray-50 transition-colors"
+            >
+              <Building className="h-5 w-5 text-realtor-gold mr-3" />
+              <span className="font-medium">Add New Property</span>
+            </Link>
+            {userRole === 'superadmin' && (
+              <Link
+                to="/admin/users"
+                className="flex items-center p-3 rounded-lg hover:bg-gray-50 transition-colors"
+              >
+                <Users className="h-5 w-5 text-realtor-gold mr-3" />
+                <span className="font-medium">Manage Users</span>
+              </Link>
+            )}
+            <Link
+              to="/admin/inquiries"
+              className="flex items-center p-3 rounded-lg hover:bg-gray-50 transition-colors"
+            >
+              <MessageSquare className="h-5 w-5 text-realtor-gold mr-3" />
+              <span className="font-medium">View Inquiries</span>
+            </Link>
+          </CardContent>
+        </Card>
 
-        <Link to="/admin/inquiries">
-          <Card className="cursor-pointer hover:shadow-lg transition-shadow duration-200">
-            <CardHeader className="pb-2">
-              <CardTitle className="text-lg flex items-center gap-2">
-                <MessageSquare className="h-5 w-5 text-realtor-gold" />
-                Inquiries
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="text-3xl font-bold">{stats.inquiries}</div>
-              <p className="text-sm text-muted-foreground">Total inquiries</p>
-            </CardContent>
-          </Card>
-        </Link>
-
-        <Link to="/admin/analytics">
-          <Card className="cursor-pointer hover:shadow-lg transition-shadow duration-200">
-            <CardHeader className="pb-2">
-              <CardTitle className="text-lg flex items-center gap-2">
-                <BarChart3 className="h-5 w-5 text-realtor-gold" />
-                Analytics
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="text-3xl font-bold">{stats.views.toLocaleString()}</div>
-              <p className="text-sm text-muted-foreground">Monthly views</p>
-            </CardContent>
-          </Card>
-        </Link>
+        <Card className="border-0 shadow-md">
+          <CardHeader>
+            <CardTitle className="text-lg">Recent Activity</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-3">
+              <div className="flex items-center p-3 rounded-lg bg-blue-50">
+                <div className="w-2 h-2 bg-blue-500 rounded-full mr-3"></div>
+                <div className="flex-1">
+                  <p className="text-sm font-medium">New property listing added</p>
+                  <p className="text-xs text-gray-500">2 hours ago</p>
+                </div>
+              </div>
+              <div className="flex items-center p-3 rounded-lg bg-green-50">
+                <div className="w-2 h-2 bg-green-500 rounded-full mr-3"></div>
+                <div className="flex-1">
+                  <p className="text-sm font-medium">Inquiry status updated</p>
+                  <p className="text-xs text-gray-500">5 hours ago</p>
+                </div>
+              </div>
+              <div className="flex items-center p-3 rounded-lg bg-orange-50">
+                <div className="w-2 h-2 bg-orange-500 rounded-full mr-3"></div>
+                <div className="flex-1">
+                  <p className="text-sm font-medium">New user registered</p>
+                  <p className="text-xs text-gray-500">1 day ago</p>
+                </div>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
       </div>
     </div>
   );
