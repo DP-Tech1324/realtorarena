@@ -56,7 +56,7 @@ const FiltersSidebar: React.FC<FiltersSidebarProps> = ({
         
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-2">Price Range</label>
-          <Select value={priceRangeFilter} onValueChange={setPriceRangeFilter}>
+          <Select value={priceRangeFilter || 'any'} onValueChange={(value) => setPriceRangeFilter(value === 'any' ? '' : value)}>
             <SelectTrigger>
               <SelectValue placeholder="Select price range" />
             </SelectTrigger>
@@ -74,7 +74,7 @@ const FiltersSidebar: React.FC<FiltersSidebarProps> = ({
 
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-2">Property Type</label>
-          <Select value={propertyTypeFilter} onValueChange={setPropertyTypeFilter}>
+          <Select value={propertyTypeFilter || 'any'} onValueChange={(value) => setPropertyTypeFilter(value === 'any' ? '' : value)}>
             <SelectTrigger>
               <SelectValue placeholder="Select property type" />
             </SelectTrigger>
@@ -92,7 +92,7 @@ const FiltersSidebar: React.FC<FiltersSidebarProps> = ({
 
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-2">Status</label>
-          <Select value={statusFilter} onValueChange={setStatusFilter}>
+          <Select value={statusFilter || 'for-sale'} onValueChange={(value) => setStatusFilter(value)}>
             <SelectTrigger>
               <SelectValue placeholder="Select status" />
             </SelectTrigger>
@@ -109,7 +109,7 @@ const FiltersSidebar: React.FC<FiltersSidebarProps> = ({
 
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-2">Sort By</label>
-          <Select value={sortOrder} onValueChange={setSortOrder}>
+          <Select value={sortOrder || 'newest'} onValueChange={(value) => setSortOrder(value)}>
             <SelectTrigger>
               <SelectValue placeholder="Sort order" />
             </SelectTrigger>
