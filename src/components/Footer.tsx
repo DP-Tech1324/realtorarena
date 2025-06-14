@@ -1,8 +1,7 @@
-
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Facebook, Twitter, Instagram, LinkedIn, Mail, Phone, MapPin } from 'lucide-react';
+import { Facebook, Twitter, Instagram, Linkedin, Mail, Phone, MapPin } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
 
@@ -91,7 +90,7 @@ const Footer = () => {
                 <Facebook className="h-5 w-5 text-gray-300 hover:text-realtor-gold cursor-pointer transition-colors" />
                 <Twitter className="h-5 w-5 text-gray-300 hover:text-realtor-gold cursor-pointer transition-colors" />
                 <Instagram className="h-5 w-5 text-gray-300 hover:text-realtor-gold cursor-pointer transition-colors" />
-                <LinkedIn className="h-5 w-5 text-gray-300 hover:text-realtor-gold cursor-pointer transition-colors" />
+                <Linkedin className="h-5 w-5 text-gray-300 hover:text-realtor-gold cursor-pointer transition-colors" />
               </div>
             </div>
 

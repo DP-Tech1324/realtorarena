@@ -6,6 +6,9 @@ interface AdminStats {
   totalProperties: number;
   totalInquiries: number;
   totalUsers: number;
+  activeProperties: number;
+  pendingInquiries: number;
+  monthlyViews: number;
   recentActivity: Array<{
     id: string;
     type: string;
@@ -19,6 +22,9 @@ export const useAdminData = () => {
     totalProperties: 0,
     totalInquiries: 0,
     totalUsers: 0,
+    activeProperties: 0,
+    pendingInquiries: 0,
+    monthlyViews: 0,
     recentActivity: []
   });
   const [loading, setLoading] = useState(true);
@@ -40,6 +46,14 @@ export const useAdminData = () => {
 
       if (propertiesError) throw propertiesError;
 
+      // Fetch active properties count
+      const { count: activePropertiesCount, error: activePropertiesError } = await supabase
+        .from('listings')
+        .select('*', { count: 'exact', head: true })
+        .eq('status', 'active');
+
+      if (activePropertiesError) throw activePropertiesError;
+
       // Fetch inquiries count
       const { count: inquiriesCount, error: inquiriesError } = await supabase
         .from('inquiries')
@@ -47,12 +61,32 @@ export const useAdminData = () => {
 
       if (inquiriesError) throw inquiriesError;
 
+      // Fetch pending inquiries count
+      const { count: pendingInquiriesCount, error: pendingInquiriesError } = await supabase
+        .from('inquiries')
+        .select('*', { count: 'exact', head: true })
+        .eq('status', 'new');
+
+      if (pendingInquiriesError) throw pendingInquiriesError;
+
       // Fetch users count
       const { count: usersCount, error: usersError } = await supabase
         .from('profiles')
         .select('*', { count: 'exact', head: true });
 
       if (usersError) throw usersError;
+
+      // Fetch monthly views from analytics
+      const thirtyDaysAgo = new Date();
+      thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
+      
+      const { count: monthlyViewsCount, error: analyticsError } = await supabase
+        .from('analytics')
+        .select('*', { count: 'exact', head: true })
+        .eq('event_type', 'view')
+        .gte('created_at', thirtyDaysAgo.toISOString());
+
+      if (analyticsError) throw analyticsError;
 
       // Fetch recent activity from analytics and inquiries
       const { data: recentInquiries } = await supabase
@@ -87,6 +121,9 @@ export const useAdminData = () => {
         totalProperties: propertiesCount || 0,
         totalInquiries: inquiriesCount || 0,
         totalUsers: usersCount || 0,
+        activeProperties: activePropertiesCount || 0,
+        pendingInquiries: pendingInquiriesCount || 0,
+        monthlyViews: monthlyViewsCount || 0,
         recentActivity: activity
       });
     } catch (err) {

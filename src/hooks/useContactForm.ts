@@ -1,9 +1,10 @@
 
 import { useState } from 'react';
+import { useMutation } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
 
-interface ContactFormData {
+export interface ContactFormData {
   name: string;
   email: string;
   phone?: string;
@@ -51,8 +52,15 @@ export const useContactForm = () => {
     }
   };
 
+  const useSubmitContactForm = () => {
+    return useMutation({
+      mutationFn: submitContactForm,
+    });
+  };
+
   return {
     submitContactForm,
-    isSubmitting
+    isSubmitting,
+    useSubmitContactForm
   };
 };

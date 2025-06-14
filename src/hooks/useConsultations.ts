@@ -1,5 +1,6 @@
 
 import { useState, useEffect } from 'react';
+import { useMutation } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
 
@@ -15,6 +16,17 @@ interface Consultation {
   property_id?: string;
   created_at: string;
   updated_at?: string;
+}
+
+interface SubmitConsultationData {
+  name: string;
+  email: string;
+  phone?: string;
+  consultationType: string;
+  date?: string;
+  time?: string;
+  message: string;
+  propertyId?: string;
 }
 
 export const useConsultations = () => {
@@ -109,12 +121,37 @@ export const useConsultations = () => {
     }
   };
 
+  const submitConsultation = async (data: SubmitConsultationData) => {
+    const { error } = await supabase
+      .from('inquiries')
+      .insert({
+        name: data.name,
+        email: data.email,
+        phone: data.phone,
+        message: `${data.message}\n\nConsultation Type: ${data.consultationType}${data.date ? `\nPreferred Date: ${data.date}` : ''}${data.time ? `\nPreferred Time: ${data.time}` : ''}`,
+        inquiry_type: 'consultation',
+        status: 'new',
+        priority: 'normal',
+        property_id: data.propertyId
+      });
+
+    if (error) throw error;
+    await fetchConsultations();
+  };
+
+  const useSubmitConsultation = () => {
+    return useMutation({
+      mutationFn: submitConsultation,
+    });
+  };
+
   return {
     consultations,
     loading,
     error,
     updateConsultationStatus,
     deleteConsultation,
-    refetch: fetchConsultations
+    refetch: fetchConsultations,
+    useSubmitConsultation
   };
 };

@@ -9,7 +9,7 @@ export interface Inquiry {
   email: string;
   phone?: string;
   message: string;
-  status: string; // Changed from union type to string to match database
+  status: string;
   property_id?: string;
   created_at: string;
 }
@@ -39,7 +39,7 @@ export const useInquiriesManagement = () => {
         phone: item.phone || undefined,
         message: item.message,
         status: item.status || 'new',
-        property_id: item.listing_id || undefined,
+        property_id: item.property_id || undefined,
         created_at: item.created_at,
       }));
       

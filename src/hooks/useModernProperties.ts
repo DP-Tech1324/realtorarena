@@ -97,9 +97,9 @@ export const useModernProperties = () => {
         square_feet: item.square_feet,
         lot_size: item.lot_size,
         year_built: item.year_built,
-        parking_spots: item.parking_spots || 0,
-        features: Array.isArray(item.features) ? item.features : [],
-        images: Array.isArray(item.images) ? item.images : [],
+        parking_spots: 0, // Default since column doesn't exist in current schema
+        features: [], // Default since column doesn't exist in current schema
+        images: Array.isArray(item.images) ? (item.images as string[]) : [],
         cover_image: item.cover_image,
         virtual_tour_url: item.virtual_tour_url,
         mls_number: item.mls_number,
