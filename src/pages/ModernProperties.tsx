@@ -92,7 +92,7 @@ const ModernProperties = () => {
                   <label className="block text-sm font-medium text-gray-700 mb-2">
                     City
                   </label>
-                  <Select value={filters.city} onValueChange={(value) => setFilters({...filters, city: value === 'all' ? '' : value})}>
+                  <Select value={filters.city || 'all'} onValueChange={(value) => setFilters({...filters, city: value === 'all' ? '' : value})}>
                     <SelectTrigger>
                       <SelectValue placeholder="Select city" />
                     </SelectTrigger>
@@ -111,7 +111,7 @@ const ModernProperties = () => {
                   <label className="block text-sm font-medium text-gray-700 mb-2">
                     Property Type
                   </label>
-                  <Select value={filters.property_type} onValueChange={(value) => setFilters({...filters, property_type: value === 'all' ? '' : value})}>
+                  <Select value={filters.property_type || 'all'} onValueChange={(value) => setFilters({...filters, property_type: value === 'all' ? '' : value})}>
                     <SelectTrigger>
                       <SelectValue placeholder="Select type" />
                     </SelectTrigger>
@@ -131,7 +131,7 @@ const ModernProperties = () => {
                     <label className="block text-sm font-medium text-gray-700 mb-2">
                       Min Price
                     </label>
-                    <Select value={filters.min_price} onValueChange={(value) => setFilters({...filters, min_price: value === 'none' ? '' : value})}>
+                    <Select value={filters.min_price || 'none'} onValueChange={(value) => setFilters({...filters, min_price: value === 'none' ? '' : value})}>
                       <SelectTrigger>
                         <SelectValue placeholder="Min" />
                       </SelectTrigger>
@@ -148,7 +148,7 @@ const ModernProperties = () => {
                     <label className="block text-sm font-medium text-gray-700 mb-2">
                       Max Price
                     </label>
-                    <Select value={filters.max_price} onValueChange={(value) => setFilters({...filters, max_price: value === 'none' ? '' : value})}>
+                    <Select value={filters.max_price || 'none'} onValueChange={(value) => setFilters({...filters, max_price: value === 'none' ? '' : value})}>
                       <SelectTrigger>
                         <SelectValue placeholder="Max" />
                       </SelectTrigger>
@@ -168,7 +168,7 @@ const ModernProperties = () => {
                   <label className="block text-sm font-medium text-gray-700 mb-2">
                     Bedrooms
                   </label>
-                  <Select value={filters.bedrooms} onValueChange={(value) => setFilters({...filters, bedrooms: value === 'any' ? '' : value})}>
+                  <Select value={filters.bedrooms || 'any'} onValueChange={(value) => setFilters({...filters, bedrooms: value === 'any' ? '' : value})}>
                     <SelectTrigger>
                       <SelectValue placeholder="Any" />
                     </SelectTrigger>
