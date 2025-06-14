@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -49,7 +50,7 @@ const ConsultationForm: React.FC<ConsultationFormProps> = ({
       email: data.email,
       phone: data.phone,
       consultationType: data.consultationType,
-      date: data.date,
+      date: data.date ? data.date.toISOString().split('T')[0] : undefined,
       time: data.time,
       message: data.message || "",
       propertyId: propertyId
