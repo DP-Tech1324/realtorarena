@@ -1,70 +1,101 @@
 
 import { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
-import { useToast } from '@/hooks/use-toast';
 
-export interface AdminStats {
+interface AdminStats {
   totalProperties: number;
-  activeProperties: number;
-  totalUsers: number;
   totalInquiries: number;
-  pendingInquiries: number;
-  monthlyViews: number;
+  totalUsers: number;
+  recentActivity: Array<{
+    id: string;
+    type: string;
+    description: string;
+    timestamp: string;
+  }>;
 }
 
 export const useAdminData = () => {
   const [stats, setStats] = useState<AdminStats>({
     totalProperties: 0,
-    activeProperties: 0,
-    totalUsers: 0,
     totalInquiries: 0,
-    pendingInquiries: 0,
-    monthlyViews: 0,
+    totalUsers: 0,
+    recentActivity: []
   });
   const [loading, setLoading] = useState(true);
-  const { toast } = useToast();
+  const [error, setError] = useState<string | null>(null);
 
-  const fetchStats = async () => {
+  useEffect(() => {
+    fetchAdminData();
+  }, []);
+
+  const fetchAdminData = async () => {
     try {
       setLoading(true);
-      
-      const [properties, users, inquiries, analytics] = await Promise.all([
-        supabase.from('listings').select('id, status', { count: 'exact' }),
-        supabase.from('admin_users').select('id', { count: 'exact' }),
-        supabase.from('inquiries').select('id, status', { count: 'exact' }),
-        supabase.from('realtorjigar_x8d1y_analytics').select('view_count').range(0, 100)
-      ]);
+      setError(null);
 
-      const totalProperties = properties.count || 0;
-      const activeProperties = properties.data?.filter(p => p.status === 'active').length || 0;
-      const totalUsers = users.count || 0;
-      const totalInquiries = inquiries.count || 0;
-      const pendingInquiries = inquiries.data?.filter(i => i.status === 'new').length || 0;
-      const monthlyViews = analytics.data?.reduce((sum, item) => sum + (item.view_count || 0), 0) || 0;
+      // Fetch properties count
+      const { count: propertiesCount, error: propertiesError } = await supabase
+        .from('listings')
+        .select('*', { count: 'exact', head: true });
+
+      if (propertiesError) throw propertiesError;
+
+      // Fetch inquiries count
+      const { count: inquiriesCount, error: inquiriesError } = await supabase
+        .from('inquiries')
+        .select('*', { count: 'exact', head: true });
+
+      if (inquiriesError) throw inquiriesError;
+
+      // Fetch users count
+      const { count: usersCount, error: usersError } = await supabase
+        .from('profiles')
+        .select('*', { count: 'exact', head: true });
+
+      if (usersError) throw usersError;
+
+      // Fetch recent activity from analytics and inquiries
+      const { data: recentInquiries } = await supabase
+        .from('inquiries')
+        .select('id, name, created_at, inquiry_type')
+        .order('created_at', { ascending: false })
+        .limit(5);
+
+      const { data: recentAnalytics } = await supabase
+        .from('analytics')
+        .select('id, event_type, created_at, metadata')
+        .order('created_at', { ascending: false })
+        .limit(5);
+
+      // Combine and format recent activity
+      const activity = [
+        ...(recentInquiries || []).map(inquiry => ({
+          id: inquiry.id,
+          type: 'inquiry',
+          description: `New ${inquiry.inquiry_type} inquiry from ${inquiry.name}`,
+          timestamp: inquiry.created_at
+        })),
+        ...(recentAnalytics || []).map(analytic => ({
+          id: analytic.id,
+          type: 'analytics',
+          description: `Property ${analytic.event_type} event`,
+          timestamp: analytic.created_at
+        }))
+      ].sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime()).slice(0, 10);
 
       setStats({
-        totalProperties,
-        activeProperties,
-        totalUsers,
-        totalInquiries,
-        pendingInquiries,
-        monthlyViews,
+        totalProperties: propertiesCount || 0,
+        totalInquiries: inquiriesCount || 0,
+        totalUsers: usersCount || 0,
+        recentActivity: activity
       });
-    } catch (error) {
-      console.error('Error fetching admin stats:', error);
-      toast({
-        title: 'Error loading dashboard stats',
-        description: 'Please try refreshing the page',
-        variant: 'destructive',
-      });
+    } catch (err) {
+      console.error('Error fetching admin data:', err);
+      setError(err instanceof Error ? err.message : 'Unknown error occurred');
     } finally {
       setLoading(false);
     }
   };
 
-  useEffect(() => {
-    fetchStats();
-  }, []);
-
-  return { stats, loading, refetch: fetchStats };
+  return { stats, loading, error, refetch: fetchAdminData };
 };
