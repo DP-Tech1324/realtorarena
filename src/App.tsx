@@ -7,6 +7,7 @@ import { Toaster } from '@/components/ui/toaster';
 import LoadingSpinner from '@/components/ui/LoadingSpinner';
 
 // Lazy load components
+const Home = lazy(() => import('@/pages/Home'));
 const ModernHome = lazy(() => import('@/pages/ModernHome'));
 const ModernProperties = lazy(() => import('@/pages/ModernProperties'));
 const PropertyDetails = lazy(() => import('@/pages/PropertyDetails'));
@@ -41,7 +42,7 @@ function App() {
             }>
               <Routes>
                 {/* Public Routes */}
-                <Route path="/" element={<ModernHome />} />
+                <Route path="/" element={<Home />} />
                 <Route path="/properties" element={<ModernProperties />} />
                 <Route path="/property/:id" element={<PropertyDetails />} />
                 <Route path="/auth" element={<AuthPage />} />

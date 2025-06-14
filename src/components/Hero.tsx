@@ -1,3 +1,4 @@
+
 import React, { useEffect, useRef } from 'react';
 import { Button } from '@/components/ui/button';
 import {
@@ -22,7 +23,7 @@ const Hero = () => {
   ];
   const navigate = useNavigate();
   const handleSearchClick = () => {
-    navigate('/listings');
+    navigate('/properties');
   };
 
   // Autoplay logic
@@ -119,7 +120,7 @@ const Hero = () => {
                   <div>
                     <label className="block text-sm font-medium mb-3 text-blue-100">Min Price</label>
                     <select className="w-full px-6 py-4 rounded-xl bg-white/20 border border-white/30 text-white focus:outline-none focus:ring-2 focus:ring-yellow-400 transition-all duration-300">
-                      <option value="">Any</option>
+                      <option value="any">Any</option>
                       <option value="500000">$500K</option>
                       <option value="750000">$750K</option>
                       <option value="1000000">$1M</option>
@@ -129,7 +130,7 @@ const Hero = () => {
                   <div>
                     <label className="block text-sm font-medium mb-3 text-blue-100">Max Price</label>
                     <select className="w-full px-6 py-4 rounded-xl bg-white/20 border border-white/30 text-white focus:outline-none focus:ring-2 focus:ring-yellow-400 transition-all duration-300">
-                      <option value="">Any</option>
+                      <option value="any">Any</option>
                       <option value="1000000">$1M</option>
                       <option value="1500000">$1.5M</option>
                       <option value="2000000">$2M</option>
@@ -141,7 +142,7 @@ const Hero = () => {
                   <div>
                     <label className="block text-sm font-medium mb-3 text-blue-100">Bedrooms</label>
                     <select className="w-full px-6 py-4 rounded-xl bg-white/20 border border-white/30 text-white focus:outline-none focus:ring-2 focus:ring-yellow-400 transition-all duration-300">
-                      <option value="">Any</option>
+                      <option value="any">Any</option>
                       <option value="1">1+</option>
                       <option value="2">2+</option>
                       <option value="3">3+</option>
@@ -151,7 +152,7 @@ const Hero = () => {
                   <div>
                     <label className="block text-sm font-medium mb-3 text-blue-100">Property Type</label>
                     <select className="w-full px-6 py-4 rounded-xl bg-white/20 border border-white/30 text-white focus:outline-none focus:ring-2 focus:ring-yellow-400 transition-all duration-300">
-                      <option value="">All Types</option>
+                      <option value="any">All Types</option>
                       <option value="house">House</option>
                       <option value="condo">Condo</option>
                       <option value="townhouse">Townhouse</option>
