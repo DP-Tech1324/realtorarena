@@ -92,12 +92,12 @@ const ModernProperties = () => {
                   <label className="block text-sm font-medium text-gray-700 mb-2">
                     City
                   </label>
-                  <Select value={filters.city} onValueChange={(value) => setFilters({...filters, city: value})}>
+                  <Select value={filters.city} onValueChange={(value) => setFilters({...filters, city: value === 'all' ? '' : value})}>
                     <SelectTrigger>
                       <SelectValue placeholder="Select city" />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="">All Cities</SelectItem>
+                      <SelectItem value="all">All Cities</SelectItem>
                       <SelectItem value="Toronto">Toronto</SelectItem>
                       <SelectItem value="Mississauga">Mississauga</SelectItem>
                       <SelectItem value="Brampton">Brampton</SelectItem>
@@ -111,12 +111,12 @@ const ModernProperties = () => {
                   <label className="block text-sm font-medium text-gray-700 mb-2">
                     Property Type
                   </label>
-                  <Select value={filters.property_type} onValueChange={(value) => setFilters({...filters, property_type: value})}>
+                  <Select value={filters.property_type} onValueChange={(value) => setFilters({...filters, property_type: value === 'all' ? '' : value})}>
                     <SelectTrigger>
                       <SelectValue placeholder="Select type" />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="">All Types</SelectItem>
+                      <SelectItem value="all">All Types</SelectItem>
                       <SelectItem value="house">House</SelectItem>
                       <SelectItem value="condo">Condo</SelectItem>
                       <SelectItem value="townhouse">Townhouse</SelectItem>
@@ -131,12 +131,12 @@ const ModernProperties = () => {
                     <label className="block text-sm font-medium text-gray-700 mb-2">
                       Min Price
                     </label>
-                    <Select value={filters.min_price} onValueChange={(value) => setFilters({...filters, min_price: value})}>
+                    <Select value={filters.min_price} onValueChange={(value) => setFilters({...filters, min_price: value === 'none' ? '' : value})}>
                       <SelectTrigger>
                         <SelectValue placeholder="Min" />
                       </SelectTrigger>
                       <SelectContent>
-                        <SelectItem value="">No Min</SelectItem>
+                        <SelectItem value="none">No Min</SelectItem>
                         <SelectItem value="400000">$400K</SelectItem>
                         <SelectItem value="600000">$600K</SelectItem>
                         <SelectItem value="800000">$800K</SelectItem>
@@ -148,12 +148,12 @@ const ModernProperties = () => {
                     <label className="block text-sm font-medium text-gray-700 mb-2">
                       Max Price
                     </label>
-                    <Select value={filters.max_price} onValueChange={(value) => setFilters({...filters, max_price: value})}>
+                    <Select value={filters.max_price} onValueChange={(value) => setFilters({...filters, max_price: value === 'none' ? '' : value})}>
                       <SelectTrigger>
                         <SelectValue placeholder="Max" />
                       </SelectTrigger>
                       <SelectContent>
-                        <SelectItem value="">No Max</SelectItem>
+                        <SelectItem value="none">No Max</SelectItem>
                         <SelectItem value="800000">$800K</SelectItem>
                         <SelectItem value="1000000">$1M</SelectItem>
                         <SelectItem value="1500000">$1.5M</SelectItem>
@@ -168,12 +168,12 @@ const ModernProperties = () => {
                   <label className="block text-sm font-medium text-gray-700 mb-2">
                     Bedrooms
                   </label>
-                  <Select value={filters.bedrooms} onValueChange={(value) => setFilters({...filters, bedrooms: value})}>
+                  <Select value={filters.bedrooms} onValueChange={(value) => setFilters({...filters, bedrooms: value === 'any' ? '' : value})}>
                     <SelectTrigger>
                       <SelectValue placeholder="Any" />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="">Any</SelectItem>
+                      <SelectItem value="any">Any</SelectItem>
                       <SelectItem value="1">1+</SelectItem>
                       <SelectItem value="2">2+</SelectItem>
                       <SelectItem value="3">3+</SelectItem>
