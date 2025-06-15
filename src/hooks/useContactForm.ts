@@ -1,5 +1,4 @@
 
-import { useState } from 'react';
 import { useMutation } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
@@ -7,60 +6,58 @@ import { useToast } from '@/hooks/use-toast';
 export interface ContactFormData {
   name: string;
   email: string;
-  phone?: string;
+  phone: string;
   message: string;
 }
 
-export const useContactForm = () => {
-  const [isSubmitting, setIsSubmitting] = useState(false);
+export function useContactForm() {
   const { toast } = useToast();
-
-  const submitContactForm = async (formData: ContactFormData) => {
-    setIsSubmitting(true);
+  
+  const submitContactForm = async (data: ContactFormData) => {
+    console.log('Submitting contact form data:', data);
     
     try {
+      // Insert contact request into Supabase
       const { error } = await supabase
-        .from('inquiries')
+        .from('realtorjigar_x8d1y_inquiries')
         .insert({
-          name: formData.name,
-          email: formData.email,
-          phone: formData.phone,
-          message: formData.message,
-          inquiry_type: 'general',
-          status: 'new',
-          priority: 'normal'
+          name: data.name,
+          email: data.email,
+          phone: data.phone,
+          message: data.message
         });
-
-      if (error) throw error;
-
-      toast({
-        title: "Message Sent!",
-        description: "Thank you for your message. We'll get back to you soon.",
-      });
-
+        
+      if (error) {
+        console.error('Supabase error:', error);
+        throw error;
+      }
+      
+      console.log('Contact form submitted successfully');
       return { success: true };
     } catch (error) {
-      console.error('Error submitting contact form:', error);
-      toast({
-        title: "Error",
-        description: "Failed to send message. Please try again.",
-        variant: "destructive",
-      });
-      return { success: false, error };
-    } finally {
-      setIsSubmitting(false);
+      console.error('Error in submitContactForm:', error);
+      throw error;
     }
   };
-
-  const useSubmitContactForm = () => {
-    return useMutation({
+  
+  const useSubmitContactForm = () => 
+    useMutation({
       mutationFn: submitContactForm,
+      onSuccess: () => {
+        toast({
+          title: "Message sent",
+          description: "Thank you for contacting us! We will get back to you soon.",
+        });
+      },
+      onError: (error: any) => {
+        console.error('Mutation error:', error);
+        toast({
+          title: "Error sending message",
+          description: error.message || "Failed to send your message. Please try again.",
+          variant: "destructive"
+        });
+      }
     });
-  };
-
-  return {
-    submitContactForm,
-    isSubmitting,
-    useSubmitContactForm
-  };
-};
+  
+  return { useSubmitContactForm };
+}

@@ -1,238 +1,348 @@
 
-import React, { useState } from 'react';
+import React from 'react';
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { z } from 'zod';
 import { Button } from '@/components/ui/button';
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { 
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
+import { toast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
-import { useToast } from '@/hooks/use-toast';
 
-const HomeValuationForm = () => {
-  const [formData, setFormData] = useState({
-    name: '',
-    email: '',
-    phone: '',
-    address: '',
-    propertyType: '',
-    bedrooms: '',
-    bathrooms: '',
-    squareFootage: '',
-    yearBuilt: '',
-    additionalInfo: ''
+const formSchema = z.object({
+  name: z.string().min(2, {
+    message: "Name must be at least 2 characters.",
+  }),
+  email: z.string().email({
+    message: "Please enter a valid email.",
+  }),
+  phone: z.string().min(10, {
+    message: "Please enter a valid phone number.",
+  }),
+  address: z.string().min(5, {
+    message: "Please enter your complete address.",
+  }),
+  city: z.string().min(2, {
+    message: "Please enter your city.",
+  }),
+  postalCode: z.string().min(6, {
+    message: "Please enter a valid postal code.",
+  }),
+  propertyType: z.string({
+    required_error: "Please select a property type.",
+  }),
+  bedrooms: z.string().optional(),
+  bathrooms: z.string().optional(),
+  squareFeet: z.string().optional(),
+  yearBuilt: z.string().optional(),
+  renovations: z.string().optional(),
+  additionalInfo: z.string().optional(),
+});
+
+type FormValues = z.infer<typeof formSchema>;
+
+const HomeValuationForm: React.FC = () => {
+  const form = useForm<FormValues>({
+    resolver: zodResolver(formSchema),
+    defaultValues: {
+      renovations: "",
+      additionalInfo: "",
+    },
   });
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const { toast } = useToast();
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
-  };
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setIsSubmitting(true);
-
+  const onSubmit = async (data: FormValues) => {
+    console.log('Home valuation form submitted with data:', data);
+    
     try {
-      const message = `
-        Home Valuation Request
-        
-        Property Details:
-        Address: ${formData.address}
-        Property Type: ${formData.propertyType}
-        Bedrooms: ${formData.bedrooms}
-        Bathrooms: ${formData.bathrooms}
-        Square Footage: ${formData.squareFootage}
-        Year Built: ${formData.yearBuilt}
-        
-        Additional Information: ${formData.additionalInfo}
-      `;
-
+      // Insert valuation request into Supabase
       const { error } = await supabase
-        .from('inquiries')
+        .from('contact_requests')
         .insert({
-          name: formData.name,
-          email: formData.email,
-          phone: formData.phone,
-          message: message,
-          inquiry_type: 'general'
+          id: crypto.randomUUID(),
+          name: data.name,
+          email: data.email,
+          message: `Property Valuation Request - 
+            Address: ${data.address}, ${data.city}, ${data.postalCode}
+            Property Type: ${data.propertyType}
+            Bedrooms: ${data.bedrooms || 'Not specified'}
+            Bathrooms: ${data.bathrooms || 'Not specified'}
+            Square Feet: ${data.squareFeet || 'Not specified'}
+            Year Built: ${data.yearBuilt || 'Not specified'}
+            Renovations: ${data.renovations || 'None specified'}
+            Additional Info: ${data.additionalInfo || 'None provided'}`
         });
-
-      if (error) throw error;
-
+        
+      if (error) {
+        console.error('Supabase error:', error);
+        toast({
+          title: "Error submitting valuation request",
+          description: error.message || "Failed to submit your valuation request. Please try again.",
+          variant: "destructive"
+        });
+      } else {
+        toast({
+          title: "Valuation Request Submitted",
+          description: "Thank you! We'll analyze your property and contact you shortly with your home valuation.",
+        });
+        form.reset();
+      }
+    } catch (error: any) {
+      console.error('Error submitting valuation form:', error);
       toast({
-        title: "Request Submitted!",
-        description: "We'll contact you soon with your home valuation.",
+        title: "Error submitting valuation request",
+        description: error.message || "An unexpected error occurred. Please try again.",
+        variant: "destructive"
       });
-
-      // Reset form
-      setFormData({
-        name: '',
-        email: '',
-        phone: '',
-        address: '',
-        propertyType: '',
-        bedrooms: '',
-        bathrooms: '',
-        squareFootage: '',
-        yearBuilt: '',
-        additionalInfo: ''
-      });
-    } catch (error) {
-      console.error('Error submitting valuation request:', error);
-      toast({
-        title: "Error",
-        description: "Failed to submit request. Please try again.",
-        variant: "destructive",
-      });
-    } finally {
-      setIsSubmitting(false);
     }
   };
 
   return (
-    <Card className="max-w-2xl mx-auto">
-      <CardHeader>
-        <CardTitle className="text-2xl text-center text-realtor-navy">
-          Get Your Free Home Valuation
-        </CardTitle>
-        <p className="text-center text-gray-600">
-          Fill out the form below and we'll provide you with a comprehensive market analysis
-        </p>
-      </CardHeader>
-      <CardContent>
-        <form onSubmit={handleSubmit} className="space-y-4">
-          {/* Personal Information */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div>
-              <label className="block text-sm font-medium mb-1">Name *</label>
-              <Input
-                type="text"
-                name="name"
-                value={formData.name}
-                onChange={handleChange}
-                required
-              />
-            </div>
-            <div>
-              <label className="block text-sm font-medium mb-1">Email *</label>
-              <Input
-                type="email"
-                name="email"
-                value={formData.email}
-                onChange={handleChange}
-                required
-              />
-            </div>
-          </div>
+    <Form {...form}>
+      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <FormField
+            control={form.control}
+            name="name"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Full Name</FormLabel>
+                <FormControl>
+                  <Input placeholder="John Doe" {...field} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
 
-          <div>
-            <label className="block text-sm font-medium mb-1">Phone</label>
-            <Input
-              type="tel"
-              name="phone"
-              value={formData.phone}
-              onChange={handleChange}
-            />
-          </div>
+          <FormField
+            control={form.control}
+            name="email"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Email</FormLabel>
+                <FormControl>
+                  <Input type="email" placeholder="john@example.com" {...field} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
 
-          {/* Property Information */}
-          <div>
-            <label className="block text-sm font-medium mb-1">Property Address *</label>
-            <Input
-              type="text"
-              name="address"
-              value={formData.address}
-              onChange={handleChange}
-              placeholder="123 Main Street, City, Province"
-              required
-            />
-          </div>
+          <FormField
+            control={form.control}
+            name="phone"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Phone Number</FormLabel>
+                <FormControl>
+                  <Input placeholder="(647) 555-1234" {...field} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div>
-              <label className="block text-sm font-medium mb-1">Property Type</label>
-              <select
-                name="propertyType"
-                value={formData.propertyType}
-                onChange={handleChange}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-realtor-gold"
-              >
-                <option value="">Select Type</option>
-                <option value="house">House</option>
-                <option value="condo">Condo</option>
-                <option value="townhouse">Townhouse</option>
-                <option value="apartment">Apartment</option>
-                <option value="commercial">Commercial</option>
-              </select>
-            </div>
-            <div>
-              <label className="block text-sm font-medium mb-1">Bedrooms</label>
-              <Input
-                type="number"
-                name="bedrooms"
-                value={formData.bedrooms}
-                onChange={handleChange}
-                min="0"
-              />
-            </div>
-          </div>
+          <FormField
+            control={form.control}
+            name="address"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Street Address</FormLabel>
+                <FormControl>
+                  <Input placeholder="123 Main St" {...field} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div>
-              <label className="block text-sm font-medium mb-1">Bathrooms</label>
-              <Input
-                type="number"
-                name="bathrooms"
-                value={formData.bathrooms}
-                onChange={handleChange}
-                min="0"
-                step="0.5"
-              />
-            </div>
-            <div>
-              <label className="block text-sm font-medium mb-1">Square Footage</label>
-              <Input
-                type="number"
-                name="squareFootage"
-                value={formData.squareFootage}
-                onChange={handleChange}
-                min="0"
-              />
-            </div>
-          </div>
+          <FormField
+            control={form.control}
+            name="city"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>City</FormLabel>
+                <FormControl>
+                  <Input placeholder="Toronto" {...field} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
 
-          <div>
-            <label className="block text-sm font-medium mb-1">Year Built</label>
-            <Input
-              type="number"
-              name="yearBuilt"
-              value={formData.yearBuilt}
-              onChange={handleChange}
-              min="1800"
-              max={new Date().getFullYear()}
-            />
-          </div>
+          <FormField
+            control={form.control}
+            name="postalCode"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Postal Code</FormLabel>
+                <FormControl>
+                  <Input placeholder="M5V 2A1" {...field} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
 
-          <div>
-            <label className="block text-sm font-medium mb-1">Additional Information</label>
-            <Textarea
-              name="additionalInfo"
-              value={formData.additionalInfo}
-              onChange={handleChange}
-              placeholder="Tell us about any recent renovations, unique features, or other details..."
-              rows={4}
-            />
-          </div>
+          <FormField
+            control={form.control}
+            name="propertyType"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Property Type</FormLabel>
+                <Select onValueChange={field.onChange} defaultValue={field.value}>
+                  <FormControl>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select property type" />
+                    </SelectTrigger>
+                  </FormControl>
+                  <SelectContent>
+                    <SelectItem value="detached">Detached House</SelectItem>
+                    <SelectItem value="semi-detached">Semi-Detached House</SelectItem>
+                    <SelectItem value="townhouse">Townhouse</SelectItem>
+                    <SelectItem value="condo">Condominium</SelectItem>
+                    <SelectItem value="other">Other</SelectItem>
+                  </SelectContent>
+                </Select>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
 
-          <Button
-            type="submit"
-            disabled={isSubmitting}
-            className="w-full bg-realtor-gold hover:bg-realtor-gold/90 text-realtor-navy font-semibold"
-          >
-            {isSubmitting ? 'Submitting...' : 'Get Free Valuation'}
-          </Button>
-        </form>
-      </CardContent>
-    </Card>
+          <FormField
+            control={form.control}
+            name="bedrooms"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Number of Bedrooms</FormLabel>
+                <Select onValueChange={field.onChange} defaultValue={field.value}>
+                  <FormControl>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select number of bedrooms" />
+                    </SelectTrigger>
+                  </FormControl>
+                  <SelectContent>
+                    <SelectItem value="1">1</SelectItem>
+                    <SelectItem value="2">2</SelectItem>
+                    <SelectItem value="3">3</SelectItem>
+                    <SelectItem value="4">4</SelectItem>
+                    <SelectItem value="5">5+</SelectItem>
+                  </SelectContent>
+                </Select>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+
+          <FormField
+            control={form.control}
+            name="bathrooms"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Number of Bathrooms</FormLabel>
+                <Select onValueChange={field.onChange} defaultValue={field.value}>
+                  <FormControl>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select number of bathrooms" />
+                    </SelectTrigger>
+                  </FormControl>
+                  <SelectContent>
+                    <SelectItem value="1">1</SelectItem>
+                    <SelectItem value="2">2</SelectItem>
+                    <SelectItem value="3">3</SelectItem>
+                    <SelectItem value="4">4+</SelectItem>
+                  </SelectContent>
+                </Select>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+
+          <FormField
+            control={form.control}
+            name="squareFeet"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Square Footage (approx.)</FormLabel>
+                <FormControl>
+                  <Input placeholder="1500" {...field} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+
+          <FormField
+            control={form.control}
+            name="yearBuilt"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Year Built (approx.)</FormLabel>
+                <FormControl>
+                  <Input placeholder="2005" {...field} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+        </div>
+
+        <FormField
+          control={form.control}
+          name="renovations"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Recent Renovations or Upgrades</FormLabel>
+              <FormControl>
+                <Textarea 
+                  placeholder="Please describe any recent renovations or upgrades to your property..."
+                  className="min-h-[100px]"
+                  {...field}
+                />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+
+        <FormField
+          control={form.control}
+          name="additionalInfo"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Additional Property Information</FormLabel>
+              <FormControl>
+                <Textarea 
+                  placeholder="Please share any additional information about your property..."
+                  className="min-h-[100px]"
+                  {...field}
+                />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+
+        <Button type="submit" className="w-full md:w-auto bg-realtor-gold hover:bg-realtor-gold/90 text-realtor-navy font-semibold">
+          Submit for Valuation
+        </Button>
+      </form>
+    </Form>
   );
 };
 

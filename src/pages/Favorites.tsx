@@ -30,8 +30,8 @@ const Favorites = () => {
 
       try {
         const { data: favorites, error } = await supabase
-          .from('user_favorites')
-          .select('property_id')
+          .from('favorites')
+          .select('listing_id')
           .eq('user_id', user.id);
 
         if (error) {
@@ -39,7 +39,7 @@ const Favorites = () => {
         }
 
         if (favorites && allProperties) {
-          const favoriteIds = favorites.map(fav => fav.property_id);
+          const favoriteIds = favorites.map(fav => fav.listing_id);
           const favoriteProps = allProperties.filter(property => 
             favoriteIds.includes(property.id)
           );
@@ -67,10 +67,10 @@ const Favorites = () => {
 
     try {
       const { error } = await supabase
-        .from('user_favorites')
+        .from('favorites')
         .delete()
         .eq('user_id', user.id)
-        .eq('property_id', propertyId);
+        .eq('listing_id', propertyId);
 
       if (error) {
         throw error;

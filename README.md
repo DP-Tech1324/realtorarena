@@ -1,84 +1,73 @@
-# RealtorArena
+# Welcome to your Lovable project
 
-RealtorArena is a full-featured real estate web platform built with React and Supabase. It includes property listings, user authentication with role-based access, an admin dashboard for managing listings, inquiries, users, and consultations, plus AI-powered features.
+## Project info
 
----
+**URL**: https://lovable.dev/projects/54e95f63-a5c2-4a7a-830e-278cae2d1ce2
 
-## 🚀 Features
+## How can I edit this code?
 
-- Responsive property listings with filtering and search  
-- Secure user authentication with roles: admin, superadmin, agent, editor, viewer  
-- Admin dashboard for managing properties, inquiries, users, and consultations  
-- Integration with Supabase backend (PostgreSQL, auth, storage, row-level security)  
-- Consultation and contact form handling  
-- AI-powered enhancements (via OpenAI API)  
-- Role-based access control enforced in UI and backend  
-- Hosted on Vercel for fast global delivery  
+There are several ways of editing your application.
 
----
+**Use Lovable**
 
-## 🛠 Technology Stack
+Simply visit the [Lovable Project](https://lovable.dev/projects/54e95f63-a5c2-4a7a-830e-278cae2d1ce2) and start prompting.
 
-- Frontend: React, TypeScript, Vite, Tailwind CSS, shadcn-ui components  
-- Backend: Supabase (PostgreSQL, Auth, Storage, RLS)  
-- AI: OpenAI API integration  
-- Hosting & Deployment: Vercel  
+Changes made via Lovable will be committed automatically to this repo.
 
----
+**Use your preferred IDE**
 
-## 💻 Getting Started
+If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
 
-### Prerequisites
+The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
 
-- Node.js v18+  
-- npm or yarn  
-- Supabase project with API keys  
-- OpenAI API key (optional for AI features)  
+Follow these steps:
 
-### Installation
+```sh
+# Step 1: Clone the repository using the project's Git URL.
+git clone <YOUR_GIT_URL>
 
-```bash
-git clone https://github.com/DP-Tech1324/realtorarena.git
-cd realtorarena
-npm install
-## Environment Setup
+# Step 2: Navigate to the project directory.
+cd <YOUR_PROJECT_NAME>
 
-Create a .env file in the root directory with:
-VITE_SUPABASE_URL=your-supabase-url
-VITE_SUPABASE_ANON_KEY=your-supabase-anon-key
-VITE_OPENAI_API_KEY=your-openai-api-key # optional
+# Step 3: Install the necessary dependencies.
+npm i
 
-
-Run Locally
+# Step 4: Start the development server with auto-reloading and an instant preview.
 npm run dev
+```
 
-🚀 Deployment
-	•	The project is deployed on Vercel.
-	•	Set environment variables in Vercel dashboard as in .env.
-	•	Build command: npm run build
-	•	Output directory: dist
+**Edit a file directly in GitHub**
 
+- Navigate to the desired file(s).
+- Click the "Edit" button (pencil icon) at the top right of the file view.
+- Make your changes and commit the changes.
 
-🔐 Authentication & Authorization
-	•	User registration, login, and password reset.
-	•	Roles supported: admin, superadmin, agent, editor, viewer.
-	•	Role-based UI rendering and route protection.
-	•	Supabase RLS policies ensure secure data access.
-    
-🤝 Contributing
+**Use GitHub Codespaces**
 
-We welcome contributions! Please:
-	•	Fork the repo
-	•	Create a feature branch (feature/xyz)
-	•	Commit with clear messages
-	•	Open a pull request
+- Navigate to the main page of your repository.
+- Click on the "Code" button (green button) near the top right.
+- Select the "Codespaces" tab.
+- Click on "New codespace" to launch a new Codespace environment.
+- Edit files directly within the Codespace and commit and push your changes once you're done.
 
-📄 License
+## What technologies are used for this project?
 
-This project is licensed under the MIT License. See the LICENSE file for details.
+This project is built with:
 
+- Vite
+- TypeScript
+- React
+- shadcn-ui
+- Tailwind CSS
 
-🙏 Acknowledgements
+## How can I deploy this project?
 
-Built with React, Supabase, Tailwind CSS, and OpenAI API — inspired by modern real estate platforms.
+Simply open [Lovable](https://lovable.dev/projects/54e95f63-a5c2-4a7a-830e-278cae2d1ce2) and click on Share -> Publish.
 
+## Can I connect a custom domain to my Lovable project?
+
+Yes, you can!
+
+To connect a domain, navigate to Project > Settings > Domains and click Connect Domain.
+
+Read more here: [Setting up a custom domain](https://docs.lovable.dev/tips-tricks/custom-domain#step-by-step-guide)

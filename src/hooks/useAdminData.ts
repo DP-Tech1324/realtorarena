@@ -1,138 +1,70 @@
 
 import { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
+import { useToast } from '@/hooks/use-toast';
 
-interface AdminStats {
+export interface AdminStats {
   totalProperties: number;
-  totalInquiries: number;
-  totalUsers: number;
   activeProperties: number;
+  totalUsers: number;
+  totalInquiries: number;
   pendingInquiries: number;
   monthlyViews: number;
-  recentActivity: Array<{
-    id: string;
-    type: string;
-    description: string;
-    timestamp: string;
-  }>;
 }
 
 export const useAdminData = () => {
   const [stats, setStats] = useState<AdminStats>({
     totalProperties: 0,
-    totalInquiries: 0,
-    totalUsers: 0,
     activeProperties: 0,
+    totalUsers: 0,
+    totalInquiries: 0,
     pendingInquiries: 0,
     monthlyViews: 0,
-    recentActivity: []
   });
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  const { toast } = useToast();
 
-  useEffect(() => {
-    fetchAdminData();
-  }, []);
-
-  const fetchAdminData = async () => {
+  const fetchStats = async () => {
     try {
       setLoading(true);
-      setError(null);
-
-      // Fetch properties count
-      const { count: propertiesCount, error: propertiesError } = await supabase
-        .from('listings')
-        .select('*', { count: 'exact', head: true });
-
-      if (propertiesError) throw propertiesError;
-
-      // Fetch active properties count
-      const { count: activePropertiesCount, error: activePropertiesError } = await supabase
-        .from('listings')
-        .select('*', { count: 'exact', head: true })
-        .eq('status', 'active');
-
-      if (activePropertiesError) throw activePropertiesError;
-
-      // Fetch inquiries count
-      const { count: inquiriesCount, error: inquiriesError } = await supabase
-        .from('inquiries')
-        .select('*', { count: 'exact', head: true });
-
-      if (inquiriesError) throw inquiriesError;
-
-      // Fetch pending inquiries count
-      const { count: pendingInquiriesCount, error: pendingInquiriesError } = await supabase
-        .from('inquiries')
-        .select('*', { count: 'exact', head: true })
-        .eq('status', 'new');
-
-      if (pendingInquiriesError) throw pendingInquiriesError;
-
-      // Fetch users count
-      const { count: usersCount, error: usersError } = await supabase
-        .from('profiles')
-        .select('*', { count: 'exact', head: true });
-
-      if (usersError) throw usersError;
-
-      // Fetch monthly views from analytics
-      const thirtyDaysAgo = new Date();
-      thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
       
-      const { count: monthlyViewsCount, error: analyticsError } = await supabase
-        .from('analytics')
-        .select('*', { count: 'exact', head: true })
-        .eq('event_type', 'view')
-        .gte('created_at', thirtyDaysAgo.toISOString());
+      const [properties, users, inquiries, analytics] = await Promise.all([
+        supabase.from('listings').select('id, status', { count: 'exact' }),
+        supabase.from('admin_users').select('id', { count: 'exact' }),
+        supabase.from('inquiries').select('id, status', { count: 'exact' }),
+        supabase.from('realtorjigar_x8d1y_analytics').select('view_count').range(0, 100)
+      ]);
 
-      if (analyticsError) throw analyticsError;
-
-      // Fetch recent activity from analytics and inquiries
-      const { data: recentInquiries } = await supabase
-        .from('inquiries')
-        .select('id, name, created_at, inquiry_type')
-        .order('created_at', { ascending: false })
-        .limit(5);
-
-      const { data: recentAnalytics } = await supabase
-        .from('analytics')
-        .select('id, event_type, created_at, metadata')
-        .order('created_at', { ascending: false })
-        .limit(5);
-
-      // Combine and format recent activity
-      const activity = [
-        ...(recentInquiries || []).map(inquiry => ({
-          id: inquiry.id,
-          type: 'inquiry',
-          description: `New ${inquiry.inquiry_type} inquiry from ${inquiry.name}`,
-          timestamp: inquiry.created_at
-        })),
-        ...(recentAnalytics || []).map(analytic => ({
-          id: analytic.id,
-          type: 'analytics',
-          description: `Property ${analytic.event_type} event`,
-          timestamp: analytic.created_at
-        }))
-      ].sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime()).slice(0, 10);
+      const totalProperties = properties.count || 0;
+      const activeProperties = properties.data?.filter(p => p.status === 'active').length || 0;
+      const totalUsers = users.count || 0;
+      const totalInquiries = inquiries.count || 0;
+      const pendingInquiries = inquiries.data?.filter(i => i.status === 'new').length || 0;
+      const monthlyViews = analytics.data?.reduce((sum, item) => sum + (item.view_count || 0), 0) || 0;
 
       setStats({
-        totalProperties: propertiesCount || 0,
-        totalInquiries: inquiriesCount || 0,
-        totalUsers: usersCount || 0,
-        activeProperties: activePropertiesCount || 0,
-        pendingInquiries: pendingInquiriesCount || 0,
-        monthlyViews: monthlyViewsCount || 0,
-        recentActivity: activity
+        totalProperties,
+        activeProperties,
+        totalUsers,
+        totalInquiries,
+        pendingInquiries,
+        monthlyViews,
       });
-    } catch (err) {
-      console.error('Error fetching admin data:', err);
-      setError(err instanceof Error ? err.message : 'Unknown error occurred');
+    } catch (error) {
+      console.error('Error fetching admin stats:', error);
+      toast({
+        title: 'Error loading dashboard stats',
+        description: 'Please try refreshing the page',
+        variant: 'destructive',
+      });
     } finally {
       setLoading(false);
     }
   };
 
-  return { stats, loading, error, refetch: fetchAdminData };
+  useEffect(() => {
+    fetchStats();
+  }, []);
+
+  return { stats, loading, refetch: fetchStats };
 };

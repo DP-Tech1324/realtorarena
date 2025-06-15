@@ -36,89 +36,171 @@ export type Database = {
         }
         Relationships: []
       }
-      analytics: {
+      bookings: {
+        Row: {
+          created_at: string | null
+          date: string
+          email: string
+          id: string
+          name: string
+          phone: string | null
+          time: string
+        }
+        Insert: {
+          created_at?: string | null
+          date: string
+          email: string
+          id?: string
+          name: string
+          phone?: string | null
+          time: string
+        }
+        Update: {
+          created_at?: string | null
+          date?: string
+          email?: string
+          id?: string
+          name?: string
+          phone?: string | null
+          time?: string
+        }
+        Relationships: []
+      }
+      consultations: {
+        Row: {
+          consultation_type: string
+          created_at: string | null
+          date: string
+          email: string
+          id: string
+          message: string | null
+          name: string
+          phone: string
+          property_id: string | null
+          time: string
+        }
+        Insert: {
+          consultation_type: string
+          created_at?: string | null
+          date: string
+          email: string
+          id?: string
+          message?: string | null
+          name: string
+          phone: string
+          property_id?: string | null
+          time: string
+        }
+        Update: {
+          consultation_type?: string
+          created_at?: string | null
+          date?: string
+          email?: string
+          id?: string
+          message?: string | null
+          name?: string
+          phone?: string
+          property_id?: string | null
+          time?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "consultations_property_id_fkey"
+            columns: ["property_id"]
+            isOneToOne: false
+            referencedRelation: "properties"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      contact_requests: {
+        Row: {
+          created_at: string | null
+          email: string | null
+          id: string
+          message: string | null
+          name: string
+        }
+        Insert: {
+          created_at?: string | null
+          email?: string | null
+          id: string
+          message?: string | null
+          name?: string
+        }
+        Update: {
+          created_at?: string | null
+          email?: string | null
+          id?: string
+          message?: string | null
+          name?: string
+        }
+        Relationships: []
+      }
+      favorites: {
         Row: {
           created_at: string
-          event_type: string
           id: string
-          ip_address: unknown | null
-          metadata: Json | null
-          property_id: string | null
-          referrer: string | null
-          session_id: string | null
-          user_agent: string | null
-          user_id: string | null
+          listing_id: string
+          user_id: string
         }
         Insert: {
           created_at?: string
-          event_type: string
           id?: string
-          ip_address?: unknown | null
-          metadata?: Json | null
-          property_id?: string | null
-          referrer?: string | null
-          session_id?: string | null
-          user_agent?: string | null
-          user_id?: string | null
+          listing_id: string
+          user_id: string
         }
         Update: {
           created_at?: string
-          event_type?: string
           id?: string
-          ip_address?: unknown | null
-          metadata?: Json | null
-          property_id?: string | null
-          referrer?: string | null
-          session_id?: string | null
-          user_agent?: string | null
-          user_id?: string | null
+          listing_id?: string
+          user_id?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "favorites_listing_id_fkey"
+            columns: ["listing_id"]
+            isOneToOne: false
+            referencedRelation: "listings"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       inquiries: {
         Row: {
           created_at: string
           email: string
           id: string
-          inquiry_type: string | null
+          listing_id: string | null
           message: string
           name: string
           phone: string | null
-          priority: string | null
-          property_id: string | null
           status: string | null
-          updated_at: string | null
         }
         Insert: {
           created_at?: string
           email: string
           id?: string
-          inquiry_type?: string | null
+          listing_id?: string | null
           message: string
           name: string
           phone?: string | null
-          priority?: string | null
-          property_id?: string | null
           status?: string | null
-          updated_at?: string | null
         }
         Update: {
           created_at?: string
           email?: string
           id?: string
-          inquiry_type?: string | null
+          listing_id?: string | null
           message?: string
           name?: string
           phone?: string | null
-          priority?: string | null
-          property_id?: string | null
           status?: string | null
-          updated_at?: string | null
         }
         Relationships: [
           {
             foreignKeyName: "inquiries_listing_id_fkey"
-            columns: ["property_id"]
+            columns: ["listing_id"]
             isOneToOne: false
             referencedRelation: "listings"
             referencedColumns: ["id"]
@@ -218,6 +300,24 @@ export type Database = {
         }
         Relationships: []
       }
+      newsletter_subscriptions: {
+        Row: {
+          created_at: string | null
+          email: string
+          id: string
+        }
+        Insert: {
+          created_at?: string | null
+          email: string
+          id?: string
+        }
+        Update: {
+          created_at?: string | null
+          email?: string
+          id?: string
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           avatar_url: string | null
@@ -251,26 +351,163 @@ export type Database = {
         }
         Relationships: []
       }
-      user_favorites: {
+      properties: {
+        Row: {
+          address: string
+          bathrooms: number
+          bedrooms: number
+          city: string
+          created_at: string | null
+          description: string | null
+          featured: boolean | null
+          id: string
+          images: Json
+          price: number
+          property_type: string
+          province: string
+          square_feet: number
+          status: string
+          title: string
+        }
+        Insert: {
+          address: string
+          bathrooms: number
+          bedrooms: number
+          city: string
+          created_at?: string | null
+          description?: string | null
+          featured?: boolean | null
+          id?: string
+          images?: Json
+          price: number
+          property_type: string
+          province: string
+          square_feet: number
+          status: string
+          title: string
+        }
+        Update: {
+          address?: string
+          bathrooms?: number
+          bedrooms?: number
+          city?: string
+          created_at?: string | null
+          description?: string | null
+          featured?: boolean | null
+          id?: string
+          images?: Json
+          price?: number
+          property_type?: string
+          province?: string
+          square_feet?: number
+          status?: string
+          title?: string
+        }
+        Relationships: []
+      }
+      realtorjigar_x8d1y_analytics: {
         Row: {
           created_at: string
           id: string
+          ip_address: string | null
           property_id: string | null
-          user_id: string | null
+          session_id: string | null
+          source: string | null
+          user_agent: string | null
+          user_email: string | null
+          view_count: number | null
         }
         Insert: {
           created_at?: string
           id?: string
+          ip_address?: string | null
           property_id?: string | null
-          user_id?: string | null
+          session_id?: string | null
+          source?: string | null
+          user_agent?: string | null
+          user_email?: string | null
+          view_count?: number | null
         }
         Update: {
           created_at?: string
           id?: string
+          ip_address?: string | null
           property_id?: string | null
-          user_id?: string | null
+          session_id?: string | null
+          source?: string | null
+          user_agent?: string | null
+          user_email?: string | null
+          view_count?: number | null
         }
         Relationships: []
+      }
+      realtorjigar_x8d1y_inquiries: {
+        Row: {
+          created_at: string
+          email: string
+          id: string
+          message: string
+          name: string
+          phone: string | null
+          property_id: string | null
+          status: string | null
+        }
+        Insert: {
+          created_at?: string
+          email: string
+          id?: string
+          message: string
+          name: string
+          phone?: string | null
+          property_id?: string | null
+          status?: string | null
+        }
+        Update: {
+          created_at?: string
+          email?: string
+          id?: string
+          message?: string
+          name?: string
+          phone?: string | null
+          property_id?: string | null
+          status?: string | null
+        }
+        Relationships: []
+      }
+      uploads: {
+        Row: {
+          created_at: string
+          file_name: string
+          id: string
+          listing_id: string | null
+          uploaded_by: string | null
+          url: string
+        }
+        Insert: {
+          created_at?: string
+          file_name: string
+          id?: string
+          listing_id?: string | null
+          uploaded_by?: string | null
+          url: string
+        }
+        Update: {
+          created_at?: string
+          file_name?: string
+          id?: string
+          listing_id?: string | null
+          uploaded_by?: string | null
+          url?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "uploads_listing_id_fkey"
+            columns: ["listing_id"]
+            isOneToOne: false
+            referencedRelation: "listings"
+            referencedColumns: ["id"]
+          },
+        ]
       }
     }
     Views: {

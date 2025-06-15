@@ -1,157 +1,116 @@
 
-import { useState, useEffect } from 'react';
-import { useMutation } from '@tanstack/react-query';
+import { useMutation, useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
+import { format } from 'date-fns';
 
-interface Consultation {
-  id: string;
+// Define the interface for consultation data
+export interface ConsultationData {
   name: string;
   email: string;
-  phone?: string;
-  message: string;
-  inquiry_type: string;
-  status: string;
-  priority: string;
-  property_id?: string;
-  created_at: string;
-  updated_at?: string;
-}
-
-interface SubmitConsultationData {
-  name: string;
-  email: string;
-  phone?: string;
+  phone: string;
   consultationType: string;
-  date?: string;
+  date?: Date;
   time?: string;
-  message: string;
+  message?: string;
   propertyId?: string;
 }
 
-export const useConsultations = () => {
-  const [consultations, setConsultations] = useState<Consultation[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+export interface Consultation extends ConsultationData {
+  id: string;
+  created_at: string;
+}
+
+export function useConsultations() {
   const { toast } = useToast();
 
-  useEffect(() => {
-    fetchConsultations();
-  }, []);
-
-  const fetchConsultations = async () => {
+  // Submit a new consultation request
+  const submitConsultation = async (data: ConsultationData) => {
+    console.log('Submitting consultation data:', data);
+    
     try {
-      setLoading(true);
-      setError(null);
-
-      const { data, error: fetchError } = await supabase
-        .from('inquiries')
-        .select('*')
-        .order('created_at', { ascending: false });
-
-      if (fetchError) throw fetchError;
-
-      setConsultations(data || []);
-    } catch (err) {
-      console.error('Error fetching consultations:', err);
-      setError(err instanceof Error ? err.message : 'Failed to fetch consultations');
-      toast({
-        title: "Error",
-        description: "Failed to load consultations",
-        variant: "destructive",
-      });
-    } finally {
-      setLoading(false);
+      // Format the date to ISO string if it exists
+      const formattedDate = data.date ? format(data.date, 'yyyy-MM-dd') : null;
+      
+      const { error } = await supabase
+        .from('consultations')
+        .insert({
+          name: data.name,
+          email: data.email,
+          phone: data.phone,
+          consultation_type: data.consultationType,
+          date: formattedDate,
+          time: data.time,
+          message: data.message || '',
+          property_id: data.propertyId || null
+        });
+      
+      if (error) {
+        console.error('Error submitting consultation:', error);
+        throw error;
+      }
+      
+      return { success: true };
+    } catch (error) {
+      console.error('Error in submitConsultation:', error);
+      throw error;
     }
   };
 
-  const updateConsultationStatus = async (id: string, status: string) => {
-    try {
-      const { error: updateError } = await supabase
-        .from('inquiries')
-        .update({ status, updated_at: new Date().toISOString() })
-        .eq('id', id);
-
-      if (updateError) throw updateError;
-
-      setConsultations(prev => 
-        prev.map(consultation => 
-          consultation.id === id 
-            ? { ...consultation, status, updated_at: new Date().toISOString() }
-            : consultation
-        )
-      );
-
-      toast({
-        title: "Success",
-        description: "Status updated successfully",
-      });
-    } catch (err) {
-      console.error('Error updating consultation status:', err);
-      toast({
-        title: "Error",
-        description: "Failed to update status",
-        variant: "destructive",
-      });
+  // Fetch all consultations
+  const fetchConsultations = async (): Promise<Consultation[]> => {
+    const { data, error } = await supabase
+      .from('consultations')
+      .select('*')
+      .order('created_at', { ascending: false });
+    
+    if (error) {
+      console.error('Error fetching consultations:', error);
+      throw error;
     }
+    
+    return data.map((item: any) => ({
+      id: item.id,
+      name: item.name,
+      email: item.email,
+      phone: item.phone,
+      consultationType: item.consultation_type,
+      date: item.date,
+      time: item.time,
+      message: item.message,
+      propertyId: item.property_id,
+      created_at: item.created_at
+    }));
   };
 
-  const deleteConsultation = async (id: string) => {
-    try {
-      const { error: deleteError } = await supabase
-        .from('inquiries')
-        .delete()
-        .eq('id', id);
-
-      if (deleteError) throw deleteError;
-
-      setConsultations(prev => prev.filter(consultation => consultation.id !== id));
-
-      toast({
-        title: "Success",
-        description: "Consultation deleted successfully",
-      });
-    } catch (err) {
-      console.error('Error deleting consultation:', err);
-      toast({
-        title: "Error",
-        description: "Failed to delete consultation",
-        variant: "destructive",
-      });
-    }
-  };
-
-  const submitConsultation = async (data: SubmitConsultationData) => {
-    const { error } = await supabase
-      .from('inquiries')
-      .insert({
-        name: data.name,
-        email: data.email,
-        phone: data.phone,
-        message: `${data.message}\n\nConsultation Type: ${data.consultationType}${data.date ? `\nPreferred Date: ${data.date}` : ''}${data.time ? `\nPreferred Time: ${data.time}` : ''}`,
-        inquiry_type: 'consultation',
-        status: 'new',
-        priority: 'normal',
-        property_id: data.propertyId
-      });
-
-    if (error) throw error;
-    await fetchConsultations();
-  };
-
-  const useSubmitConsultation = () => {
-    return useMutation({
+  // Define the mutation for submitting consultation requests
+  const useSubmitConsultation = () => 
+    useMutation({
       mutationFn: submitConsultation,
+      onSuccess: () => {
+        toast({
+          title: "Consultation requested",
+          description: "Thank you! Your consultation request has been submitted.",
+        });
+      },
+      onError: (error: any) => {
+        toast({
+          title: "Error requesting consultation",
+          description: error.message || "Failed to submit your consultation request. Please try again.",
+          variant: "destructive"
+        });
+      }
     });
-  };
 
-  return {
-    consultations,
-    loading,
-    error,
-    updateConsultationStatus,
-    deleteConsultation,
-    refetch: fetchConsultations,
-    useSubmitConsultation
+  // Query for fetching all consultations
+  const useAllConsultations = () => 
+    useQuery({
+      queryKey: ['consultations'],
+      queryFn: fetchConsultations
+    });
+
+  return { 
+    useSubmitConsultation,
+    useAllConsultations
   };
-};
+}
